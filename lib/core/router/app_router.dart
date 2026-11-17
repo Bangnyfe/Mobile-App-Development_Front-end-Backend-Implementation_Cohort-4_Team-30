@@ -1,5 +1,9 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/dashboard/domain/repositories/dashboard_repository.dart';
+import '../../features/dashboard/presentation/cubit/dashboard_cubit.dart';
+import '../../features/dashboard/presentation/pages/dashboard_page.dart';
 import '../widgets/app_shell.dart';
 import '../widgets/feature_placeholder_page.dart';
 import 'route_paths.dart';
@@ -20,7 +24,19 @@ GoRouter createAppRouter() {
         builder: (context, state, navigationShell) =>
             AppShell(navigationShell: navigationShell),
         branches: [
-          _tab(RoutePaths.home, 'Dashboard'),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RoutePaths.home,
+                builder: (context, state) => BlocProvider(
+                  create: (context) =>
+                      DashboardCubit(context.read<DashboardRepository>())
+                        ..start(),
+                  child: const DashboardPage(),
+                ),
+              ),
+            ],
+          ),
           _tab(RoutePaths.sell, 'Sell'),
           _tab(RoutePaths.stock, 'Inventory'),
           _tab(RoutePaths.reports, 'Reports'),
