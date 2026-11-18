@@ -59,12 +59,22 @@ class FirestoreCheckoutRepository implements CheckoutRepository {
         final quantity = (data?['quantity'] as num?)?.toInt();
         final expiry = data?['expiryDate'];
         final expiryDate = expiry is Timestamp ? expiry.toDate() : null;
-        if (quantity == null ||
-            quantity < read.requested ||
-            expiryDate == null ||
-            _isExpired(expiryDate, today)) {
+        if (quantity == null || expiryDate == null) {
+          throw const CheckoutException(
+            'Checkout failed because a batch record is incomplete.',
+          );
+        }
+        if (_isExpired(expiryDate, today)) {
+          final batchNumber = data?['batchNumber'] as String?;
+          final which = batchNumber == null ? 'A batch' : 'Batch $batchNumber';
           throw CheckoutException(
-            'Insufficient stock. Available: ${quantity ?? 0}, '
+            "$which has expired and can't be sold. "
+            'Remove it from the cart and try again.',
+          );
+        }
+        if (quantity < read.requested) {
+          throw CheckoutException(
+            'Insufficient stock. Available: $quantity, '
             'Requested: ${read.requested}.',
           );
         }
