@@ -76,9 +76,19 @@ void main() {
     cashReceived: 3000,
   );
 
+  late _CheckoutRepository successRepository;
   blocTest<CheckoutCubit, CheckoutState>(
     'deducts stock only after complete successful checkout',
-    build: () => CheckoutCubit(_CheckoutRepository({'b1': 5})),
+    build: () {
+      successRepository = _CheckoutRepository({'b1': 5});
+      return CheckoutCubit(successRepository);
+    },
+    act: checkout,
+    expect: () => [
+      const CheckoutState.processing(),
+      const CheckoutState.success('0001'),
+    ],
+    verify: (_) => expect(successRepository.stock['b1'], 0),
   );
 
   test('deducts the allocated quantities', () async {
