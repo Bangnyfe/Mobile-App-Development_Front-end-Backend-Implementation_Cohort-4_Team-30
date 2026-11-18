@@ -20,7 +20,7 @@ class CartCubit extends Cubit<CartState> {
     required int quantity,
   }) {
     if (quantity <= 0) {
-      emit(state.copyWith(error: 'Quantity must be greater than zero.'));
+      emit(state.withError('Quantity must be greater than zero.'));
       return;
     }
 
@@ -73,15 +73,15 @@ class CartCubit extends Cubit<CartState> {
         emit(CartState(items: items));
       }
     } on AllocationFailure catch (error) {
-      emit(state.copyWith(error: error.message));
+      emit(state.withError(error.message));
     } on ArgumentError catch (error) {
-      emit(state.copyWith(error: error.message.toString()));
+      emit(state.withError(error.message.toString()));
     }
   }
 
   void updateQuantity(String productId, int quantity) {
     if (quantity <= 0) {
-      emit(state.copyWith(error: 'Quantity must be greater than zero.'));
+      emit(state.withError('Quantity must be greater than zero.'));
       return;
     }
 
@@ -109,7 +109,7 @@ class CartCubit extends Cubit<CartState> {
       );
       emit(CartState(items: items));
     } on AllocationFailure catch (error) {
-      emit(state.copyWith(error: error.message));
+      emit(state.withError(error.message));
     }
   }
 
