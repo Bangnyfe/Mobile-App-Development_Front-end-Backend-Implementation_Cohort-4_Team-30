@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../domain/entities/cart_item.dart';
+import '../../domain/entities/payment_method.dart';
 import '../../domain/repositories/checkout_repository.dart';
 import '../../domain/services/change_calculator.dart';
 import 'checkout_state.dart';
@@ -17,7 +18,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     required String receiptNo,
     required String soldBy,
     required String paymentMethod,
-    required int cashReceived,
+    int? cashReceived,
   }) async {
     if (items.isEmpty) {
       emit(const CheckoutState.failure('The cart is empty.'));
@@ -25,11 +26,15 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     }
 
     final total = ChangeCalculator.total(items);
-    final change = ChangeCalculator.change(
-      total: total,
-      cashReceived: cashReceived,
-    );
-    if (change == null) {
+
+    // Only cash sales take cash and give change. Mobile Money and Card are
+    // just labels on the receipt, so they're recorded as paid in full.
+    final isCash = paymentMethod == PaymentMethods.cash;
+    final paid = isCash ? cashReceived : total;
+    final change = paid == null
+        ? null
+        : ChangeCalculator.change(total: total, cashReceived: paid);
+    if (paid == null || change == null) {
       emit(const CheckoutState.failure('Insufficient cash received.'));
       return;
     }
@@ -43,7 +48,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
           receiptNo: receiptNo,
           soldBy: soldBy,
           paymentMethod: paymentMethod,
-          cashReceived: cashReceived,
+          cashReceived: paid,
           change: change,
           items: items,
         ),
