@@ -6,6 +6,8 @@ import 'core/theme/app_theme.dart';
 import 'features/dashboard/data/fake_dashboard_repository.dart';
 import 'features/dashboard/domain/repositories/dashboard_repository.dart';
 import 'features/pos/presentation/cubit/cart_cubit.dart';
+import 'features/sales/data/fake_sales_repository.dart';
+import 'features/sales/domain/repositories/sales_repository.dart';
 import 'features/settings/data/fake_account_repository.dart';
 import 'features/settings/domain/repositories/account_repository.dart';
 import 'features/settings/domain/repositories/settings_repository.dart';
@@ -27,6 +29,7 @@ class PharmacyApp extends StatelessWidget {
     required this.settingsRepository,
     this.dashboardRepository,
     this.accountRepository,
+    this.salesRepository,
   });
 
   final GoRouter router;
@@ -40,6 +43,10 @@ class PharmacyApp extends StatelessWidget {
   /// merged.
   final AccountRepository? accountRepository;
 
+  /// Defaults to the fake repository until auth gives us the signed-in
+  /// user's pharmacy ID for `FirestoreSalesRepository`.
+  final SalesRepository? salesRepository;
+
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
@@ -50,6 +57,9 @@ class PharmacyApp extends StatelessWidget {
         RepositoryProvider<SettingsRepository>.value(value: settingsRepository),
         RepositoryProvider<AccountRepository>(
           create: (_) => accountRepository ?? const FakeAccountRepository(),
+        ),
+        RepositoryProvider<SalesRepository>(
+          create: (_) => salesRepository ?? FakeSalesRepository(),
         ),
       ],
       child: MultiBlocProvider(
