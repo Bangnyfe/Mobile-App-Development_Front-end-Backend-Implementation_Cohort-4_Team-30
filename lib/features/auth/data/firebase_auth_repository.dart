@@ -226,8 +226,7 @@ class FirebaseAuthRepository implements AuthRepository {
     return user;
   }
 
-  static String _nameFromEmail(String? email) =>
-      (email ?? '').split('@').first;
+  static String _nameFromEmail(String? email) => (email ?? '').split('@').first;
 
   Future<T> _guard<T>(Future<T> Function() action) async {
     try {

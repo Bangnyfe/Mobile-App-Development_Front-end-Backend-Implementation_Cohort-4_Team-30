@@ -42,10 +42,7 @@ void main() {
     test('maps each kind of user to the right screen', () {
       expect(AuthStatus.fromUser(null), AuthStatus.unauthenticated);
       expect(AuthStatus.fromUser(_unverified), AuthStatus.needsVerification);
-      expect(
-        AuthStatus.fromUser(_googleNoPharmacy),
-        AuthStatus.needsPharmacy,
-      );
+      expect(AuthStatus.fromUser(_googleNoPharmacy), AuthStatus.needsPharmacy);
       expect(AuthStatus.fromUser(_owner), AuthStatus.authenticated);
     });
   });
@@ -56,9 +53,8 @@ void main() {
 
   blocTest<AuthBloc, AuthState>(
     'follows the user stream after AuthStarted',
-    setUp: () => when(() => repository.watchUser()).thenAnswer(
-      (_) => Stream.fromIterable([null, _unverified, _owner]),
-    ),
+    setUp: () => when(() => repository.watchUser())
+        .thenAnswer((_) => Stream.fromIterable([null, _unverified, _owner])),
     build: () => AuthBloc(repository),
     act: (bloc) => bloc.add(const AuthStarted()),
     expect: () => const [
@@ -165,9 +161,9 @@ void main() {
   group('Google sign-in', () {
     blocTest<AuthBloc, AuthState>(
       'a first-time Google user is sent to pharmacy setup',
-      setUp: () => when(
-        () => repository.signInWithGoogle(),
-      ).thenAnswer((_) async => _googleNoPharmacy),
+      setUp: () =>
+          when(() => repository.signInWithGoogle())
+              .thenAnswer((_) async => _googleNoPharmacy),
       build: () => AuthBloc(repository),
       act: (bloc) => bloc.add(const AuthGoogleSignInRequested()),
       expect: () => const [
@@ -186,9 +182,9 @@ void main() {
 
     blocTest<AuthBloc, AuthState>(
       'closing the account picker shows no error',
-      setUp: () => when(
-        () => repository.signInWithGoogle(),
-      ).thenAnswer((_) async => null),
+      setUp: () =>
+          when(() => repository.signInWithGoogle())
+              .thenAnswer((_) async => null),
       build: () => AuthBloc(repository),
       act: (bloc) => bloc.add(const AuthGoogleSignInRequested()),
       expect: () => const [
@@ -203,9 +199,9 @@ void main() {
 
   blocTest<AuthBloc, AuthState>(
     'a password reset always shows the same neutral message',
-    setUp: () => when(
-      () => repository.sendPasswordResetEmail(any()),
-    ).thenAnswer((_) async {}),
+    setUp: () =>
+        when(() => repository.sendPasswordResetEmail(any()))
+            .thenAnswer((_) async {}),
     build: () => AuthBloc(repository),
     act: (bloc) =>
         bloc.add(const AuthPasswordResetRequested('aline@amanipharmacy.rw')),
@@ -225,9 +221,9 @@ void main() {
   group('verification check', () {
     blocTest<AuthBloc, AuthState>(
       'explains what to do when the email is still unverified',
-      setUp: () => when(
-        () => repository.reloadUser(),
-      ).thenAnswer((_) async => _unverified),
+      setUp: () =>
+          when(() => repository.reloadUser())
+              .thenAnswer((_) async => _unverified),
       build: () => AuthBloc(repository),
       seed: () => const AuthState(
         status: AuthStatus.needsVerification,
@@ -253,9 +249,8 @@ void main() {
 
     blocTest<AuthBloc, AuthState>(
       'moves on once the email is verified',
-      setUp: () => when(
-        () => repository.reloadUser(),
-      ).thenAnswer((_) async => _owner),
+      setUp: () =>
+          when(() => repository.reloadUser()).thenAnswer((_) async => _owner),
       build: () => AuthBloc(repository),
       seed: () => const AuthState(
         status: AuthStatus.needsVerification,

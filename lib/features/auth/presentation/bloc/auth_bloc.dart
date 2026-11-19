@@ -195,7 +195,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(state.withUser(user).withAction(action, ActionStatus.success));
     } on AuthFailure catch (failure) {
       emit(
-        state.withAction(action, ActionStatus.failure, message: failure.message),
+        state.withAction(
+          action,
+          ActionStatus.failure,
+          message: failure.message,
+        ),
       );
     }
   }
@@ -211,15 +215,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       await call();
       emit(
-        state.withAction(
-          action,
-          ActionStatus.success,
-          message: successMessage,
-        ),
+        state.withAction(action, ActionStatus.success, message: successMessage),
       );
     } on AuthFailure catch (failure) {
       emit(
-        state.withAction(action, ActionStatus.failure, message: failure.message),
+        state.withAction(
+          action,
+          ActionStatus.failure,
+          message: failure.message,
+        ),
       );
     }
   }
