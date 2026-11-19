@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/widgets/app_list_row.dart';
 import '../cubit/settings_cubit.dart';
+import '../widgets/settings_row.dart';
 
 /// Settings tab: alert thresholds and notification preferences.
 class SettingsPage extends StatelessWidget {
@@ -18,61 +18,74 @@ class SettingsPage extends StatelessWidget {
         ..hideCurrentSnackBar()
         ..showSnackBar(SnackBar(content: Text(state.error!))),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Settings')),
         body: SafeArea(
-          child: BlocBuilder<SettingsCubit, SettingsState>(
-            builder: (context, state) {
-              final settings = state.settings;
-
-              // Centred and width-capped like the dashboard, so it stays
-              // readable in landscape.
-              return Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 640),
-                  child: ListView(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-                    children: [
-                      const _SectionLabel('ALERTS'),
-                      Card(
-                        clipBehavior: Clip.antiAlias,
-                        child: Column(
-                          children: [
-                            AppListRow(
-                              icon: Icons.inventory_2_outlined,
-                              title: 'Low-stock threshold',
-                              subtitle: 'Flag products at or below this',
-                              trailing: '${settings.lowStockThreshold} units',
-                            ),
-                            const Divider(indent: 62),
-                            AppListRow(
-                              icon: Icons.event_busy_outlined,
-                              title: 'Expiry alert period',
-                              subtitle: 'Warn before batches expire',
-                              trailing: '${settings.expiryAlertDays} days',
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      const _SectionLabel('NOTIFICATIONS'),
-                      Card(
-                        clipBehavior: Clip.antiAlias,
-                        child: AppListRow(
-                          icon: Icons.notifications_none,
-                          title: 'Push notifications',
-                          subtitle: 'Low-stock and expiry alerts',
-                          trailing: settings.pushNotificationsEnabled
-                              ? 'On'
-                              : 'Off',
-                        ),
-                      ),
-                    ],
+          // Centred and width-capped like the dashboard, so it stays
+          // readable in landscape.
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 640),
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                children: [
+                  Text(
+                    'Settings',
+                    style: Theme.of(context).textTheme.headlineSmall
+                        ?.copyWith(fontWeight: FontWeight.w700),
                   ),
-                ),
-              );
-            },
+                  const SizedBox(height: 16),
+                  const _SectionLabel('ALERTS'),
+                  const _AlertsCard(),
+                ],
+              ),
+            ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _AlertsCard extends StatelessWidget {
+  const _AlertsCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final settings = context.select(
+      (SettingsCubit cubit) => cubit.state.settings,
+    );
+    final cubit = context.read<SettingsCubit>();
+
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: [
+          SettingsRow(
+            title: 'Low stock threshold',
+            subtitle: 'Default for new products',
+            value: '${settings.lowStockThreshold} units',
+          ),
+          const Divider(indent: 16, endIndent: 16),
+          SettingsRow(
+            title: 'Expiry alert period',
+            subtitle: 'Warn before a batch expires',
+            value: '${settings.expiryAlertDays} days',
+          ),
+          const Divider(indent: 16, endIndent: 16),
+          // MergeSemantics reads the title and the switch as one control,
+          // and tapping anywhere on the row flips it.
+          MergeSemantics(
+            child: SettingsRow(
+              title: 'Push notifications',
+              onTap: () => cubit.setPushNotificationsEnabled(
+                !settings.pushNotificationsEnabled,
+              ),
+              trailing: Switch(
+                value: settings.pushNotificationsEnabled,
+                onChanged: cubit.setPushNotificationsEnabled,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

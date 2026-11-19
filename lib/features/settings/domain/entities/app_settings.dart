@@ -22,8 +22,9 @@ class AppSettings extends Equatable {
   static const minExpiryAlertDays = 1;
   static const maxExpiryAlertDays = 365;
 
-  /// A product is low on stock when its total units across all batches are
-  /// at or below this number.
+  /// Default reorder level for products that don't have their own. A
+  /// product is low on stock when its total units across all batches are
+  /// at or below its reorder level.
   final int lowStockThreshold;
 
   /// A batch is "expiring soon" when it expires within this many days.
