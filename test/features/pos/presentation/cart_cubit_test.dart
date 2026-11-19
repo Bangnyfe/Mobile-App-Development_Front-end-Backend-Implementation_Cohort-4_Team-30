@@ -96,4 +96,21 @@ void main() {
       ),
     ],
   );
+
+  blocTest<CartCubit, CartState>(
+    'emits the same error again when it happens twice in a row',
+    build: () => CartCubit(clock: () => today),
+    act: (cubit) {
+      cubit.addItem(product: product, batches: [b1, b2], quantity: 8);
+      cubit.addItem(product: product, batches: [b1, b2], quantity: 8);
+    },
+    expect: () => [
+      isA<CartState>()
+          .having((state) => state.error, 'error', startsWith('Insufficient'))
+          .having((state) => state.errorCount, 'errorCount', 1),
+      isA<CartState>()
+          .having((state) => state.error, 'error', startsWith('Insufficient'))
+          .having((state) => state.errorCount, 'errorCount', 2),
+    ],
+  );
 }

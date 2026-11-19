@@ -6,12 +6,16 @@ class FefoPicker {
 
   /// Returns the sellable batch with the earliest expiry, or null if none.
   /// [today] is passed in so the result never depends on the real clock.
-  /// On a tie, the batch that comes first in [batches] wins.
+  /// Ties are broken as in [sortedSellable], so the order of [batches]
+  /// doesn't matter.
   static PosBatch? pick(List<PosBatch> batches, {required DateTime today}) {
     final sorted = sortedSellable(batches, today: today);
     return sorted.isEmpty ? null : sorted.first;
   }
 
+  /// Sellable batches (in stock, not expired) sorted by expiry day, earliest
+  /// first. Time of day is ignored. Batches expiring on the same day are
+  /// ordered by batch number, then id, so the result is always the same.
   static List<PosBatch> sortedSellable(
     List<PosBatch> batches, {
     required DateTime today,

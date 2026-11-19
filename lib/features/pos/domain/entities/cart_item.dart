@@ -4,7 +4,13 @@ import 'batch_allocation.dart';
 import 'pos_batch.dart';
 import 'pos_product.dart';
 
-/// One cart line: a product, the batch it will be taken from, and a quantity.
+/// One cart line: a product, a quantity, and the batches it will be taken
+/// from.
+///
+/// [allocations] is what checkout actually deducts. It can span several
+/// batches when the first one doesn't hold enough. [batch] is the first
+/// batch to sell from (earliest expiry), kept for display, e.g.
+/// "from batch B001" on the cart screen.
 class CartItem extends Equatable {
   const CartItem({
     required this.product,
