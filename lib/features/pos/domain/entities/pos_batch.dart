@@ -24,6 +24,13 @@ class PosBatch extends Equatable {
   /// Sellable means in stock and not expired.
   bool isSellableOn(DateTime today) => quantity > 0 && !isExpiredOn(today);
 
+  PosBatch copyWith({int? quantity}) => PosBatch(
+    id: id,
+    batchNumber: batchNumber,
+    expiryDate: expiryDate,
+    quantity: quantity ?? this.quantity,
+  );
+
   @override
   List<Object?> get props => [id, batchNumber, expiryDate, quantity];
 }
