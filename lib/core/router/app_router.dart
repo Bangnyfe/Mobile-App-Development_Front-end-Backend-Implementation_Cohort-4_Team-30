@@ -4,6 +4,9 @@ import 'package:go_router/go_router.dart';
 import '../../features/dashboard/domain/repositories/dashboard_repository.dart';
 import '../../features/dashboard/presentation/cubit/dashboard_cubit.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
+import '../../features/sales/domain/repositories/sales_repository.dart';
+import '../../features/sales/presentation/cubit/sales_history_cubit.dart';
+import '../../features/sales/presentation/pages/sales_history_page.dart';
 import '../../features/settings/presentation/pages/categories_page.dart';
 import '../../features/settings/presentation/pages/pharmacy_profile_page.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
@@ -38,6 +41,19 @@ GoRouter createAppRouter() {
                         ..start(),
                   child: const DashboardPage(),
                 ),
+                // Inside the Home tab, so the bottom bar stays visible and
+                // back returns to the dashboard.
+                routes: [
+                  GoRoute(
+                    path: 'sales',
+                    builder: (context, state) => BlocProvider(
+                      create: (context) =>
+                          SalesHistoryCubit(context.read<SalesRepository>())
+                            ..start(),
+                      child: const SalesHistoryPage(),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
