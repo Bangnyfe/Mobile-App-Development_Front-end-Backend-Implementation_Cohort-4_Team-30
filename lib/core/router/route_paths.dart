@@ -10,6 +10,7 @@ abstract final class RoutePaths {
 
   // Home subpages.
   static const salesHistory = '$home/sales';
+  static String saleDetails(String saleId) => '$salesHistory/$saleId';
 
   // Settings subpages.
   static const pharmacyProfile = '$settings/pharmacy';

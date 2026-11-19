@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/route_paths.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/app_list_row.dart';
@@ -155,6 +157,8 @@ class _SaleRow extends StatelessWidget {
         sale.sellerName,
       ].join(' · '),
       trailing: Formatters.amount(sale.total),
+      // push, not go, so back returns to wherever the history was opened.
+      onTap: () => context.push(RoutePaths.saleDetails(sale.id)),
     );
   }
 }
