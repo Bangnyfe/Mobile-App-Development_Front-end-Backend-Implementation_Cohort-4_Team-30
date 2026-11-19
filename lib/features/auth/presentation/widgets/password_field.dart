@@ -53,12 +53,16 @@ class _PasswordFieldState extends State<PasswordField> {
         onSubmitted: widget.onSubmitted,
         enabled: widget.enabled,
         autofillHints: [
-          widget.isNewPassword ? AutofillHints.newPassword : AutofillHints.password,
+          widget.isNewPassword
+              ? AutofillHints.newPassword
+              : AutofillHints.password,
         ],
         suffix: IconButton(
           tooltip: obscured ? 'Show password' : 'Hide password',
           icon: Icon(
-            obscured ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+            obscured
+                ? Icons.visibility_outlined
+                : Icons.visibility_off_outlined,
             size: 20,
           ),
           onPressed: () => _obscured.value = !obscured,
