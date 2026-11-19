@@ -14,15 +14,11 @@ class FirestoreSalesRepository implements SalesRepository {
   final String pharmacyId;
   final FirebaseFirestore _firestore;
 
-  CollectionReference<Map<String, dynamic>> get _sales => _firestore
-      .collection('pharmacies')
-      .doc(pharmacyId)
-      .collection('sales');
+  CollectionReference<Map<String, dynamic>> get _sales =>
+      _firestore.collection('pharmacies').doc(pharmacyId).collection('sales');
 
   @override
-  Stream<List<Sale>> watchSales({
-    int limit = SalesRepository.defaultLimit,
-  }) {
+  Stream<List<Sale>> watchSales({int limit = SalesRepository.defaultLimit}) {
     return _sales
         .orderBy('createdAt', descending: true)
         .limit(limit)

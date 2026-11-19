@@ -13,9 +13,8 @@ class FakeSalesRepository implements SalesRepository {
   final DateTime Function() _clock;
 
   @override
-  Stream<List<Sale>> watchSales({
-    int limit = SalesRepository.defaultLimit,
-  }) => Stream.value(_sales().take(limit).toList());
+  Stream<List<Sale>> watchSales({int limit = SalesRepository.defaultLimit}) =>
+      Stream.value(_sales().take(limit).toList());
 
   @override
   Future<Sale?> getSale(String saleId) async {

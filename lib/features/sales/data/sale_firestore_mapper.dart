@@ -7,11 +7,7 @@ import '../domain/entities/sale.dart';
 /// Sale documents are written by checkout, but this is forgiving about
 /// missing or oddly typed fields so one bad document can't break the whole
 /// history. [now] is used if `createdAt` hasn't been set by the server yet.
-Sale saleFromFirestore(
-  String id,
-  Map<String, dynamic> data, {
-  DateTime? now,
-}) {
+Sale saleFromFirestore(String id, Map<String, dynamic> data, {DateTime? now}) {
   final total = _int(data['total']);
   final rawItems = data['items'];
 
