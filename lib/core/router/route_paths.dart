@@ -7,4 +7,9 @@ abstract final class RoutePaths {
   static const stock = '/stock';
   static const reports = '/reports';
   static const settings = '/settings';
+
+  // Settings subpages.
+  static const pharmacyProfile = '$settings/pharmacy';
+  static const staff = '$settings/staff';
+  static const categories = '$settings/categories';
 }
