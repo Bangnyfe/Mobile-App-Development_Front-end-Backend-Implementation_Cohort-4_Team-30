@@ -4,7 +4,10 @@ import 'package:go_router/go_router.dart';
 import '../../features/dashboard/domain/repositories/dashboard_repository.dart';
 import '../../features/dashboard/presentation/cubit/dashboard_cubit.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
+import '../../features/settings/presentation/pages/categories_page.dart';
+import '../../features/settings/presentation/pages/pharmacy_profile_page.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
+import '../../features/settings/presentation/pages/staff_page.dart';
 import '../widgets/app_shell.dart';
 import '../widgets/feature_placeholder_page.dart';
 import 'route_paths.dart';
@@ -46,6 +49,22 @@ GoRouter createAppRouter() {
               GoRoute(
                 path: RoutePaths.settings,
                 builder: (context, state) => const SettingsPage(),
+                // Sub-routes stay inside the Settings tab, so the bottom
+                // bar stays visible and back returns to Settings.
+                routes: [
+                  GoRoute(
+                    path: 'pharmacy',
+                    builder: (context, state) => const PharmacyProfilePage(),
+                  ),
+                  GoRoute(
+                    path: 'staff',
+                    builder: (context, state) => const StaffPage(),
+                  ),
+                  GoRoute(
+                    path: 'categories',
+                    builder: (context, state) => const CategoriesPage(),
+                  ),
+                ],
               ),
             ],
           ),
