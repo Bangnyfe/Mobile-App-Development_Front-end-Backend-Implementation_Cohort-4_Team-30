@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/widgets/status_chip.dart';
 import '../../../pos/domain/entities/pos_batch.dart';
 import '../../../pos/domain/services/fefo_picker.dart';
 
+/// Shows "Expired" on an expired batch, or "Sell first" on the batch that
+/// FEFO would sell next. Shows nothing for any other batch.
 class FefoBatchIndicator extends StatelessWidget {
   const FefoBatchIndicator({
     super.key,
@@ -17,24 +20,17 @@ class FefoBatchIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final expired = batch.isExpiredOn(today);
-    final sellable = batch.isSellableOn(today);
-    final sellFirst =
-        sellable && FefoPicker.pick(batches, today: today)?.id == batch.id;
+    if (batch.isExpiredOn(today)) {
+      return const StatusChip(label: 'Expired', tone: StatusTone.danger);
+    }
 
-    return Row(
-      children: [
-        if (expired)
-          const Chip(
-            label: Text('EXPIRED'),
-            backgroundColor: Color(0xFFFFE4E6),
-          ),
-        if (sellFirst)
-          const Chip(
-            label: Text('SELL FIRST'),
-            backgroundColor: Color(0xFFD1FAE5),
-          ),
-      ],
-    );
+    final sellFirst =
+        batch.isSellableOn(today) &&
+        FefoPicker.pick(batches, today: today)?.id == batch.id;
+    if (sellFirst) {
+      return const StatusChip(label: 'Sell first', tone: StatusTone.success);
+    }
+
+    return const SizedBox.shrink();
   }
 }

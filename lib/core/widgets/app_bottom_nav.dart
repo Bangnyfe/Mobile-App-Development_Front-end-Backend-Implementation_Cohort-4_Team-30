@@ -9,10 +9,15 @@ class AppBottomNav extends StatelessWidget {
     super.key,
     required this.currentIndex,
     required this.onTabSelected,
+    this.cartCount = 0,
   });
 
   final int currentIndex;
   final ValueChanged<int> onTabSelected;
+
+  /// Number of items in the cart, shown as a badge on the Sell tab.
+  /// The badge is hidden when this is 0.
+  final int cartCount;
 
   @override
   Widget build(BuildContext context) {
@@ -23,28 +28,28 @@ class AppBottomNav extends StatelessWidget {
       child: NavigationBar(
         selectedIndex: currentIndex,
         onDestinationSelected: onTabSelected,
-        destinations: const [
-          NavigationDestination(
+        destinations: [
+          const NavigationDestination(
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home),
             label: 'Home',
           ),
           NavigationDestination(
-            icon: Icon(Icons.shopping_cart_outlined),
-            selectedIcon: Icon(Icons.shopping_cart),
+            icon: _withCartBadge(const Icon(Icons.shopping_cart_outlined)),
+            selectedIcon: _withCartBadge(const Icon(Icons.shopping_cart)),
             label: 'Sell',
           ),
-          NavigationDestination(
+          const NavigationDestination(
             icon: Icon(Icons.inventory_2_outlined),
             selectedIcon: Icon(Icons.inventory_2),
             label: 'Stock',
           ),
-          NavigationDestination(
+          const NavigationDestination(
             icon: Icon(Icons.bar_chart_outlined),
             selectedIcon: Icon(Icons.bar_chart),
             label: 'Reports',
           ),
-          NavigationDestination(
+          const NavigationDestination(
             icon: Icon(Icons.tune_outlined),
             selectedIcon: Icon(Icons.tune),
             label: 'Settings',
@@ -53,4 +58,7 @@ class AppBottomNav extends StatelessWidget {
       ),
     );
   }
+
+  Widget _withCartBadge(Widget icon) =>
+      Badge.count(count: cartCount, isLabelVisible: cartCount > 0, child: icon);
 }
