@@ -11,10 +11,9 @@ import '../domain/repositories/auth_repository.dart';
 /// can then be removed.
 class AuthBackedAccountRepository implements AccountRepository {
   const AuthBackedAccountRepository({
-    required AccountRepository details,
-    required AuthRepository auth,
-  }) : _details = details,
-       _auth = auth;
+    required this._details,
+    required this._auth,
+  });
 
   final AccountRepository _details;
   final AuthRepository _auth;
