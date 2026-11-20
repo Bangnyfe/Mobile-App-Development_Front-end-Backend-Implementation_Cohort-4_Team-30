@@ -11,6 +11,7 @@ abstract final class RoutePaths {
   // Home subpages.
   static const salesHistory = '$home/sales';
   static String saleDetails(String saleId) => '$salesHistory/$saleId';
+  static const notifications = '$home/notifications';
 
   // Reports subpages. Sales history is reachable from Home too; these
   // copies keep the Reports tab selected when it's opened from here.

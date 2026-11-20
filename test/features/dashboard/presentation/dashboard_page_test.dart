@@ -6,7 +6,11 @@ import 'package:team30_app/features/dashboard/domain/entities/dashboard_summary.
 import 'package:team30_app/features/dashboard/domain/repositories/dashboard_repository.dart';
 import 'package:team30_app/features/dashboard/presentation/cubit/dashboard_cubit.dart';
 import 'package:team30_app/features/dashboard/presentation/pages/dashboard_page.dart';
+import 'package:team30_app/features/notifications/data/in_memory_seen_alerts_repository.dart';
+import 'package:team30_app/features/notifications/presentation/cubit/notifications_cubit.dart';
+import 'package:team30_app/features/settings/domain/entities/app_settings.dart';
 
+import '../../notifications/notifications_test_helpers.dart';
 import '../dashboard_test_data.dart';
 
 class _StubDashboardRepository implements DashboardRepository {
@@ -32,9 +36,22 @@ Future<void> pumpDashboard(
   await tester.pumpWidget(
     MaterialApp(
       theme: AppTheme.light(),
-      home: BlocProvider(
-        create: (_) =>
-            DashboardCubit(_StubDashboardRepository(stream))..start(),
+      home: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (_) =>
+                DashboardCubit(_StubDashboardRepository(stream))..start(),
+          ),
+          // For the bell; no alerts, so no badge.
+          BlocProvider(
+            create: (_) => NotificationsCubit(
+              stockRepository: FixedStockAlertsRepository(const []),
+              seenRepository: InMemorySeenAlertsRepository(),
+              initialSettings: const AppSettings(),
+              settingsChanges: const Stream.empty(),
+            )..start(),
+          ),
+        ],
         // Friday 25 Sep 2026, 14:40 -> "Good afternoon".
         child: DashboardPage(clock: () => DateTime(2026, 9, 25, 14, 40)),
       ),
