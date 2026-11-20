@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/dashboard/domain/repositories/dashboard_repository.dart';
 import '../../features/dashboard/presentation/cubit/dashboard_cubit.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
+import '../../features/reports/presentation/pages/reports_hub_page.dart';
 import '../../features/sales/domain/repositories/sales_repository.dart';
 import '../../features/sales/presentation/cubit/sale_details_cubit.dart';
 import '../../features/sales/presentation/cubit/sales_history_cubit.dart';
@@ -45,35 +46,37 @@ GoRouter createAppRouter() {
                 ),
                 // Inside the Home tab, so the bottom bar stays visible and
                 // back returns to the dashboard.
-                routes: [
-                  GoRoute(
-                    path: 'sales',
-                    builder: (context, state) => BlocProvider(
-                      create: (context) =>
-                          SalesHistoryCubit(context.read<SalesRepository>())
-                            ..start(),
-                      child: const SalesHistoryPage(),
-                    ),
-                    routes: [
-                      GoRoute(
-                        path: ':saleId',
-                        builder: (context, state) => BlocProvider(
-                          create: (context) => SaleDetailsCubit(
-                            context.read<SalesRepository>(),
-                            state.pathParameters['saleId']!,
-                          )..load(),
-                          child: const SaleDetailsPage(),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                routes: [_salesHistoryRoute(RoutePaths.saleDetails)],
               ),
             ],
           ),
           _tab(RoutePaths.sell, 'Sell'),
           _tab(RoutePaths.stock, 'Inventory'),
-          _tab(RoutePaths.reports, 'Reports'),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RoutePaths.reports,
+                builder: (context, state) => const ReportsHubPage(),
+                // Sub-routes stay inside the Reports tab, so the bottom
+                // bar stays visible and back returns to the hub.
+                routes: [
+                  _salesHistoryRoute(RoutePaths.reportsSaleDetails),
+                  // Brian: replace these placeholders with your reports.
+                  GoRoute(
+                    path: 'inventory',
+                    builder: (context, state) =>
+                        const FeaturePlaceholderPage(title: 'Inventory report'),
+                  ),
+                  GoRoute(
+                    path: 'expiry-waste',
+                    builder: (context, state) => const FeaturePlaceholderPage(
+                      title: 'Expiry & waste report',
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -99,6 +102,32 @@ GoRouter createAppRouter() {
             ],
           ),
         ],
+      ),
+    ],
+  );
+}
+
+/// Sales history and Sale details as a sub-route of whichever tab opens
+/// them (Home and Reports). [saleDetailsPath] keeps the details in the same
+/// tab, so the selected tab never jumps.
+GoRoute _salesHistoryRoute(String Function(String saleId) saleDetailsPath) {
+  return GoRoute(
+    path: 'sales',
+    builder: (context, state) => BlocProvider(
+      create: (context) =>
+          SalesHistoryCubit(context.read<SalesRepository>())..start(),
+      child: SalesHistoryPage(saleDetailsPath: saleDetailsPath),
+    ),
+    routes: [
+      GoRoute(
+        path: ':saleId',
+        builder: (context, state) => BlocProvider(
+          create: (context) => SaleDetailsCubit(
+            context.read<SalesRepository>(),
+            state.pathParameters['saleId']!,
+          )..load(),
+          child: const SaleDetailsPage(),
+        ),
       ),
     ],
   );
