@@ -89,7 +89,8 @@ class _RegisterPageState extends State<RegisterPage> {
               children: [
                 const AuthHeader(
                   title: 'Create your pharmacy',
-                  subtitle: 'Register as the pharmacy owner. You can add '
+                  subtitle:
+                      'Register as the pharmacy owner. You can add '
                       'staff accounts later in Settings.',
                   tile: AuthIconTile(
                     icon: Icons.storefront_outlined,
