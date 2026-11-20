@@ -117,8 +117,10 @@ class _DashboardContent extends StatelessWidget {
                     ),
                   ),
                 ),
-                // Disabled until the Sales history screen is added.
-                TextButton(onPressed: null, child: const Text('See all')),
+                TextButton(
+                  onPressed: () => context.push(RoutePaths.salesHistory),
+                  child: const Text('See all'),
+                ),
               ],
             ),
             const SizedBox(height: 4),
@@ -226,6 +228,7 @@ class _RecentSalesList extends StatelessWidget {
                   '${Formatters.itemCount(sale.itemCount)} · '
                   '${sale.paymentMethod}',
               trailing: Formatters.amount(sale.total),
+              onTap: () => context.push(RoutePaths.saleDetails(sale.saleId)),
             ),
           ],
         ],

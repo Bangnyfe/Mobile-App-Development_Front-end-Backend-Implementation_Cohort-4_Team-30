@@ -8,6 +8,10 @@ abstract final class RoutePaths {
   static const reports = '/reports';
   static const settings = '/settings';
 
+  // Home subpages.
+  static const salesHistory = '$home/sales';
+  static String saleDetails(String saleId) => '$salesHistory/$saleId';
+
   // Settings subpages.
   static const pharmacyProfile = '$settings/pharmacy';
   static const staff = '$settings/staff';
