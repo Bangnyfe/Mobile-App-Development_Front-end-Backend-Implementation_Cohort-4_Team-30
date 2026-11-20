@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:team30_app/app.dart';
 import 'package:team30_app/core/router/app_router.dart';
@@ -104,6 +105,42 @@ void main() {
     );
     await tester.scrollUntilVisible(footer, 500);
     expect(footer, findsOneWidget);
+  });
+
+  testWidgets('tapping a sale opens the details path it was given', (
+    tester,
+  ) async {
+    final router = GoRouter(
+      initialLocation: '/history',
+      routes: [
+        GoRoute(
+          path: '/history',
+          builder: (context, state) => BlocProvider(
+            create: (_) =>
+                SalesHistoryCubit(FakeSalesRepository(clock: () => _now))
+                  ..start(),
+            child: SalesHistoryPage(
+              clock: () => _now,
+              saleDetailsPath: (saleId) => '/elsewhere/$saleId',
+            ),
+          ),
+        ),
+        GoRoute(
+          path: '/elsewhere/:saleId',
+          builder: (context, state) =>
+              Text('Opened ${state.pathParameters['saleId']}'),
+        ),
+      ],
+    );
+    await tester.pumpWidget(
+      MaterialApp.router(theme: AppTheme.light(), routerConfig: router),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Sale #0141'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Opened sale-0141'), findsOneWidget);
   });
 
   testWidgets('fits in landscape without overflowing', (tester) async {

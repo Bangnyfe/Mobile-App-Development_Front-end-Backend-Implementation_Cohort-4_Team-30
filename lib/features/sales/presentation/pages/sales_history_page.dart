@@ -13,10 +13,19 @@ import '../cubit/sales_history_cubit.dart';
 
 /// Every recent sale, grouped by day with each day's total.
 class SalesHistoryPage extends StatelessWidget {
-  const SalesHistoryPage({super.key, this.clock = DateTime.now});
+  const SalesHistoryPage({
+    super.key,
+    this.clock = DateTime.now,
+    this.saleDetailsPath = RoutePaths.saleDetails,
+  });
 
   /// Injected so tests get fixed "Today" and "Yesterday" headings.
   final DateTime Function() clock;
+
+  /// Where tapping a sale goes. The history is opened from more than one
+  /// tab, and each tab passes its own path so the details open in the same
+  /// tab.
+  final String Function(String saleId) saleDetailsPath;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +43,7 @@ class SalesHistoryPage extends StatelessWidget {
               days: days,
               isAtLimit: isAtLimit,
               now: clock(),
+              saleDetailsPath: saleDetailsPath,
             ),
           },
         ),
@@ -47,11 +57,13 @@ class _SalesList extends StatelessWidget {
     required this.days,
     required this.isAtLimit,
     required this.now,
+    required this.saleDetailsPath,
   });
 
   final List<SalesDay> days;
   final bool isAtLimit;
   final DateTime now;
+  final String Function(String saleId) saleDetailsPath;
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +77,7 @@ class _SalesList extends StatelessWidget {
           children: [
             for (final day in days) ...[
               _DayHeader(day: day, label: _dayLabel(day.date, now)),
-              _DayCard(day: day),
+              _DayCard(day: day, saleDetailsPath: saleDetailsPath),
               const SizedBox(height: 16),
             ],
             if (isAtLimit)
@@ -119,9 +131,10 @@ class _DayHeader extends StatelessWidget {
 }
 
 class _DayCard extends StatelessWidget {
-  const _DayCard({required this.day});
+  const _DayCard({required this.day, required this.saleDetailsPath});
 
   final SalesDay day;
+  final String Function(String saleId) saleDetailsPath;
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +144,7 @@ class _DayCard extends StatelessWidget {
         children: [
           for (final (index, sale) in day.sales.indexed) ...[
             if (index > 0) const Divider(indent: 62),
-            _SaleRow(sale: sale),
+            _SaleRow(sale: sale, detailsPath: saleDetailsPath(sale.id)),
           ],
         ],
       ),
@@ -140,9 +153,10 @@ class _DayCard extends StatelessWidget {
 }
 
 class _SaleRow extends StatelessWidget {
-  const _SaleRow({required this.sale});
+  const _SaleRow({required this.sale, required this.detailsPath});
 
   final Sale sale;
+  final String detailsPath;
 
   @override
   Widget build(BuildContext context) {
@@ -158,7 +172,7 @@ class _SaleRow extends StatelessWidget {
       ].join(' · '),
       trailing: Formatters.amount(sale.total),
       // push, not go, so back returns to wherever the history was opened.
-      onTap: () => context.push(RoutePaths.saleDetails(sale.id)),
+      onTap: () => context.push(detailsPath),
     );
   }
 }
