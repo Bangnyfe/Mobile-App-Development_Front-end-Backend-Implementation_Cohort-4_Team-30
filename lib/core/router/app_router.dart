@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/dashboard/domain/repositories/dashboard_repository.dart';
 import '../../features/dashboard/presentation/cubit/dashboard_cubit.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
+import '../../features/notifications/presentation/pages/notifications_page.dart';
 import '../../features/reports/presentation/pages/reports_hub_page.dart';
 import '../../features/sales/domain/repositories/sales_repository.dart';
 import '../../features/sales/presentation/cubit/sale_details_cubit.dart';
@@ -46,7 +47,15 @@ GoRouter createAppRouter() {
                 ),
                 // Inside the Home tab, so the bottom bar stays visible and
                 // back returns to the dashboard.
-                routes: [_salesHistoryRoute(RoutePaths.saleDetails)],
+                routes: [
+                  _salesHistoryRoute(RoutePaths.saleDetails),
+                  // Reads the app-wide NotificationsCubit, which the bell
+                  // shares.
+                  GoRoute(
+                    path: 'notifications',
+                    builder: (context, state) => const NotificationsPage(),
+                  ),
+                ],
               ),
             ],
           ),

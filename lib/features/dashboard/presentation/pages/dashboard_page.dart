@@ -6,6 +6,7 @@ import '../../../../core/router/route_paths.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/app_list_row.dart';
+import '../../../notifications/presentation/widgets/notifications_bell.dart';
 import '../../domain/entities/dashboard_summary.dart';
 import '../../domain/greeting.dart';
 import '../cubit/dashboard_cubit.dart';
@@ -164,13 +165,7 @@ class _Header extends StatelessWidget {
             ],
           ),
         ),
-        // Disabled until the Notifications screen is added; the unread
-        // badge comes from NotificationsCubit.
-        IconButton(
-          onPressed: null,
-          tooltip: 'Notifications',
-          icon: const Icon(Icons.notifications_none),
-        ),
+        const NotificationsBell(),
       ],
     );
   }

@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app.dart';
 import 'core/router/app_router.dart';
+import 'features/notifications/data/shared_prefs_seen_alerts_repository.dart';
 import 'features/settings/data/shared_prefs_settings_repository.dart';
 import 'firebase_options.dart';
 
@@ -16,6 +17,7 @@ Future<void> main() async {
     PharmacyApp(
       router: createAppRouter(),
       settingsRepository: SharedPrefsSettingsRepository(prefs),
+      seenAlertsRepository: SharedPrefsSeenAlertsRepository(prefs),
     ),
   );
 }
