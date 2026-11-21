@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../invites/presentation/widgets/pending_invites_section.dart';
 import '../../domain/entities/pharmacy_account.dart';
 import '../widgets/account_subpage.dart';
 import '../widgets/settings_row.dart';
@@ -7,8 +8,14 @@ import '../widgets/settings_section.dart';
 
 /// Settings > Staff and users: everyone with access to the pharmacy.
 /// Only owners can open it; the Settings tab hides the row for pharmacists.
+///
+/// With [canInvite] (a signed-in owner), it also shows the pending invites
+/// and the "Invite pharmacist" button, which need a `PharmacyInvitesCubit`
+/// above the page.
 class StaffPage extends StatelessWidget {
-  const StaffPage({super.key});
+  const StaffPage({super.key, this.canInvite = false});
+
+  final bool canInvite;
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +53,7 @@ class StaffPage extends StatelessWidget {
               ],
             ),
           ],
+          if (canInvite) const PendingInvitesSection(),
         ];
       },
     );

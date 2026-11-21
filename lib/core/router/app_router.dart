@@ -15,6 +15,7 @@ import '../../features/dashboard/presentation/cubit/dashboard_cubit.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
 import '../../features/invites/domain/repositories/invite_repository.dart';
 import '../../features/invites/presentation/cubit/pharmacy_choice_cubit.dart';
+import '../../features/invites/presentation/cubit/pharmacy_invites_cubit.dart';
 import '../../features/notifications/presentation/pages/notifications_page.dart';
 import '../../features/reports/presentation/pages/reports_hub_page.dart';
 import '../../features/sales/domain/repositories/sales_repository.dart';
@@ -126,7 +127,24 @@ GoRouter createAppRouter({AuthBloc? authBloc}) {
                   ),
                   GoRoute(
                     path: 'staff',
-                    builder: (context, state) => const StaffPage(),
+                    builder: (context, state) {
+                      // Inviting needs a signed-in owner and their pharmacy,
+                      // so it only shows with auth (not in most tests).
+                      final user = authBloc?.state.user;
+                      final pharmacyId = user?.pharmacyId;
+                      if (user == null || !user.isOwner || pharmacyId == null) {
+                        return const StaffPage();
+                      }
+                      return BlocProvider(
+                        create: (context) => PharmacyInvitesCubit(
+                          inviteRepository: context.read<InviteRepository>(),
+                          pharmacyId: pharmacyId,
+                          ownerUid: user.uid,
+                          ownerName: user.name,
+                        )..start(),
+                        child: const StaffPage(canInvite: true),
+                      );
+                    },
                   ),
                   GoRoute(
                     path: 'categories',
