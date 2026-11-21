@@ -12,7 +12,36 @@
           "package_name": "com.yourteam.team30_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1029034478085-99k9lgmor1oatcitip0eq8mtspjcqhkv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yourteam.team30_app",
+            "certificate_hash": "c382aa8589b8b9002d3327af4b77168977de0ecc"
+          }
+        },
+        {
+          "client_id": "1029034478085-fum4l71umnsn17r9eklkf0ip8g5ald51.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yourteam.team30_app",
+            "certificate_hash": "fbdd14d138cd167242ed0b501ff7a8d9ef9ddea9"
+          }
+        },
+        {
+          "client_id": "1029034478085-i94pnfs4rd0r8481codr5hsvta45jm5v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yourteam.team30_app",
+            "certificate_hash": "a66127a2ef2dddc80f5eb90fdafbc72ec722555c"
+          }
+        },
+        {
+          "client_id": "1029034478085-trk6qtgcq4o90famuh8p4q9nl0p3arm1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBrkis0KsIa-DRNDJs8feJQYNxujhN1dQw"
@@ -20,7 +49,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1029034478085-trk6qtgcq4o90famuh8p4q9nl0p3arm1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1029034478085-1uqmq9u7qm7dmvkkb8job4e4gb4f4coj.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.yourteam.team30App"
+              }
+            }
+          ]
         }
       }
     }

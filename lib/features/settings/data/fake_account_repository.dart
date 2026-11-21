@@ -1,3 +1,4 @@
+import '../../../core/domain/user_role.dart';
 import '../domain/entities/pharmacy_account.dart';
 import '../domain/repositories/account_repository.dart';
 
