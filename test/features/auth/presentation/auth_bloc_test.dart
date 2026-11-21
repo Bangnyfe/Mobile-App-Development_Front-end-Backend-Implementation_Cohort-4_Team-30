@@ -2,6 +2,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:team30_app/features/auth/domain/auth_failure.dart';
+import 'package:team30_app/core/domain/user_role.dart';
 import 'package:team30_app/features/auth/domain/entities/app_user.dart';
 import 'package:team30_app/features/auth/domain/repositories/auth_repository.dart';
 import 'package:team30_app/features/auth/presentation/bloc/auth_bloc.dart';

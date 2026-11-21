@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:team30_app/core/domain/user_role.dart';
 import 'package:team30_app/features/auth/domain/entities/app_user.dart';
 
 void main() {
@@ -32,12 +33,5 @@ void main() {
     expect(verified.emailVerified, isTrue);
     expect(verified.pharmacyId, owner.pharmacyId);
     expect(verified, isNot(owner));
-  });
-
-  test('UserRole.fromName falls back to staff for unknown values', () {
-    expect(UserRole.fromName('owner'), UserRole.owner);
-    expect(UserRole.fromName('staff'), UserRole.staff);
-    expect(UserRole.fromName(null), UserRole.staff);
-    expect(UserRole.fromName('admin'), UserRole.staff);
   });
 }

@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../../../core/domain/user_role.dart';
 import '../domain/auth_failure.dart';
 import '../domain/entities/app_user.dart';
 import '../domain/repositories/auth_repository.dart';
@@ -211,9 +212,7 @@ class FirebaseAuthRepository implements AuthRepository {
           user.displayName ??
           _nameFromEmail(user.email),
       emailVerified: user.emailVerified,
-      role: profile == null
-          ? null
-          : UserRole.fromName(profile['role'] as String?),
+      role: UserRole.fromName(profile?['role'] as String?),
       pharmacyId: profile?['pharmacyId'] as String?,
     );
   }

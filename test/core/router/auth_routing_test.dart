@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:team30_app/app.dart';
 import 'package:team30_app/core/router/app_router.dart';
+import 'package:team30_app/core/domain/user_role.dart';
 import 'package:team30_app/features/auth/domain/entities/app_user.dart';
 import 'package:team30_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:team30_app/features/auth/presentation/pages/login_page.dart';

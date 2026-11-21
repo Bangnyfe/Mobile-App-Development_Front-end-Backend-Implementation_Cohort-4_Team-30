@@ -132,7 +132,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const Center(
                   child: Text(
-                    'Staff accounts are created by your pharmacy owner.',
+                    'Pharmacists join with an invite from their pharmacy owner.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 12,

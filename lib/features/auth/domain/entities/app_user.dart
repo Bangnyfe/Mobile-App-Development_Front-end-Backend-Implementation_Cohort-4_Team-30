@@ -1,13 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-/// Role stored on `users/{uid}.role`.
-enum UserRole {
-  owner,
-  staff;
-
-  static UserRole fromName(String? name) =>
-      name == UserRole.owner.name ? UserRole.owner : UserRole.staff;
-}
+import '../../../../core/domain/user_role.dart';
 
 class AppUser extends Equatable {
   const AppUser({

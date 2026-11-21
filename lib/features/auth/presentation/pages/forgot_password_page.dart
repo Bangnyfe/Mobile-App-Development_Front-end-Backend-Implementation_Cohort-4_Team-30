@@ -89,7 +89,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               ),
               const SizedBox(height: 16),
               const AuthInfoNote(
-                'Staff accounts: if the email does not arrive, ask your '
+                'Pharmacists: if the email does not arrive, ask your '
                 'pharmacy owner for help.',
               ),
               const SizedBox(height: 24),

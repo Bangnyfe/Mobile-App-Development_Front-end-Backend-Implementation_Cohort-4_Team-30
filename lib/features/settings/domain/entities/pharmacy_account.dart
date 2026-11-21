@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../../core/domain/user_role.dart';
+
 /// What the Settings screens need to know about the pharmacy and who is
 /// signed in.
 ///
@@ -50,17 +52,6 @@ class Pharmacy extends Equatable {
 
   @override
   List<Object?> get props => [id, name, district, city, phone, address];
-}
-
-/// Owners manage prices, reorder levels, deletions and users. Pharmacists
-/// sell and manage stock.
-enum UserRole {
-  owner('Owner'),
-  pharmacist('Pharmacist');
-
-  const UserRole(this.label);
-
-  final String label;
 }
 
 class StaffMember extends Equatable {
