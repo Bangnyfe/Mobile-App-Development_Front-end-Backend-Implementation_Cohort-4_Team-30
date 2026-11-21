@@ -6,6 +6,7 @@ abstract final class Formatters {
   static final _amount = NumberFormat('#,##0', 'en_US');
   static final _dayHeader = DateFormat('EEEE, d MMM', 'en_US');
   static final _time = DateFormat('HH:mm', 'en_US');
+  static final _date = DateFormat('d MMM yyyy', 'en_US');
 
   /// 284500 -> "284,500"
   static String amount(num value) => _amount.format(value);
@@ -18,6 +19,12 @@ abstract final class Formatters {
 
   /// "14:32"
   static String time(DateTime date) => _time.format(date);
+
+  /// "9 Dec 2026"
+  static String date(DateTime date) => _date.format(date);
+
+  /// 1 -> "1 unit", 40 -> "40 units"
+  static String unitCount(int count) => count == 1 ? '1 unit' : '$count units';
 
   /// 12.04 -> "+12%", -3.6 -> "-4%"
   static String percentChange(double percent) {

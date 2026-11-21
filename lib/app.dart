@@ -6,6 +6,11 @@ import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/dashboard/data/fake_dashboard_repository.dart';
 import 'features/dashboard/domain/repositories/dashboard_repository.dart';
+import 'features/notifications/data/fake_stock_alerts_repository.dart';
+import 'features/notifications/data/in_memory_seen_alerts_repository.dart';
+import 'features/notifications/domain/repositories/seen_alerts_repository.dart';
+import 'features/notifications/domain/repositories/stock_alerts_repository.dart';
+import 'features/notifications/presentation/cubit/notifications_cubit.dart';
 import 'features/pos/presentation/cubit/cart_cubit.dart';
 import 'features/sales/data/fake_sales_repository.dart';
 import 'features/sales/domain/repositories/sales_repository.dart';
@@ -21,8 +26,8 @@ import 'features/settings/presentation/cubit/settings_cubit.dart';
 /// Cubit can read them with `context.read<...>()`. Tests pass their own
 /// router and repositories so they run without Firebase.
 ///
-/// Cubits that several screens share (settings, account and the cart) are
-/// provided here too, so every tab sees the same state.
+/// Cubits that several screens share (settings, account, the cart and the
+/// stock alerts) are provided here too, so every tab sees the same state.
 ///
 /// [authBloc] is provided above everything when given (the real app), so
 /// the auth screens can read it and per-user state is reset when the
@@ -36,6 +41,8 @@ class PharmacyApp extends StatelessWidget {
     this.dashboardRepository,
     this.accountRepository,
     this.salesRepository,
+    this.stockAlertsRepository,
+    this.seenAlertsRepository,
   });
 
   final GoRouter router;
@@ -55,6 +62,14 @@ class PharmacyApp extends StatelessWidget {
   /// Defaults to the fake repository until auth gives us the signed-in
   /// user's pharmacy ID for `FirestoreSalesRepository`.
   final SalesRepository? salesRepository;
+
+  /// Defaults to sample stock until auth gives us the pharmacy ID and the
+  /// data layer (products and batches) is merged.
+  final StockAlertsRepository? stockAlertsRepository;
+
+  /// Defaults to remembering seen alerts in memory only; `main.dart`
+  /// passes one that saves them on the device.
+  final SeenAlertsRepository? seenAlertsRepository;
 
   @override
   Widget build(BuildContext context) {
@@ -93,6 +108,12 @@ class PharmacyApp extends StatelessWidget {
         RepositoryProvider<SalesRepository>(
           create: (_) => salesRepository ?? FakeSalesRepository(),
         ),
+        RepositoryProvider<StockAlertsRepository>(
+          create: (_) => stockAlertsRepository ?? FakeStockAlertsRepository(),
+        ),
+        RepositoryProvider<SeenAlertsRepository>(
+          create: (_) => seenAlertsRepository ?? InMemorySeenAlertsRepository(),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -107,6 +128,21 @@ class PharmacyApp extends StatelessWidget {
           // One cart for the whole app: the Sell tab's badge and the Sell
           // screens read the same CartCubit, so they never disagree.
           BlocProvider(create: (_) => CartCubit()),
+          // One set of alerts for the whole app, so the dashboard bell and
+          // the Notifications page always agree. Follows the alert settings.
+          BlocProvider(
+            create: (context) {
+              final settings = context.read<SettingsCubit>();
+              return NotificationsCubit(
+                stockRepository: context.read<StockAlertsRepository>(),
+                seenRepository: context.read<SeenAlertsRepository>(),
+                initialSettings: settings.state.settings,
+                settingsChanges: settings.stream
+                    .map((state) => state.settings)
+                    .distinct(),
+              )..start();
+            },
+          ),
         ],
         child: app,
       ),

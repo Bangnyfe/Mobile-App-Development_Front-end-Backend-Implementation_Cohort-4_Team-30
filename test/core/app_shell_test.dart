@@ -9,6 +9,7 @@ import 'package:team30_app/features/dashboard/presentation/pages/dashboard_page.
 import 'package:team30_app/features/pos/domain/entities/pos_batch.dart';
 import 'package:team30_app/features/pos/domain/entities/pos_product.dart';
 import 'package:team30_app/features/pos/presentation/cubit/cart_cubit.dart';
+import 'package:team30_app/features/reports/presentation/pages/reports_hub_page.dart';
 import 'package:team30_app/features/settings/data/shared_prefs_settings_repository.dart';
 import 'package:team30_app/features/settings/presentation/pages/settings_page.dart';
 
@@ -48,11 +49,7 @@ void main() {
   testWidgets('tapping each tab shows its page', (tester) async {
     await pumpApp(tester);
 
-    const placeholderTabs = {
-      'Sell': 'Sell',
-      'Stock': 'Inventory',
-      'Reports': 'Reports',
-    };
+    const placeholderTabs = {'Sell': 'Sell', 'Stock': 'Inventory'};
 
     for (final MapEntry(key: label, value: title) in placeholderTabs.entries) {
       await tapTab(tester, label);
@@ -62,6 +59,9 @@ void main() {
         reason: 'after tapping $label',
       );
     }
+
+    await tapTab(tester, 'Reports');
+    expect(find.byType(ReportsHubPage), findsOneWidget);
 
     await tapTab(tester, 'Settings');
     expect(find.byType(SettingsPage), findsOneWidget);

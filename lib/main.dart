@@ -7,6 +7,7 @@ import 'core/router/app_router.dart';
 import 'features/auth/data/auth_backed_account_repository.dart';
 import 'features/auth/data/firebase_auth_repository.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/notifications/data/shared_prefs_seen_alerts_repository.dart';
 import 'features/settings/data/fake_account_repository.dart';
 import 'features/settings/data/shared_prefs_settings_repository.dart';
 import 'firebase_options.dart';
@@ -26,6 +27,7 @@ Future<void> main() async {
     PharmacyApp(
       router: createAppRouter(authBloc: authBloc),
       settingsRepository: SharedPrefsSettingsRepository(prefs),
+      seenAlertsRepository: SharedPrefsSeenAlertsRepository(prefs),
       authBloc: authBloc,
       accountRepository: AuthBackedAccountRepository(
         details: const FakeAccountRepository(),
