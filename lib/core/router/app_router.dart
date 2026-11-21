@@ -9,9 +9,12 @@ import '../../features/auth/presentation/pages/pharmacy_setup_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
 import '../../features/auth/presentation/pages/splash_page.dart';
 import '../../features/auth/presentation/pages/verify_email_page.dart';
+import '../../features/auth/domain/repositories/pharmacy_draft_repository.dart';
 import '../../features/dashboard/domain/repositories/dashboard_repository.dart';
 import '../../features/dashboard/presentation/cubit/dashboard_cubit.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
+import '../../features/invites/domain/repositories/invite_repository.dart';
+import '../../features/invites/presentation/cubit/pharmacy_choice_cubit.dart';
 import '../../features/notifications/presentation/pages/notifications_page.dart';
 import '../../features/reports/presentation/pages/reports_hub_page.dart';
 import '../../features/sales/domain/repositories/sales_repository.dart';
@@ -189,7 +192,20 @@ final _authRoutes = <RouteBase>[
   ),
   GoRoute(
     path: AuthRoutePaths.pharmacySetup,
-    builder: (context, state) => const PharmacySetupPage(),
+    builder: (context, state) {
+      // The redirect only sends signed-in users here; the check covers the
+      // moment of signing out, before the router moves to Login.
+      final user = context.read<AuthBloc>().state.user;
+      if (user == null) return const SplashPage();
+      return BlocProvider(
+        create: (context) => PharmacyChoiceCubit(
+          inviteRepository: context.read<InviteRepository>(),
+          draftRepository: context.read<PharmacyDraftRepository>(),
+          user: user,
+        )..load(),
+        child: const PharmacySetupPage(),
+      );
+    },
   ),
 ];
 
