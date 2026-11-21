@@ -1,6 +1,14 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/auth/presentation/auth_route_paths.dart';
+import '../../features/auth/presentation/bloc/auth_bloc.dart';
+import '../../features/auth/presentation/pages/forgot_password_page.dart';
+import '../../features/auth/presentation/pages/login_page.dart';
+import '../../features/auth/presentation/pages/pharmacy_setup_page.dart';
+import '../../features/auth/presentation/pages/register_page.dart';
+import '../../features/auth/presentation/pages/splash_page.dart';
+import '../../features/auth/presentation/pages/verify_email_page.dart';
 import '../../features/dashboard/domain/repositories/dashboard_repository.dart';
 import '../../features/dashboard/presentation/cubit/dashboard_cubit.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
@@ -17,6 +25,8 @@ import '../../features/settings/presentation/pages/settings_page.dart';
 import '../../features/settings/presentation/pages/staff_page.dart';
 import '../widgets/app_shell.dart';
 import '../widgets/feature_placeholder_page.dart';
+import 'auth_redirect.dart';
+import 'auth_status_listenable.dart';
 import 'route_paths.dart';
 
 /// Creates the app's router.
@@ -27,10 +37,23 @@ import 'route_paths.dart';
 ///
 /// Feature owners: replace the [FeaturePlaceholderPage] in your branch with
 /// your real page, and add sub-routes (e.g. product details) under it.
-GoRouter createAppRouter() {
+///
+/// With [authBloc] (the real app), the app starts on Splash and every
+/// navigation is checked by [authRedirect], so each sign-in status always
+/// lands on its own screen. Without it (most widget tests), the app opens
+/// straight on Home as before.
+GoRouter createAppRouter({AuthBloc? authBloc}) {
   return GoRouter(
-    initialLocation: RoutePaths.home,
+    initialLocation: authBloc == null ? RoutePaths.home : AuthRoutePaths.splash,
+    refreshListenable: authBloc == null ? null : AuthStatusListenable(authBloc),
+    redirect: authBloc == null
+        ? null
+        : (context, state) => authRedirect(
+            status: authBloc.state.status,
+            location: state.uri.path,
+          ),
     routes: [
+      ..._authRoutes,
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
             AppShell(navigationShell: navigationShell),
@@ -141,6 +164,34 @@ GoRoute _salesHistoryRoute(String Function(String saleId) saleDetailsPath) {
     ],
   );
 }
+
+/// Screens outside the tabs, so the bottom bar is hidden on them.
+final _authRoutes = <RouteBase>[
+  GoRoute(
+    path: AuthRoutePaths.splash,
+    builder: (context, state) => const SplashPage(),
+  ),
+  GoRoute(
+    path: AuthRoutePaths.login,
+    builder: (context, state) => const LoginPage(),
+  ),
+  GoRoute(
+    path: AuthRoutePaths.register,
+    builder: (context, state) => const RegisterPage(),
+  ),
+  GoRoute(
+    path: AuthRoutePaths.forgotPassword,
+    builder: (context, state) => const ForgotPasswordPage(),
+  ),
+  GoRoute(
+    path: AuthRoutePaths.verifyEmail,
+    builder: (context, state) => const VerifyEmailPage(),
+  ),
+  GoRoute(
+    path: AuthRoutePaths.pharmacySetup,
+    builder: (context, state) => const PharmacySetupPage(),
+  ),
+];
 
 StatefulShellBranch _tab(String path, String title) {
   return StatefulShellBranch(
