@@ -7,21 +7,27 @@ import 'package:google_sign_in/google_sign_in.dart';
 import '../../../core/domain/user_role.dart';
 import '../domain/auth_failure.dart';
 import '../domain/entities/app_user.dart';
+import '../domain/entities/pharmacy_draft.dart';
 import '../domain/repositories/auth_repository.dart';
+import '../domain/repositories/pharmacy_draft_repository.dart';
 import 'auth_error_messages.dart';
+import 'in_memory_pharmacy_draft_repository.dart';
 
 class FirebaseAuthRepository implements AuthRepository {
   FirebaseAuthRepository({
     FirebaseAuth? auth,
     FirebaseFirestore? firestore,
     GoogleSignIn? googleSignIn,
+    PharmacyDraftRepository? drafts,
   }) : _auth = auth ?? FirebaseAuth.instance,
        _firestore = firestore ?? FirebaseFirestore.instance,
-       _googleSignIn = googleSignIn ?? GoogleSignIn.instance;
+       _googleSignIn = googleSignIn ?? GoogleSignIn.instance,
+       _drafts = drafts ?? InMemoryPharmacyDraftRepository();
 
   final FirebaseAuth _auth;
   final FirebaseFirestore _firestore;
   final GoogleSignIn _googleSignIn;
+  final PharmacyDraftRepository _drafts;
 
   Future<void>? _googleInit;
 
@@ -94,15 +100,28 @@ class FirebaseAuthRepository implements AuthRepository {
     final user = credential.user!;
     await user.updateDisplayName(name.trim());
 
-    final profile = await _createPharmacyAndProfile(
-      user: user,
-      name: name.trim(),
-      pharmacyName: pharmacyName,
-      pharmacyLocation: pharmacyLocation,
-    );
+    // The pharmacy is only remembered here, not created: after verifying,
+    // the user may have an invite to join a pharmacy instead, and the
+    // rules only let verified accounts create one.
+    try {
+      await _drafts.save(
+        user.uid,
+        PharmacyDraft(
+          name: pharmacyName.trim(),
+          location: pharmacyLocation.trim(),
+        ),
+      );
+    } on Object catch (_) {
+      // Only means the setup form starts empty; not worth failing for.
+    }
 
     await user.sendEmailVerification();
-    return _toAppUser(user, profile);
+    return AppUser(
+      uid: user.uid,
+      email: user.email ?? email.trim(),
+      name: name.trim(),
+      emailVerified: false,
+    );
   });
 
   @override
@@ -138,6 +157,11 @@ class FirebaseAuthRepository implements AuthRepository {
       pharmacyName: pharmacyName,
       pharmacyLocation: pharmacyLocation,
     );
+    try {
+      await _drafts.clear(user.uid);
+    } on Object catch (_) {
+      // A leftover draft is harmless: it's only read before this step.
+    }
     return _toAppUser(user, profile);
   });
 
@@ -158,7 +182,13 @@ class FirebaseAuthRepository implements AuthRepository {
   @override
   Future<AppUser> reloadUser() => _guard(() async {
     await _requireUser().reload();
-    return _loadAppUser(_requireUser());
+    final user = _requireUser();
+    // The sign-in token still says "unverified" until it's refreshed, and
+    // the Firestore rules read the token, not the reloaded user. Without
+    // this, the invite check and pharmacy setup are refused for up to an
+    // hour after verifying.
+    if (user.emailVerified) await user.getIdToken(true);
+    return _loadAppUser(user);
   });
 
   @override

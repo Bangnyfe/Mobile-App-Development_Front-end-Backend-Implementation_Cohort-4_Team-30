@@ -6,6 +6,7 @@ import 'app.dart';
 import 'core/router/app_router.dart';
 import 'features/auth/data/auth_backed_account_repository.dart';
 import 'features/auth/data/firebase_auth_repository.dart';
+import 'features/auth/data/shared_prefs_pharmacy_draft_repository.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/notifications/data/shared_prefs_seen_alerts_repository.dart';
 import 'features/settings/data/fake_account_repository.dart';
@@ -20,7 +21,9 @@ Future<void> main() async {
   // Created before the app so the router can follow the sign-in status
   // from the first frame. AuthStarted begins listening to Firebase, which
   // reports the saved session (if any) and moves the app off Splash.
-  final authRepository = FirebaseAuthRepository();
+  final authRepository = FirebaseAuthRepository(
+    drafts: SharedPrefsPharmacyDraftRepository(prefs),
+  );
   final authBloc = AuthBloc(authRepository)..add(const AuthStarted());
 
   runApp(
