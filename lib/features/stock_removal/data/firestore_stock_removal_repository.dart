@@ -138,6 +138,24 @@ class FirestoreStockRemovalRepository implements StockRemovalRepository {
     });
   }
 
+  @override
+  Future<List<StockRemoval>> loadRemovals({required DateTime since}) => _guard(
+    () async {
+      // A range and an order on the same field need no composite index.
+      final docs = await _pharmacy
+          .collection(StockRemovalFields.stockRemovals)
+          .where(
+            StockRemovalFields.createdAt,
+            isGreaterThanOrEqualTo: Timestamp.fromDate(since),
+          )
+          .orderBy(StockRemovalFields.createdAt, descending: true)
+          .get();
+      return [
+        for (final doc in docs.docs) ?removalFromFirestore(doc.id, doc.data()),
+      ];
+    },
+  );
+
   /// Runs [action] and turns Firestore errors into [StockRemovalFailure].
   Future<T> _guard<T>(Future<T> Function() action) async {
     try {
