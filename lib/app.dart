@@ -78,10 +78,8 @@ class PharmacyApp extends StatelessWidget {
   /// Defaults to sample stock until the Firestore one is passed in.
   final StockRemovalRepository? stockRemovalRepository;
 
-  /// Finds scanned barcodes. Defaults to sample products until products
-  /// can be added to Firestore; then `main.dart` passes a
-  /// `CurrentPharmacyProductLookupRepository` using
-  /// `FirestoreProductLookupRepository`.
+  /// Finds scanned barcodes. Defaults to sample products for widget tests;
+  /// `main.dart` passes the signed-in pharmacy's products from Firestore.
   final ProductLookupRepository? productLookupRepository;
 
   /// Defaults to sample stock until auth gives us the pharmacy ID and the
