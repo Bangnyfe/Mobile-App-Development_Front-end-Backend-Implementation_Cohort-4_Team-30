@@ -65,8 +65,8 @@ class PharmacyApp extends StatelessWidget {
   /// merged.
   final AccountRepository? accountRepository;
 
-  /// Defaults to the fake repository until auth gives us the signed-in
-  /// user's pharmacy ID for `FirestoreSalesRepository`.
+  /// Defaults to sample sales for widget tests; `main.dart` passes the
+  /// signed-in user's sales from Firestore.
   final SalesRepository? salesRepository;
 
   /// Defaults to sample stock until auth gives us the pharmacy ID and the
