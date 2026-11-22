@@ -230,13 +230,14 @@ class _SellPageState extends State<SellPage> {
   }
 }
 
-/// Cart icon with the number of products in the cart.
+/// Cart icon with the number of units in the cart: the same count as the
+/// Sell tab's badge in the bottom bar, so the two never disagree.
 class _CartAction extends StatelessWidget {
   const _CartAction();
 
   @override
   Widget build(BuildContext context) {
-    final count = context.select((CartCubit cubit) => cubit.state.items.length);
+    final count = context.select((CartCubit cubit) => cubit.state.itemCount);
     return IconButton(
       tooltip: 'Cart',
       onPressed: () => context.push(RoutePaths.sellCart),
