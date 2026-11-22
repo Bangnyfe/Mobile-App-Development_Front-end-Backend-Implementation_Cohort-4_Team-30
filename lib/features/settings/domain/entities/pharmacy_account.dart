@@ -47,8 +47,9 @@ class Pharmacy extends Equatable {
   final String? phone;
   final String? address;
 
-  /// e.g. "Nyarugenge, Kigali".
-  String get location => '$district, $city';
+  /// e.g. "Nyarugenge, Kigali". Leaves out whichever part is empty.
+  String get location =>
+      [district, city].where((part) => part.isNotEmpty).join(', ');
 
   @override
   List<Object?> get props => [id, name, district, city, phone, address];
