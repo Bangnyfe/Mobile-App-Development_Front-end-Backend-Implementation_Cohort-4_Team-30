@@ -4,7 +4,8 @@ import '../domain/removal_rules.dart';
 import '../domain/repositories/stock_removal_repository.dart';
 
 /// In-memory stock with the prototype's sample products, used until the
-/// shared data layer (products and batches in Firestore) is merged.
+/// shared data layer (products and batches in Firestore) is merged. The
+/// barcodes have real check digits, so they can be typed in the scanner.
 ///
 /// Expiry dates are set relative to [clock], so the samples always include
 /// an expired batch, one expiring soon and some in date.
@@ -87,7 +88,7 @@ class FakeStockRemovalRepository implements StockRemovalRepository {
       RemovableProduct(
         id: 'p-metronidazole',
         name: 'Metronidazole 400mg',
-        barcode: '6001007012345',
+        barcode: '6001007012342',
         details: 'Tablets · strip of 10',
         batches: [
           RemovableBatch(
@@ -111,7 +112,7 @@ class FakeStockRemovalRepository implements StockRemovalRepository {
       RemovableProduct(
         id: 'amoxicillin-500',
         name: 'Amoxicillin 500mg',
-        barcode: '6001007023456',
+        barcode: '6001007023454',
         details: 'Capsules · box of 21',
         batches: [
           RemovableBatch(
@@ -133,7 +134,7 @@ class FakeStockRemovalRepository implements StockRemovalRepository {
       RemovableProduct(
         id: 'cough-syrup-100',
         name: 'Cough syrup 100ml',
-        barcode: '6001007056789',
+        barcode: '6001007056780',
         details: 'Syrup · 100ml bottle',
         batches: [
           RemovableBatch(
@@ -148,7 +149,7 @@ class FakeStockRemovalRepository implements StockRemovalRepository {
       RemovableProduct(
         id: 'p-ibuprofen',
         name: 'Ibuprofen 400mg',
-        barcode: '6001007034567',
+        barcode: '6001007034566',
         details: 'Tablets · strip of 10',
         batches: [
           RemovableBatch(

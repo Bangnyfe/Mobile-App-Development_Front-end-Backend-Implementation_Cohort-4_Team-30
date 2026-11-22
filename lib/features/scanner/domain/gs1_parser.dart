@@ -7,7 +7,7 @@ import 'entities/scanned_code.dart';
 /// * GS1 DataMatrix element strings, as the camera returns them, with
 ///   groups separated by the GS character
 /// * the human-readable form printed beside the code, like
-///   `(01)06001007012345(17)271231(10)MZ2308`
+///   `(01)06001007012342(17)271231(10)MZ2308`
 ///
 /// Returns null when the text is not a barcode we can use, including a
 /// product code whose check digit is wrong (usually a typing mistake).

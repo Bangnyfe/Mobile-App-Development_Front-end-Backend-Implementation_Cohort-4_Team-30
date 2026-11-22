@@ -4,21 +4,9 @@ import 'package:team30_app/features/scanner/domain/entities/scanned_code.dart';
 import 'package:team30_app/features/scanner/presentation/pages/scanner_page.dart';
 import 'package:team30_app/features/scanner/presentation/widgets/type_barcode_dialog.dart';
 
+import '../scanner_test_helpers.dart';
+
 const _ean = '6001007012342';
-
-/// Stands in for the camera: tests call [see] to "show" it a barcode.
-class FakeCamera {
-  ValueChanged<String>? _onCode;
-  int builds = 0;
-
-  Widget build(BuildContext context, ValueChanged<String> onCode) {
-    _onCode = onCode;
-    builds++;
-    return const ColoredBox(color: Colors.black26);
-  }
-
-  void see(String raw) => _onCode!(raw);
-}
 
 void main() {
   late FakeCamera camera;

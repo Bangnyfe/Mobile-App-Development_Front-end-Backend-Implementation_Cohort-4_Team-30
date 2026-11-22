@@ -126,6 +126,31 @@ class RemoveStockCubit extends Cubit<RemoveStockState> {
     if (first != null) selectBatch(first.id);
   }
 
+  /// Picks the product with a scanned [barcode]. When the code also named
+  /// a batch (a GS1 DataMatrix does), that batch is chosen if the product
+  /// has it with units left. Returns false when no product with stock has
+  /// this barcode.
+  bool selectScanned({required String barcode, String? batchNumber}) {
+    RemovableProduct? product;
+    for (final item in state.products) {
+      if (item.barcode == barcode) product = item;
+    }
+    if (product == null) return false;
+
+    emit(state.copyWith(query: ''));
+    selectProduct(product.id);
+    final wanted = batchNumber?.trim().toUpperCase();
+    if (wanted != null) {
+      for (final batch in product.batches) {
+        if (batch.quantity > 0 &&
+            batch.batchNumber.trim().toUpperCase() == wanted) {
+          selectBatch(batch.id);
+        }
+      }
+    }
+    return true;
+  }
+
   /// An expired batch starts with all its units and Expired suggested,
   /// since it should come off the shelf entirely; others start at 1.
   void selectBatch(String batchId) {

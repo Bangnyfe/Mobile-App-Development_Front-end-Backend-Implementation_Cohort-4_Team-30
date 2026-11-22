@@ -23,6 +23,9 @@ import '../../features/sales/presentation/cubit/sale_details_cubit.dart';
 import '../../features/sales/presentation/cubit/sales_history_cubit.dart';
 import '../../features/sales/presentation/pages/sale_details_page.dart';
 import '../../features/sales/presentation/pages/sales_history_page.dart';
+import '../../features/scanner/domain/repositories/product_lookup_repository.dart';
+import '../../features/scanner/presentation/cubit/scan_cubit.dart';
+import '../../features/scanner/presentation/pages/scan_product_page.dart';
 import '../../features/settings/presentation/pages/categories_page.dart';
 import '../../features/settings/presentation/pages/pharmacy_profile_page.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
@@ -91,7 +94,20 @@ GoRouter createAppRouter({AuthBloc? authBloc}) {
               ),
             ],
           ),
-          _tab(RoutePaths.sell, 'Sell'),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RoutePaths.sell,
+                // Maxime: the cart and checkout build on this. A found
+                // product is ready for CartCubit.addItem.
+                builder: (context, state) => BlocProvider(
+                  create: (context) =>
+                      ScanCubit(context.read<ProductLookupRepository>()),
+                  child: const ScanProductPage(),
+                ),
+              ),
+            ],
+          ),
           _tab(RoutePaths.stock, 'Inventory'),
           StatefulShellBranch(
             routes: [
