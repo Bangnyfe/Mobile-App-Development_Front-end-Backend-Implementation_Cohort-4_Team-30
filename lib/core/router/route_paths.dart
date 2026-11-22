@@ -13,6 +13,14 @@ abstract final class RoutePaths {
   static String saleDetails(String saleId) => '$salesHistory/$saleId';
   static const notifications = '$home/notifications';
 
+  // Sell subpages. Opened above the tabs (no bottom bar), as in the Figma
+  // flow; back returns to Sell. Product found and Receipt need their data
+  // passed as `extra`.
+  static const sellProduct = '$sell/product';
+  static const sellCart = '$sell/cart';
+  static const sellCheckout = '$sell/checkout';
+  static const sellReceipt = '$sell/receipt';
+
   // Reports subpages. Sales history is reachable from Home too; these
   // copies keep the Reports tab selected when it's opened from here.
   static const reportsSalesHistory = '$reports/sales';
