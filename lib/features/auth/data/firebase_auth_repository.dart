@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../core/domain/user_role.dart';
+import '../../settings/domain/entities/app_settings.dart';
 import '../domain/auth_failure.dart';
 import '../domain/entities/app_user.dart';
 import '../domain/entities/pharmacy_draft.dart';
@@ -91,7 +92,8 @@ class FirebaseAuthRepository implements AuthRepository {
     required String email,
     required String password,
     required String pharmacyName,
-    required String pharmacyLocation,
+    required String pharmacyDistrict,
+    required String pharmacyCity,
   }) => _guard(() async {
     final credential = await _auth.createUserWithEmailAndPassword(
       email: email.trim(),
@@ -108,7 +110,8 @@ class FirebaseAuthRepository implements AuthRepository {
         user.uid,
         PharmacyDraft(
           name: pharmacyName.trim(),
-          location: pharmacyLocation.trim(),
+          district: pharmacyDistrict.trim(),
+          city: pharmacyCity.trim(),
         ),
       );
     } on Object catch (_) {
@@ -148,14 +151,16 @@ class FirebaseAuthRepository implements AuthRepository {
   @override
   Future<AppUser> createPharmacy({
     required String pharmacyName,
-    required String pharmacyLocation,
+    required String pharmacyDistrict,
+    required String pharmacyCity,
   }) => _guard(() async {
     final user = _requireUser();
     final profile = await _createPharmacyAndProfile(
       user: user,
       name: user.displayName ?? _nameFromEmail(user.email),
       pharmacyName: pharmacyName,
-      pharmacyLocation: pharmacyLocation,
+      pharmacyDistrict: pharmacyDistrict,
+      pharmacyCity: pharmacyCity,
     );
     try {
       await _drafts.clear(user.uid);
@@ -206,7 +211,8 @@ class FirebaseAuthRepository implements AuthRepository {
     required User user,
     required String name,
     required String pharmacyName,
-    required String pharmacyLocation,
+    required String pharmacyDistrict,
+    required String pharmacyCity,
   }) async {
     final pharmacyRef = _firestore.collection(_pharmacies).doc();
     final profile = <String, dynamic>{
@@ -220,8 +226,14 @@ class FirebaseAuthRepository implements AuthRepository {
     final batch = _firestore.batch()
       ..set(pharmacyRef, {
         'name': pharmacyName.trim(),
-        'location': pharmacyLocation.trim(),
+        'district': pharmacyDistrict.trim(),
+        'city': pharmacyCity.trim(),
         'ownerId': user.uid,
+        // Defaults from the ERD, changed later in Settings.
+        'nextReceiptNo': 1,
+        'defaultReorderLevel': AppSettings.defaultLowStockThreshold,
+        'expiryAlertDays': AppSettings.defaultExpiryAlertDays,
+        'createdAt': FieldValue.serverTimestamp(),
       })
       ..set(_userDoc(user.uid), profile);
     await batch.commit();

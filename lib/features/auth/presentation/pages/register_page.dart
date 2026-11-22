@@ -30,7 +30,8 @@ class _RegisterPageState extends State<RegisterPage> {
   final _password = TextEditingController();
   final _confirmPassword = TextEditingController();
   final _pharmacyName = TextEditingController();
-  final _location = TextEditingController();
+  final _district = TextEditingController();
+  final _city = TextEditingController();
 
   @override
   void dispose() {
@@ -40,7 +41,8 @@ class _RegisterPageState extends State<RegisterPage> {
       _password,
       _confirmPassword,
       _pharmacyName,
-      _location,
+      _district,
+      _city,
     ]) {
       controller.dispose();
     }
@@ -56,7 +58,8 @@ class _RegisterPageState extends State<RegisterPage> {
         email: _email.text.trim(),
         password: _password.text,
         pharmacyName: _pharmacyName.text.trim(),
-        pharmacyLocation: _location.text.trim(),
+        pharmacyDistrict: _district.text.trim(),
+        pharmacyCity: _city.text.trim(),
       ),
     );
   }
@@ -160,15 +163,26 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 16),
                 AuthTextField(
-                  label: 'Location',
-                  controller: _location,
-                  hint: 'Nyarugenge, Kigali',
+                  label: 'District',
+                  controller: _district,
+                  hint: 'Nyarugenge',
                   icon: Icons.place_outlined,
+                  textCapitalization: TextCapitalization.words,
+                  validator: (value) =>
+                      AuthValidators.requiredField(value, 'the district'),
+                  enabled: !anyBusy,
+                ),
+                const SizedBox(height: 16),
+                AuthTextField(
+                  label: 'City',
+                  controller: _city,
+                  hint: 'Kigali',
+                  icon: Icons.location_city_outlined,
                   textCapitalization: TextCapitalization.words,
                   textInputAction: TextInputAction.done,
                   onSubmitted: (_) => _submit(),
                   validator: (value) =>
-                      AuthValidators.requiredField(value, 'the location'),
+                      AuthValidators.requiredField(value, 'the city'),
                   enabled: !anyBusy,
                 ),
                 const SizedBox(height: 24),

@@ -21,7 +21,11 @@ const _invite = PharmacyInvite(
   invitedBy: 'owner-1',
 );
 
-const _draft = PharmacyDraft(name: 'Eric Pharmacy', location: 'Gasabo');
+const _draft = PharmacyDraft(
+  name: 'Eric Pharmacy',
+  district: 'Gasabo',
+  city: 'Kigali',
+);
 
 void main() {
   late FakeInviteRepository invites;

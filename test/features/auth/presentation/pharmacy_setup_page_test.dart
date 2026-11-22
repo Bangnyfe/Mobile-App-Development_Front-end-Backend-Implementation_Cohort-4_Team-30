@@ -83,20 +83,22 @@ void main() {
       await tapText(tester, 'Continue');
 
       expect(find.text('Enter the pharmacy name.'), findsOneWidget);
-      expect(find.text('Enter the location.'), findsOneWidget);
+      expect(find.text('Enter the district.'), findsOneWidget);
+      expect(find.text('Enter the city.'), findsOneWidget);
       verifyNever(() => bloc.add(any()));
     });
 
     testWidgets('a valid form creates the pharmacy', (tester) async {
       await pumpPage(tester);
-      await fillFields(tester, [' Kacyiru Pharmacy ', 'Gasabo, Kigali']);
+      await fillFields(tester, [' Kacyiru Pharmacy ', 'Gasabo ', ' Kigali']);
       await tapText(tester, 'Continue');
 
       verify(
         () => bloc.add(
           const AuthPharmacySetupSubmitted(
             pharmacyName: 'Kacyiru Pharmacy',
-            pharmacyLocation: 'Gasabo, Kigali',
+            pharmacyDistrict: 'Gasabo',
+            pharmacyCity: 'Kigali',
           ),
         ),
       ).called(1);
@@ -106,19 +108,25 @@ void main() {
       tester,
     ) async {
       drafts = InMemoryPharmacyDraftRepository({
-        'u2': const PharmacyDraft(name: 'Eric Pharmacy', location: 'Remera'),
+        'u2': const PharmacyDraft(
+          name: 'Eric Pharmacy',
+          district: 'Rubavu',
+          city: 'Gisenyi',
+        ),
       });
       await pumpPage(tester);
 
       expect(find.text('Eric Pharmacy'), findsOneWidget);
-      expect(find.text('Remera'), findsOneWidget);
+      expect(find.text('Rubavu'), findsOneWidget);
+      expect(find.text('Gisenyi'), findsOneWidget);
 
       await tapText(tester, 'Continue');
       verify(
         () => bloc.add(
           const AuthPharmacySetupSubmitted(
             pharmacyName: 'Eric Pharmacy',
-            pharmacyLocation: 'Remera',
+            pharmacyDistrict: 'Rubavu',
+            pharmacyCity: 'Gisenyi',
           ),
         ),
       ).called(1);
@@ -182,7 +190,7 @@ void main() {
 
     testWidgets('Create still works instead of joining', (tester) async {
       await pumpPage(tester);
-      await fillFields(tester, ['Eric Pharmacy', 'Remera']);
+      await fillFields(tester, ['Eric Pharmacy', 'Gasabo', 'Kigali']);
 
       await tapText(tester, 'Create my pharmacy');
 
@@ -190,7 +198,8 @@ void main() {
         () => bloc.add(
           const AuthPharmacySetupSubmitted(
             pharmacyName: 'Eric Pharmacy',
-            pharmacyLocation: 'Remera',
+            pharmacyDistrict: 'Gasabo',
+            pharmacyCity: 'Kigali',
           ),
         ),
       ).called(1);

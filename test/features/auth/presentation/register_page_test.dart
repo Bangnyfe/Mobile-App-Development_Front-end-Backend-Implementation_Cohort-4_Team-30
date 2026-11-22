@@ -29,7 +29,8 @@ void main() {
     expect(find.text('Choose a password.'), findsOneWidget);
     expect(find.text('Re-enter your password.'), findsOneWidget);
     expect(find.text('Enter the pharmacy name.'), findsOneWidget);
-    expect(find.text('Enter the location.'), findsOneWidget);
+    expect(find.text('Enter the district.'), findsOneWidget);
+    expect(find.text('Enter the city.'), findsOneWidget);
     verifyNever(() => bloc.add(any()));
   });
 
@@ -41,7 +42,8 @@ void main() {
       'pharmacy2026',
       'pharmacy2025',
       'Amani Pharmacy',
-      'Gasabo, Kigali',
+      'Gasabo',
+      'Kigali',
     ]);
     await tapText(tester, 'Create account');
 
@@ -57,7 +59,8 @@ void main() {
       'pharmacy2026',
       'pharmacy2026',
       ' Amani Pharmacy',
-      'Gasabo, Kigali ',
+      ' Gasabo',
+      'Kigali ',
     ]);
     await tapText(tester, 'Create account');
 
@@ -68,7 +71,8 @@ void main() {
           email: 'aline@amanipharmacy.rw',
           password: 'pharmacy2026',
           pharmacyName: 'Amani Pharmacy',
-          pharmacyLocation: 'Gasabo, Kigali',
+          pharmacyDistrict: 'Gasabo',
+          pharmacyCity: 'Kigali',
         ),
       ),
     ).called(1);

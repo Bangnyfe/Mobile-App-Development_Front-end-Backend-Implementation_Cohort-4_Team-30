@@ -32,6 +32,9 @@ class _MockDocument extends Mock
 class _MockSnapshot extends Mock
     implements DocumentSnapshot<Map<String, dynamic>> {}
 
+// ignore: subtype_of_sealed_class
+class _MockBatch extends Mock implements WriteBatch {}
+
 void main() {
   late _MockAuth auth;
   late _MockFirestore firestore;
@@ -74,7 +77,8 @@ void main() {
       email: ' aline@amanipharmacy.rw ',
       password: 'secret123',
       pharmacyName: ' Amani Pharmacy ',
-      pharmacyLocation: ' Nyarugenge, Kigali ',
+      pharmacyDistrict: ' Nyarugenge ',
+      pharmacyCity: ' Kigali ',
     );
 
     test('creates the account and sends the verification email', () async {
@@ -96,14 +100,16 @@ void main() {
         email: 'aline@amanipharmacy.rw',
         password: 'secret123',
         pharmacyName: ' Amani Pharmacy ',
-        pharmacyLocation: ' Nyarugenge, Kigali ',
+        pharmacyDistrict: ' Nyarugenge ',
+        pharmacyCity: ' Kigali ',
       );
 
       expect(
         await drafts.load('u1'),
         const PharmacyDraft(
           name: 'Amani Pharmacy',
-          location: 'Nyarugenge, Kigali',
+          district: 'Nyarugenge',
+          city: 'Kigali',
         ),
       );
       // Nothing is written until the email is verified.
@@ -151,6 +157,74 @@ void main() {
       await repository.reloadUser();
 
       verifyNever(() => user.getIdToken(any()));
+    });
+  });
+
+  group('createPharmacy', () {
+    late _MockBatch batch;
+    late _MockDocument pharmacyDoc;
+    late _MockDocument userDoc;
+
+    setUp(() async {
+      when(() => auth.currentUser).thenReturn(user);
+      when(() => user.displayName).thenReturn('Eric');
+      when(() => user.emailVerified).thenReturn(true);
+
+      final pharmacies = _MockCollection();
+      final users = _MockCollection();
+      pharmacyDoc = _MockDocument();
+      userDoc = _MockDocument();
+      batch = _MockBatch();
+      when(() => firestore.collection('pharmacies')).thenReturn(pharmacies);
+      when(() => firestore.collection('users')).thenReturn(users);
+      when(() => pharmacies.doc()).thenReturn(pharmacyDoc);
+      when(() => pharmacyDoc.id).thenReturn('p1');
+      when(() => users.doc('u1')).thenReturn(userDoc);
+      when(() => firestore.batch()).thenReturn(batch);
+      when(() => batch.commit()).thenAnswer((_) async {});
+      await drafts.save(
+        'u1',
+        const PharmacyDraft(
+          name: 'Eric Pharmacy',
+          district: 'Gasabo',
+          city: 'Kigali',
+        ),
+      );
+    });
+
+    test('saves the district, city and the ERD defaults, then clears the '
+        'draft', () async {
+      final created = await repository.createPharmacy(
+        pharmacyName: ' Kacyiru Pharmacy ',
+        pharmacyDistrict: ' Gasabo ',
+        pharmacyCity: ' Kigali ',
+      );
+
+      final pharmacy =
+          verify(
+                () =>
+                    batch.set<Map<String, dynamic>>(pharmacyDoc, captureAny()),
+              ).captured.single
+              as Map<String, dynamic>;
+      expect(pharmacy, containsPair('name', 'Kacyiru Pharmacy'));
+      expect(pharmacy, containsPair('district', 'Gasabo'));
+      expect(pharmacy, containsPair('city', 'Kigali'));
+      expect(pharmacy, containsPair('ownerId', 'u1'));
+      expect(pharmacy, containsPair('nextReceiptNo', 1));
+      expect(pharmacy, containsPair('defaultReorderLevel', 20));
+      expect(pharmacy, containsPair('expiryAlertDays', 90));
+      expect(pharmacy.containsKey('location'), isFalse);
+
+      final profile =
+          verify(() => batch.set<Map<String, dynamic>>(userDoc, captureAny()))
+                  .captured
+                  .single
+              as Map<String, dynamic>;
+      expect(profile, containsPair('role', 'owner'));
+      expect(profile, containsPair('pharmacyId', 'p1'));
+
+      expect(created.pharmacyId, 'p1');
+      expect(await drafts.load('u1'), isNull);
     });
   });
 }

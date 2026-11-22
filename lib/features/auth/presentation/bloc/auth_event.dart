@@ -37,14 +37,16 @@ final class AuthRegisterRequested extends AuthEvent {
     required this.email,
     required this.password,
     required this.pharmacyName,
-    required this.pharmacyLocation,
+    required this.pharmacyDistrict,
+    required this.pharmacyCity,
   });
 
   final String name;
   final String email;
   final String password;
   final String pharmacyName;
-  final String pharmacyLocation;
+  final String pharmacyDistrict;
+  final String pharmacyCity;
 
   @override
   List<Object?> get props => [
@@ -52,7 +54,8 @@ final class AuthRegisterRequested extends AuthEvent {
     email,
     password,
     pharmacyName,
-    pharmacyLocation,
+    pharmacyDistrict,
+    pharmacyCity,
   ];
 }
 
@@ -80,14 +83,16 @@ final class AuthVerificationChecked extends AuthEvent {
 final class AuthPharmacySetupSubmitted extends AuthEvent {
   const AuthPharmacySetupSubmitted({
     required this.pharmacyName,
-    required this.pharmacyLocation,
+    required this.pharmacyDistrict,
+    required this.pharmacyCity,
   });
 
   final String pharmacyName;
-  final String pharmacyLocation;
+  final String pharmacyDistrict;
+  final String pharmacyCity;
 
   @override
-  List<Object?> get props => [pharmacyName, pharmacyLocation];
+  List<Object?> get props => [pharmacyName, pharmacyDistrict, pharmacyCity];
 }
 
 final class AuthSignOutRequested extends AuthEvent {

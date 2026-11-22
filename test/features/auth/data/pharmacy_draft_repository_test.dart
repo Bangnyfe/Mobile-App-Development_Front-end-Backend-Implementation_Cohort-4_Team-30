@@ -5,7 +5,11 @@ import 'package:team30_app/features/auth/data/shared_prefs_pharmacy_draft_reposi
 import 'package:team30_app/features/auth/domain/entities/pharmacy_draft.dart';
 import 'package:team30_app/features/auth/domain/repositories/pharmacy_draft_repository.dart';
 
-const _draft = PharmacyDraft(name: 'Amani Pharmacy', location: 'Nyarugenge');
+const _draft = PharmacyDraft(
+  name: 'Amani Pharmacy',
+  district: 'Nyarugenge',
+  city: 'Kigali',
+);
 
 void main() {
   final implementations = <String, Future<PharmacyDraftRepository> Function()>{

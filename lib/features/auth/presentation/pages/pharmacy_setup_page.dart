@@ -32,12 +32,14 @@ class PharmacySetupPage extends StatefulWidget {
 class _PharmacySetupPageState extends State<PharmacySetupPage> {
   final _formKey = GlobalKey<FormState>();
   final _pharmacyName = TextEditingController();
-  final _location = TextEditingController();
+  final _district = TextEditingController();
+  final _city = TextEditingController();
 
   @override
   void dispose() {
     _pharmacyName.dispose();
-    _location.dispose();
+    _district.dispose();
+    _city.dispose();
     super.dispose();
   }
 
@@ -47,7 +49,8 @@ class _PharmacySetupPageState extends State<PharmacySetupPage> {
     context.read<AuthBloc>().add(
       AuthPharmacySetupSubmitted(
         pharmacyName: _pharmacyName.text.trim(),
-        pharmacyLocation: _location.text.trim(),
+        pharmacyDistrict: _district.text.trim(),
+        pharmacyCity: _city.text.trim(),
       ),
     );
   }
@@ -57,7 +60,8 @@ class _PharmacySetupPageState extends State<PharmacySetupPage> {
   void _prefill(PharmacyDraft? draft) {
     if (draft == null) return;
     if (_pharmacyName.text.isEmpty) _pharmacyName.text = draft.name;
-    if (_location.text.isEmpty) _location.text = draft.location;
+    if (_district.text.isEmpty) _district.text = draft.district;
+    if (_city.text.isEmpty) _city.text = draft.city;
   }
 
   void _showMessage(String message) {
@@ -189,15 +193,26 @@ class _PharmacySetupPageState extends State<PharmacySetupPage> {
                     ),
                     const SizedBox(height: 16),
                     AuthTextField(
-                      label: 'Location',
-                      controller: _location,
-                      hint: 'Gasabo, Kigali',
+                      label: 'District',
+                      controller: _district,
+                      hint: 'Gasabo',
                       icon: Icons.place_outlined,
+                      textCapitalization: TextCapitalization.words,
+                      validator: (value) =>
+                          AuthValidators.requiredField(value, 'the district'),
+                      enabled: !anyBusy,
+                    ),
+                    const SizedBox(height: 16),
+                    AuthTextField(
+                      label: 'City',
+                      controller: _city,
+                      hint: 'Kigali',
+                      icon: Icons.location_city_outlined,
                       textCapitalization: TextCapitalization.words,
                       textInputAction: TextInputAction.done,
                       onSubmitted: (_) => _submit(),
                       validator: (value) =>
-                          AuthValidators.requiredField(value, 'the location'),
+                          AuthValidators.requiredField(value, 'the city'),
                       enabled: !anyBusy,
                     ),
                     const SizedBox(height: 24),

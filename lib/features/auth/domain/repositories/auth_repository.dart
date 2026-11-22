@@ -19,7 +19,8 @@ abstract interface class AuthRepository {
     required String email,
     required String password,
     required String pharmacyName,
-    required String pharmacyLocation,
+    required String pharmacyDistrict,
+    required String pharmacyCity,
   });
 
   /// Returns null if the user closes the Google account picker.
@@ -27,7 +28,8 @@ abstract interface class AuthRepository {
 
   Future<AppUser> createPharmacy({
     required String pharmacyName,
-    required String pharmacyLocation,
+    required String pharmacyDistrict,
+    required String pharmacyCity,
   });
 
   Future<void> sendPasswordResetEmail(String email);
