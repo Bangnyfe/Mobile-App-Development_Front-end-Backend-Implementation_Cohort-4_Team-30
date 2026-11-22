@@ -15,6 +15,8 @@ import 'features/sales/data/firestore_sales_repository.dart';
 import 'features/settings/data/fake_account_repository.dart';
 import 'features/settings/data/shared_prefs_settings_repository.dart';
 import 'firebase_options.dart';
+import 'features/stock_removal/data/current_pharmacy_stock_removal_repository.dart';
+import 'features/stock_removal/data/firestore_stock_removal_repository.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,6 +44,15 @@ Future<void> main() async {
       salesRepository: CurrentPharmacySalesRepository(
         pharmacyId: () => authBloc.state.user?.pharmacyId,
         forPharmacy: (id) => FirestoreSalesRepository(pharmacyId: id),
+      ),
+      // Remove stock reads and writes the signed-in user's pharmacy.
+      stockRemovalRepository: CurrentPharmacyStockRemovalRepository(
+        pharmacyId: () => authBloc.state.user?.pharmacyId,
+        forPharmacy: (id) => FirestoreStockRemovalRepository(
+          pharmacyId: id,
+          removedBy: () => authBloc.state.user?.uid ?? '',
+          removedByName: () => authBloc.state.user?.name ?? '',
+        ),
       ),
       pharmacyDraftRepository: pharmacyDrafts,
       accountRepository: AuthBackedAccountRepository(
