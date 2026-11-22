@@ -14,6 +14,12 @@ import '../../features/auth/domain/repositories/pharmacy_draft_repository.dart';
 import '../../features/dashboard/domain/repositories/dashboard_repository.dart';
 import '../../features/dashboard/presentation/cubit/dashboard_cubit.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
+import '../../features/inventory/domain/inventory_filter.dart';
+import '../../features/inventory/domain/repositories/inventory_repository.dart';
+import '../../features/inventory/presentation/cubit/inventory_cubit.dart';
+import '../../features/inventory/presentation/cubit/product_details_cubit.dart';
+import '../../features/inventory/presentation/pages/inventory_page.dart';
+import '../../features/inventory/presentation/pages/product_details_page.dart';
 import '../../features/invites/domain/repositories/invite_repository.dart';
 import '../../features/invites/presentation/cubit/pharmacy_choice_cubit.dart';
 import '../../features/invites/presentation/cubit/pharmacy_invites_cubit.dart';
@@ -53,7 +59,6 @@ import '../../features/stock_removal/domain/repositories/stock_removal_repositor
 import '../../features/stock_removal/presentation/cubit/remove_stock_cubit.dart';
 import '../../features/stock_removal/presentation/pages/remove_stock_page.dart';
 import '../widgets/app_shell.dart';
-import '../widgets/feature_placeholder_page.dart';
 import 'auth_redirect.dart';
 import 'auth_status_listenable.dart';
 import 'route_paths.dart';
@@ -63,9 +68,6 @@ import 'route_paths.dart';
 /// The five tabs use a [StatefulShellRoute.indexedStack]: each tab keeps its
 /// own navigation stack, so switching tabs never loses where the user was
 /// and the system back button only pops within the current tab.
-///
-/// Feature owners: replace the [FeaturePlaceholderPage] in your branch with
-/// your real page, and add sub-routes (e.g. product details) under it.
 ///
 /// With [authBloc] (the real app), the app starts on Splash and every
 /// navigation is checked by [authRedirect], so each sign-in status always
@@ -132,7 +134,7 @@ GoRouter createAppRouter({
               ),
             ],
           ),
-          _tab(RoutePaths.stock, 'Inventory'),
+          StatefulShellBranch(routes: [_stockRoute(authBloc: authBloc)]),
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -379,12 +381,37 @@ final _removeStockRoute = GoRoute(
   },
 );
 
-StatefulShellBranch _tab(String path, String title) {
-  return StatefulShellBranch(
+/// The Stock tab: the Inventory list, with Product details inside the tab
+/// so the bottom bar stays visible and back returns to the list.
+///
+/// `/stock?filter=lowStock` opens the list on a filter chip (the names are
+/// in `InventoryFilter`). Only owners may edit or delete products; without
+/// [authBloc] (most widget tests) everyone can.
+GoRoute _stockRoute({AuthBloc? authBloc}) {
+  bool canManage() =>
+      authBloc == null || (authBloc.state.user?.isOwner ?? false);
+
+  return GoRoute(
+    path: RoutePaths.stock,
+    builder: (context, state) => BlocProvider(
+      create: (context) => InventoryCubit(
+        context.read<InventoryRepository>(),
+        initialFilter: InventoryFilter.fromName(
+          state.uri.queryParameters['filter'],
+        ),
+      )..start(),
+      child: const InventoryPage(),
+    ),
     routes: [
       GoRoute(
-        path: path,
-        builder: (context, state) => FeaturePlaceholderPage(title: title),
+        path: 'products/:productId',
+        builder: (context, state) => BlocProvider(
+          create: (context) => ProductDetailsCubit(
+            context.read<InventoryRepository>(),
+            state.pathParameters['productId']!,
+          )..start(),
+          child: ProductDetailsPage(canManage: canManage()),
+        ),
       ),
     ],
   );

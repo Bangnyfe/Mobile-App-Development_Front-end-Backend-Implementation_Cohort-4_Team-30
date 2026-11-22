@@ -8,6 +8,8 @@ import 'features/auth/data/auth_backed_account_repository.dart';
 import 'features/auth/data/firebase_auth_repository.dart';
 import 'features/auth/data/shared_prefs_pharmacy_draft_repository.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/inventory/data/current_pharmacy_inventory_repository.dart';
+import 'features/inventory/data/firestore_inventory_repository.dart';
 import 'features/invites/data/firestore_invite_repository.dart';
 import 'features/notifications/data/shared_prefs_seen_alerts_repository.dart';
 import 'features/inventory/data/firestore_batch_repository.dart';
@@ -62,6 +64,11 @@ Future<void> main() async {
       productLookupRepository: CurrentPharmacyProductLookupRepository(
         pharmacyId: () => authBloc.state.user?.pharmacyId,
         forPharmacy: (id) => FirestoreProductLookupRepository(pharmacyId: id),
+      ),
+      // The Stock tab lists the signed-in pharmacy's products and batches.
+      inventoryRepository: CurrentPharmacyInventoryRepository(
+        pharmacyId: () => authBloc.state.user?.pharmacyId,
+        forPharmacy: FirestoreInventoryRepository.forPharmacy,
       ),
       // ...and searches them by name, through the inventory repositories.
       productCatalog: CurrentPharmacyProductCatalog(
