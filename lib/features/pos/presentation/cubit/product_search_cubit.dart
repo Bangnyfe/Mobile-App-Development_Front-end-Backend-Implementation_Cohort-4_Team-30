@@ -92,12 +92,18 @@ class ProductSearchCubit extends Cubit<ProductSearchState> {
           ),
         );
       },
-      onError: (Object _) => emit(
-        state.copyWith(
-          status: SearchStatus.failure,
-          message: loadFailedMessage,
-        ),
-      ),
+      onError: (Object _) {
+        // Forget the failed subscription so the next search subscribes
+        // again, even after clear() has turned failure back into idle.
+        _subscription?.cancel();
+        _subscription = null;
+        emit(
+          state.copyWith(
+            status: SearchStatus.failure,
+            message: loadFailedMessage,
+          ),
+        );
+      },
     );
   }
 
