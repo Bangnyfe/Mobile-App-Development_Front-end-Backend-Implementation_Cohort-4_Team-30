@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -17,15 +18,27 @@ import '../../features/invites/domain/repositories/invite_repository.dart';
 import '../../features/invites/presentation/cubit/pharmacy_choice_cubit.dart';
 import '../../features/invites/presentation/cubit/pharmacy_invites_cubit.dart';
 import '../../features/notifications/presentation/pages/notifications_page.dart';
+import '../../features/pos/data/fake_checkout_repository.dart';
+import '../../features/pos/domain/entities/sale_receipt.dart';
+import '../../features/pos/domain/repositories/checkout_repository.dart';
+import '../../features/pos/presentation/cubit/batch_pick_cubit.dart';
+import '../../features/pos/presentation/cubit/cart_cubit.dart';
+import '../../features/pos/presentation/cubit/checkout_cubit.dart';
+import '../../features/pos/presentation/cubit/payment_form_cubit.dart';
+import '../../features/pos/presentation/pages/cart_page.dart';
+import '../../features/pos/presentation/pages/checkout_page.dart';
+import '../../features/pos/presentation/pages/product_found_page.dart';
+import '../../features/pos/presentation/pages/receipt_page.dart';
+import '../../features/pos/presentation/pages/sell_page.dart';
 import '../../features/reports/presentation/pages/reports_hub_page.dart';
 import '../../features/sales/domain/repositories/sales_repository.dart';
 import '../../features/sales/presentation/cubit/sale_details_cubit.dart';
 import '../../features/sales/presentation/cubit/sales_history_cubit.dart';
 import '../../features/sales/presentation/pages/sale_details_page.dart';
 import '../../features/sales/presentation/pages/sales_history_page.dart';
+import '../../features/scanner/domain/entities/found_product.dart';
 import '../../features/scanner/domain/repositories/product_lookup_repository.dart';
 import '../../features/scanner/presentation/cubit/scan_cubit.dart';
-import '../../features/scanner/presentation/pages/scan_product_page.dart';
 import '../../features/settings/presentation/pages/categories_page.dart';
 import '../../features/settings/presentation/pages/pharmacy_profile_page.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
@@ -53,8 +66,17 @@ import 'route_paths.dart';
 /// navigation is checked by [authRedirect], so each sign-in status always
 /// lands on its own screen. Without it (most widget tests), the app opens
 /// straight on Home as before.
-GoRouter createAppRouter({AuthBloc? authBloc}) {
+///
+/// [checkoutRepository] saves confirmed sales; it defaults to
+/// [FakeCheckoutRepository] (see [_sellRoute]).
+GoRouter createAppRouter({
+  AuthBloc? authBloc,
+  CheckoutRepository? checkoutRepository,
+}) {
+  // Screens that open above the tabs (no bottom bar) use this navigator.
+  final rootNavigatorKey = GlobalKey<NavigatorState>();
   return GoRouter(
+    navigatorKey: rootNavigatorKey,
     initialLocation: authBloc == null ? RoutePaths.home : AuthRoutePaths.splash,
     refreshListenable: authBloc == null ? null : AuthStatusListenable(authBloc),
     redirect: authBloc == null
@@ -96,15 +118,14 @@ GoRouter createAppRouter({AuthBloc? authBloc}) {
           ),
           StatefulShellBranch(
             routes: [
-              GoRoute(
-                path: RoutePaths.sell,
-                // Maxime: the cart and checkout build on this. A found
-                // product is ready for CartCubit.addItem.
-                builder: (context, state) => BlocProvider(
-                  create: (context) =>
-                      ScanCubit(context.read<ProductLookupRepository>()),
-                  child: const ScanProductPage(),
-                ),
+              _sellRoute(
+                rootNavigatorKey: rootNavigatorKey,
+                // TODO(Maxime): use FirestoreCheckoutRepository() once Sell
+                // finds products in Firestore; the sample products' batches
+                // don't exist there, so every real checkout would fail.
+                checkoutRepository:
+                    checkoutRepository ?? FakeCheckoutRepository(),
+                authBloc: authBloc,
               ),
             ],
           ),
@@ -175,6 +196,75 @@ GoRouter createAppRouter({AuthBloc? authBloc}) {
             ],
           ),
         ],
+      ),
+    ],
+  );
+}
+
+/// The Sell tab and its flow: Sell → Product found → Cart → Checkout →
+/// Receipt. The sub-screens open on the root navigator, above the tabs, so
+/// the bottom bar is hidden on them as in the Figma flow, while their paths
+/// stay under /sell and back returns to Sell.
+///
+/// The cart is the app-wide CartCubit from `app.dart`.
+GoRoute _sellRoute({
+  required GlobalKey<NavigatorState> rootNavigatorKey,
+  required CheckoutRepository checkoutRepository,
+  AuthBloc? authBloc,
+}) {
+  return GoRoute(
+    path: RoutePaths.sell,
+    builder: (context, state) => BlocProvider(
+      // TODO(Maxime): this is FakeProductLookupRepository (the default in
+      // app.dart) until main.dart passes a
+      // CurrentPharmacyProductLookupRepository using
+      // FirestoreProductLookupRepository.
+      create: (context) => ScanCubit(context.read<ProductLookupRepository>()),
+      child: const SellPage(),
+    ),
+    routes: [
+      GoRoute(
+        path: 'product',
+        parentNavigatorKey: rootNavigatorKey,
+        // Needs the scanned product; without it (e.g. a restored link)
+        // there's nothing to show, so start again from Sell.
+        redirect: (context, state) =>
+            state.extra is FoundProduct ? null : RoutePaths.sell,
+        builder: (context, state) {
+          final found = state.extra! as FoundProduct;
+          return BlocProvider(
+            create: (context) => BatchPickCubit(
+              batches: found.batches,
+              today: DateTime.now(),
+              cart: context.read<CartCubit>().state.items,
+            ),
+            child: ProductFoundPage(found: found),
+          );
+        },
+      ),
+      GoRoute(
+        path: 'cart',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const CartPage(),
+      ),
+      GoRoute(
+        path: 'checkout',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => CheckoutCubit(checkoutRepository)),
+            BlocProvider(create: (_) => PaymentFormCubit()),
+          ],
+          child: CheckoutPage(signedInUser: authBloc?.state.user),
+        ),
+      ),
+      GoRoute(
+        path: 'receipt',
+        parentNavigatorKey: rootNavigatorKey,
+        redirect: (context, state) =>
+            state.extra is SaleReceipt ? null : RoutePaths.sell,
+        builder: (context, state) =>
+            ReceiptPage(receipt: state.extra! as SaleReceipt),
       ),
     ],
   );
