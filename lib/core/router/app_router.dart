@@ -17,6 +17,9 @@ import '../../features/invites/domain/repositories/invite_repository.dart';
 import '../../features/invites/presentation/cubit/pharmacy_choice_cubit.dart';
 import '../../features/invites/presentation/cubit/pharmacy_invites_cubit.dart';
 import '../../features/notifications/presentation/pages/notifications_page.dart';
+import '../../features/reports/presentation/cubit/stock_reports_cubit.dart';
+import '../../features/reports/presentation/pages/expiry_waste_report_page.dart';
+import '../../features/reports/presentation/pages/inventory_report_page.dart';
 import '../../features/reports/presentation/pages/reports_hub_page.dart';
 import '../../features/sales/domain/repositories/sales_repository.dart';
 import '../../features/sales/presentation/cubit/sale_details_cubit.dart';
@@ -118,15 +121,24 @@ GoRouter createAppRouter({AuthBloc? authBloc}) {
                 // bar stays visible and back returns to the hub.
                 routes: [
                   _salesHistoryRoute(RoutePaths.reportsSaleDetails),
+                  // Each report loads the stock and removals when opened,
+                  // so a removal made meanwhile always shows.
                   GoRoute(
                     path: 'inventory',
-                    builder: (context, state) =>
-                        const FeaturePlaceholderPage(title: 'Inventory report'),
+                    builder: (context, state) => BlocProvider(
+                      create: (context) => StockReportsCubit(
+                        context.read<StockRemovalRepository>(),
+                      )..load(),
+                      child: const InventoryReportPage(),
+                    ),
                   ),
                   GoRoute(
                     path: 'expiry-waste',
-                    builder: (context, state) => const FeaturePlaceholderPage(
-                      title: 'Expiry & waste report',
+                    builder: (context, state) => BlocProvider(
+                      create: (context) => StockReportsCubit(
+                        context.read<StockRemovalRepository>(),
+                      )..load(),
+                      child: const ExpiryWasteReportPage(),
                     ),
                   ),
                 ],

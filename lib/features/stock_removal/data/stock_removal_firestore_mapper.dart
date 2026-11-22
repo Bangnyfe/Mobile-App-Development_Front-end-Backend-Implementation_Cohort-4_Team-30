@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../domain/entities/removable_product.dart';
 import '../domain/entities/stock_removal.dart';
+import '../domain/entities/removal_reason.dart';
 
 /// Firestore field names used by Remove stock, exactly as in the ERD
 /// : PRODUCTS, BATCHES and STOCK_REMOVALS.
@@ -98,6 +99,27 @@ Map<String, Object> removalToFirestore({
   StockRemovalFields.removedByName: removedByName,
   StockRemovalFields.createdAt: FieldValue.serverTimestamp(),
 };
+
+/// Reads a `stock_removals` document, or returns null while its
+/// `createdAt` server time has not been set.
+StockRemoval? removalFromFirestore(String id, Map<String, dynamic> data) {
+  final createdAt = data[StockRemovalFields.createdAt];
+  if (createdAt is! Timestamp) return null;
+  return StockRemoval(
+    id: id,
+    productId: data[StockRemovalFields.productId] as String? ?? '',
+    productName: data[StockRemovalFields.productName] as String? ?? '',
+    batchId: data[StockRemovalFields.batchId] as String? ?? '',
+    batchNumber: data[StockRemovalFields.batchNumber] as String? ?? '',
+    quantity: (data[StockRemovalFields.quantity] as num?)?.toInt() ?? 0,
+    reason: RemovalReason.fromName(data[StockRemovalFields.reason] as String?),
+    note: data[StockRemovalFields.note] as String? ?? '',
+    costValue: (data[StockRemovalFields.costValue] as num?)?.toInt() ?? 0,
+    removedBy: data[StockRemovalFields.removedBy] as String? ?? '',
+    removedByName: data[StockRemovalFields.removedByName] as String? ?? '',
+    createdAt: createdAt.toDate(),
+  );
+}
 
 /// A Firestore error code as a message for the user.
 String stockRemovalErrorMessage(String code) => switch (code) {
