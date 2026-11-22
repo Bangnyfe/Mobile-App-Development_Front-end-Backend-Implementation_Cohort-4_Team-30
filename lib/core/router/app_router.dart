@@ -70,8 +70,9 @@ import 'route_paths.dart';
 /// lands on its own screen. Without it (most widget tests), the app opens
 /// straight on Home as before.
 ///
-/// [checkoutRepository] saves confirmed sales; it defaults to
-/// [FakeCheckoutRepository] (see [_sellRoute]).
+/// [checkoutRepository] saves confirmed sales: `main.dart` passes
+/// `FirestoreCheckoutRepository`, and tests get [FakeCheckoutRepository]
+/// by default (see [_sellRoute]).
 GoRouter createAppRouter({
   AuthBloc? authBloc,
   CheckoutRepository? checkoutRepository,
@@ -123,9 +124,6 @@ GoRouter createAppRouter({
             routes: [
               _sellRoute(
                 rootNavigatorKey: rootNavigatorKey,
-                // TODO(Maxime): use FirestoreCheckoutRepository() once Sell
-                // finds products in Firestore; the sample products' batches
-                // don't exist there, so every real checkout would fail.
                 checkoutRepository:
                     checkoutRepository ?? FakeCheckoutRepository(),
                 authBloc: authBloc,
@@ -227,10 +225,9 @@ GoRoute _sellRoute({
   return GoRoute(
     path: RoutePaths.sell,
     builder: (context, state) => BlocProvider(
-      // TODO(Maxime): this is FakeProductLookupRepository (the default in
-      // app.dart) until main.dart passes a
-      // CurrentPharmacyProductLookupRepository using
-      // FirestoreProductLookupRepository.
+      // The app looks barcodes up in the signed-in pharmacy's Firestore
+      // products (see main.dart); tests use the sample products. Checkout
+      // must use the same source, since it takes stock from those batches.
       create: (context) => ScanCubit(context.read<ProductLookupRepository>()),
       child: const SellPage(),
     ),

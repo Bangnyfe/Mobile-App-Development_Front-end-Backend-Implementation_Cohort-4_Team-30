@@ -1,11 +1,8 @@
 import '../domain/repositories/checkout_repository.dart';
 
-/// Records sales in memory, until scanned products come from Firestore.
-///
-/// `FirestoreCheckoutRepository` deducts stock from the batch documents the
-/// cart names. The Sell tab still finds products with
-/// `FakeProductLookupRepository`, whose batches don't exist in Firestore, so
-/// a real checkout would always fail with "batch no longer available".
+/// Records sales in memory, for widget tests. The app uses
+/// `FirestoreCheckoutRepository`, which takes the stock from the batch
+/// documents the cart names.
 class FakeCheckoutRepository implements CheckoutRepository {
   FakeCheckoutRepository();
 
