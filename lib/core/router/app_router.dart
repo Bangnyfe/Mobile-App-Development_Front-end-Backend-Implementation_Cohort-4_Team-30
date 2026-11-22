@@ -23,6 +23,10 @@ import '../../features/settings/presentation/pages/categories_page.dart';
 import '../../features/settings/presentation/pages/pharmacy_profile_page.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
 import '../../features/settings/presentation/pages/staff_page.dart';
+import '../../features/stock_removal/domain/entities/removal_reason.dart';
+import '../../features/stock_removal/domain/repositories/stock_removal_repository.dart';
+import '../../features/stock_removal/presentation/cubit/remove_stock_cubit.dart';
+import '../../features/stock_removal/presentation/pages/remove_stock_page.dart';
 import '../widgets/app_shell.dart';
 import '../widgets/feature_placeholder_page.dart';
 import 'auth_redirect.dart';
@@ -54,6 +58,7 @@ GoRouter createAppRouter({AuthBloc? authBloc}) {
           ),
     routes: [
       ..._authRoutes,
+      _removeStockRoute,
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
             AppShell(navigationShell: navigationShell),
@@ -93,7 +98,6 @@ GoRouter createAppRouter({AuthBloc? authBloc}) {
                 // bar stays visible and back returns to the hub.
                 routes: [
                   _salesHistoryRoute(RoutePaths.reportsSaleDetails),
-                  // Brian: replace these placeholders with your reports.
                   GoRoute(
                     path: 'inventory',
                     builder: (context, state) =>
@@ -192,6 +196,27 @@ final _authRoutes = <RouteBase>[
     builder: (context, state) => const PharmacySetupPage(),
   ),
 ];
+
+/// Remove stock opens above the tabs, like the Figma flow (no bottom bar).
+/// From an expiry notification the query carries the batch and reason.
+final _removeStockRoute = GoRoute(
+  path: RoutePaths.removeStock,
+  builder: (context, state) {
+    final query = state.uri.queryParameters;
+    final reason = query['reason'];
+    return BlocProvider(
+      create: (context) =>
+          RemoveStockCubit(context.read<StockRemovalRepository>())..start(
+            productId: query['productId'],
+            batchId: query['batchId'],
+            suggestedReason: reason == null
+                ? null
+                : RemovalReason.fromName(reason),
+          ),
+      child: const RemoveStockPage(),
+    );
+  },
+);
 
 StatefulShellBranch _tab(String path, String title) {
   return StatefulShellBranch(

@@ -21,6 +21,23 @@ abstract final class RoutePaths {
   static const inventoryReport = '$reports/inventory';
   static const expiryWasteReport = '$reports/expiry-waste';
 
+  // Full-screen flows opened above the tabs (no bottom bar).
+  static const removeStock = '/remove-stock';
+
+  /// Remove stock with the batch already chosen and Expired suggested,
+  /// as opened from an expiry notification.
+  static String removeExpiredBatch({
+    required String productId,
+    required String batchId,
+  }) => Uri(
+    path: removeStock,
+    queryParameters: {
+      'productId': productId,
+      'batchId': batchId,
+      'reason': 'expired',
+    },
+  ).toString();
+
   // Settings subpages.
   static const pharmacyProfile = '$settings/pharmacy';
   static const staff = '$settings/staff';
