@@ -149,16 +149,102 @@ void main() {
     expect(find.byType(ProductFoundPage), findsOneWidget);
   });
 
-  testWidgets('searching by name explains that only barcodes work yet', (
-    tester,
-  ) async {
-    await openSell(tester);
+  group('search by name', () {
+    const cameraHint = 'Point the camera at the product barcode';
 
-    await tester.enterText(find.byType(TextField), 'paracetamol');
-    await tester.testTextInput.receiveAction(TextInputAction.search);
-    await tester.pumpAndSettle();
+    testWidgets('lists matching products in place of the camera', (
+      tester,
+    ) async {
+      await openSell(tester);
+      expect(find.text(cameraHint), findsOneWidget);
 
-    expect(find.text(SellPage.searchByNameMessage), findsOneWidget);
-    expect(find.byType(ProductFoundPage), findsNothing);
+      await tester.enterText(find.byType(TextField), 'PARA');
+      await tester.pumpAndSettle();
+
+      expect(find.text(cameraHint), findsNothing);
+      expect(
+        find.byKey(const ValueKey('search-result-p-paracetamol')),
+        findsOneWidget,
+      );
+      expect(find.text('Paracetamol 500mg'), findsOneWidget);
+      expect(
+        find.text('Tablets · strip of 10 · Barcode $_paracetamol'),
+        findsOneWidget,
+      );
+      expect(find.text('RWF 700'), findsOneWidget);
+      expect(find.text('Ibuprofen 400mg'), findsNothing);
+    });
+
+    testWidgets('tapping a result opens Product found and clears the search', (
+      tester,
+    ) async {
+      await openSell(tester);
+
+      await tester.enterText(find.byType(TextField), 'para');
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Paracetamol 500mg'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ProductFoundPage), findsOneWidget);
+      expect(find.text('PC2401'), findsOneWidget);
+
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+      expect(find.text(cameraHint), findsOneWidget);
+      expect(
+        tester.widget<TextField>(find.byType(TextField)).controller!.text,
+        isEmpty,
+      );
+    });
+
+    testWidgets('Enter opens the product when only one matches', (
+      tester,
+    ) async {
+      await openSell(tester);
+
+      await tester.enterText(find.byType(TextField), 'ibupro');
+      await tester.testTextInput.receiveAction(TextInputAction.search);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ProductFoundPage), findsOneWidget);
+      expect(find.text('Ibuprofen 400mg'), findsOneWidget);
+    });
+
+    testWidgets('says when nothing matches', (tester) async {
+      await openSell(tester);
+
+      await tester.enterText(find.byType(TextField), 'zzz');
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(
+          'No product matches "zzz". Check the spelling, or scan the '
+          'barcode.',
+        ),
+        findsOneWidget,
+      );
+
+      await tester.testTextInput.receiveAction(TextInputAction.search);
+      await tester.pumpAndSettle();
+      expect(
+        find.descendant(
+          of: find.byType(SnackBar),
+          matching: find.text(SellPage.noMatchMessage('zzz')),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('the clear button brings the camera back', (tester) async {
+      await openSell(tester);
+
+      await tester.enterText(find.byType(TextField), 'para');
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Clear search'));
+      await tester.pumpAndSettle();
+
+      expect(find.text(cameraHint), findsOneWidget);
+      expect(find.text('Paracetamol 500mg'), findsNothing);
+    });
   });
 }
