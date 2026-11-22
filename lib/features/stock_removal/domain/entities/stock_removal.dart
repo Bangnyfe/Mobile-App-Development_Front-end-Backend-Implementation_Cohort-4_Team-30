@@ -22,8 +22,9 @@ class StockRemovalRequest extends Equatable {
   List<Object?> get props => [productId, batchId, quantity, reason, note];
 }
 
-/// A recorded removal: one document in `stockRemovals`, with the product
-/// and batch names filled in for display.
+/// A recorded removal: one document in
+/// `pharmacies/{pharmacyId}/stock_removals`, with the product and batch
+/// names copied in so the record still reads correctly after a rename.
 class StockRemoval extends Equatable {
   const StockRemoval({
     required this.id,
@@ -35,6 +36,7 @@ class StockRemoval extends Equatable {
     required this.reason,
     required this.costValue,
     required this.removedBy,
+    required this.removedByName,
     required this.createdAt,
     this.note = '',
   });
@@ -51,8 +53,11 @@ class StockRemoval extends Equatable {
   /// quantity × the batch's cost price, in RWF: the value written off.
   final int costValue;
 
-  /// Name of the person who removed it.
+  /// The uid of the person who removed it.
   final String removedBy;
+
+  /// Their name at the time, for display.
+  final String removedByName;
   final DateTime createdAt;
 
   @override
@@ -67,6 +72,7 @@ class StockRemoval extends Equatable {
     note,
     costValue,
     removedBy,
+    removedByName,
     createdAt,
   ];
 }

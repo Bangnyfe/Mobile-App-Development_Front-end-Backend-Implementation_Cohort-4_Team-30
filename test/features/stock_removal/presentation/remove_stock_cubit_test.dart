@@ -172,4 +172,95 @@ void main() {
     expect(cubit.state.batch!.batchNumber, 'MZ2308');
     expect(cubit.state.result, isNull);
   });
+
+  test(
+    'an unexpected error ends the save with a message, not a spinner',
+    () async {
+      final failing = _MockRepository();
+      final products = await repository.loadProducts();
+      when(() => failing.loadProducts()).thenAnswer((_) async => products);
+      when(() => failing.removeStock(any())).thenThrow(Exception('offline'));
+      final cubit = RemoveStockCubit(failing, clock: () => now);
+      await cubit.start();
+      cubit
+        ..selectProduct('p-metronidazole')
+        ..selectReason(RemovalReason.expired);
+
+      await cubit.submit();
+
+      expect(cubit.state.submitStatus, SubmitStatus.failure);
+      expect(cubit.state.message, RemoveStockCubit.saveFailedMessage);
+      expect(cubit.state.step, isNot(RemoveStockStep.done));
+      expect(cubit.state.result, isNull);
+    },
+  );
+
+  test('a saved removal still succeeds when the reload fails', () async {
+    final flaky = _MockRepository();
+    final products = await repository.loadProducts();
+    var loads = 0;
+    when(() => flaky.loadProducts()).thenAnswer((_) async {
+      if (loads++ > 0) throw Exception('offline');
+      return products;
+    });
+    when(() => flaky.removeStock(any())).thenAnswer(
+      (invocation) => repository.removeStock(
+        invocation.positionalArguments.single as StockRemovalRequest,
+      ),
+    );
+    final cubit = RemoveStockCubit(flaky, clock: () => now);
+    await cubit.start();
+    cubit
+      ..selectProduct('p-ibuprofen')
+      ..setQuantity(2)
+      ..selectReason(RemovalReason.expired);
+
+    await cubit.submit();
+
+    expect(cubit.state.submitStatus, SubmitStatus.success);
+    expect(cubit.state.step, RemoveStockStep.done);
+    expect(cubit.state.result!.quantity, 2);
+    // The batch is lowered locally: 6 expired - 2 removed + 40 in date.
+    expect(cubit.state.product!.totalUnits, 44);
+  });
+
+  test('records who removed the stock by uid and name', () async {
+    final cubit = build();
+    await cubit.start();
+    cubit
+      ..selectProduct('p-metronidazole')
+      ..selectReason(RemovalReason.expired);
+
+    await cubit.submit();
+
+    expect(cubit.state.result!.removedBy, 'owner-1');
+    expect(cubit.state.result!.removedByName, 'Aline Uwase');
+  });
+
+  test(
+    'trying again after a failed load keeps the notification’s batch',
+    () async {
+      final flaky = _MockRepository();
+      final products = await repository.loadProducts();
+      var loads = 0;
+      when(() => flaky.loadProducts()).thenAnswer((_) async {
+        if (loads++ == 0) throw Exception('offline');
+        return products;
+      });
+      final cubit = RemoveStockCubit(flaky, clock: () => now);
+
+      await cubit.start(
+        productId: 'p-ibuprofen',
+        batchId: 'b-ib2209',
+        suggestedReason: RemovalReason.expired,
+      );
+      expect(cubit.state.status, RemoveStockStatus.loadFailure);
+
+      await cubit.retry();
+
+      expect(cubit.state.status, RemoveStockStatus.ready);
+      expect(cubit.state.batch!.batchNumber, 'IB2209');
+      expect(cubit.state.reason, RemovalReason.expired);
+    },
+  );
 }

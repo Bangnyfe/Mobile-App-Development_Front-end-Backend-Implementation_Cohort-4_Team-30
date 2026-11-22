@@ -71,7 +71,8 @@ class FakeStockRemovalRepository implements StockRemovalRepository {
       reason: request.reason,
       note: request.note.trim(),
       costValue: batch.costOf(request.quantity),
-      removedBy: 'Aline Uwase',
+      removedBy: 'owner-1',
+      removedByName: 'Aline Uwase',
       createdAt: _clock(),
     );
     _removals.add(removal);

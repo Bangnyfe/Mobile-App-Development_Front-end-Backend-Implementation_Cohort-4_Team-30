@@ -72,7 +72,7 @@ class RemovalDoneView extends StatelessWidget {
                       'Written off (cost)',
                       Formatters.rwf(removal.costValue),
                     ),
-                    _DetailRow('Removed by', removal.removedBy),
+                    _DetailRow('Removed by', removal.removedByName),
                     _DetailRow(
                       'Date and time',
                       '${Formatters.date(removal.createdAt)}, '

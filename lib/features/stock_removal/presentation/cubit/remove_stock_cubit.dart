@@ -25,6 +25,13 @@ class RemoveStockCubit extends Cubit<RemoveStockState> {
   static const loadFailedMessage =
       "Couldn't load your stock. Check your connection and try again.";
 
+  static const saveFailedMessage =
+      "Couldn't remove the stock. Check your connection and try again.";
+
+  /// What [start] was opened with, so [retry] opens the same batch.
+  ({String? productId, String? batchId, RemovalReason? suggestedReason})
+  _opened = (productId: null, batchId: null, suggestedReason: null);
+
   /// Loads the products. From an expiry notification, pass the product,
   /// batch and suggested reason so the flow opens with them selected.
   Future<void> start({
@@ -32,6 +39,11 @@ class RemoveStockCubit extends Cubit<RemoveStockState> {
     String? batchId,
     RemovalReason? suggestedReason,
   }) async {
+    _opened = (
+      productId: productId,
+      batchId: batchId,
+      suggestedReason: suggestedReason,
+    );
     emit(const RemoveStockState());
     final List<RemovableProduct> products;
     try {
@@ -65,6 +77,14 @@ class RemoveStockCubit extends Cubit<RemoveStockState> {
       );
     }
   }
+
+  /// "Try again" after a failed load: opens the same product and batch as
+  /// before, so a notification's batch is not lost.
+  Future<void> retry() => start(
+    productId: _opened.productId,
+    batchId: _opened.batchId,
+    suggestedReason: _opened.suggestedReason,
+  );
 
   void search(String query) => emit(state.copyWith(query: query));
 
@@ -144,6 +164,9 @@ class RemoveStockCubit extends Cubit<RemoveStockState> {
 
   /// Saves the removal. On success the stock is reloaded, so every screen
   /// that reads it afterwards shows the lower quantity.
+  ///
+  /// Always ends in success or failure, never stuck on submitting, whatever
+  /// the repository throws.
   Future<void> submit() async {
     final batch = state.batch;
     final reason = state.reason;
@@ -155,8 +178,9 @@ class RemoveStockCubit extends Cubit<RemoveStockState> {
         message: () => null,
       ),
     );
+    final StockRemoval removal;
     try {
-      final removal = await _repository.removeStock(
+      removal = await _repository.removeStock(
         StockRemovalRequest(
           productId: state.productId!,
           batchId: batch.id,
@@ -165,24 +189,51 @@ class RemoveStockCubit extends Cubit<RemoveStockState> {
           note: state.note.trim(),
         ),
       );
-      final products = await _repository.loadProducts();
-      emit(
-        state.copyWith(
-          products: products,
-          submitStatus: SubmitStatus.success,
-          step: RemoveStockStep.done,
-          result: () => removal,
-        ),
-      );
-    } on StockRemovalFailure catch (failure) {
+    } catch (error) {
       emit(
         state.copyWith(
           submitStatus: SubmitStatus.failure,
-          message: () => failure.message,
+          message: () =>
+              error is StockRemovalFailure ? error.message : saveFailedMessage,
         ),
       );
+      return;
     }
+
+    // The removal is saved. If reloading fails, lower the batch here
+    // instead, rather than reporting an error for a removal that worked.
+    List<RemovableProduct> products;
+    try {
+      products = await _repository.loadProducts();
+    } catch (_) {
+      products = _withUnitsRemoved(batch.id, removal.quantity);
+    }
+    emit(
+      state.copyWith(
+        products: products,
+        submitStatus: SubmitStatus.success,
+        step: RemoveStockStep.done,
+        result: () => removal,
+      ),
+    );
   }
+
+  /// The current products with [units] taken off batch [batchId], keeping
+  /// only products with stock left, as [StockRemovalRepository.loadProducts]
+  /// does.
+  List<RemovableProduct> _withUnitsRemoved(String batchId, int units) => [
+    for (final product in state.products)
+      RemovableProduct(
+        id: product.id,
+        name: product.name,
+        barcode: product.barcode,
+        details: product.details,
+        batches: [
+          for (final b in product.batches)
+            b.id == batchId ? b.copyWith(quantity: b.quantity - units) : b,
+        ],
+      ),
+  ].where((product) => product.totalUnits > 0).toList();
 
   RemovableProduct? _productById(String productId) {
     for (final product in state.products) {

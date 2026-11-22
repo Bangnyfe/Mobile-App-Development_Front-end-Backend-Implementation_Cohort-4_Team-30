@@ -83,7 +83,7 @@ class RemoveStockPage extends StatelessWidget {
       case RemoveStockStatus.loadFailure:
         return _LoadError(
           message: state.message ?? RemoveStockCubit.loadFailedMessage,
-          onRetry: cubit.start,
+          onRetry: cubit.retry,
         );
       case RemoveStockStatus.ready:
         final today = clock();
