@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/formatters.dart';
+import '../../../scanner/presentation/pages/scanner_page.dart';
 import '../../domain/entities/removable_product.dart';
 import '../cubit/remove_stock_cubit.dart';
 import 'batch_option_card.dart';
@@ -21,6 +22,30 @@ class ChooseBatchView extends StatelessWidget {
   final RemoveStockState state;
   final DateTime today;
   final int alertDays;
+
+  /// Scans a pack and jumps to its product, and to its batch when the code
+  /// carries one.
+  Future<void> _scan(BuildContext context) async {
+    final cubit = context.read<RemoveStockCubit>();
+    final messenger = ScaffoldMessenger.of(context);
+    final code = await ScannerPage.open(context, title: 'Scan to remove');
+    if (code == null) return;
+    final found = cubit.selectScanned(
+      barcode: code.gtin,
+      batchNumber: code.batchNumber,
+    );
+    if (!found) {
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(
+              'No product with barcode ${code.gtin} has stock to remove.',
+            ),
+          ),
+        );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +66,14 @@ class ChooseBatchView extends StatelessWidget {
                   initialValue: state.query,
                   onChanged: cubit.search,
                   textInputAction: TextInputAction.search,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Search product name or barcode',
-                    prefixIcon: Icon(Icons.search),
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: IconButton(
+                      tooltip: 'Scan barcode',
+                      icon: const Icon(Icons.qr_code_scanner),
+                      onPressed: () => _scan(context),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 12),
