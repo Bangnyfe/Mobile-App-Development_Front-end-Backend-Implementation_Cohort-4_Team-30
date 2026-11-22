@@ -168,6 +168,9 @@ void main() {
 
     expect(repository.sales, hasLength(1));
     expect(repository.sales.values.single.cashReceived, 10000);
+    // Who sold it, by uid and by name, from the signed-in account.
+    expect(repository.sales.values.single.soldBy, 'u1');
+    expect(repository.sales.values.single.soldByName, 'Aline Uwase');
     expect(cart.state.items, isEmpty);
 
     expect(find.text('Sale complete'), findsOneWidget);

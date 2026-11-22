@@ -17,6 +17,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     required String saleId,
     required String receiptNo,
     required String soldBy,
+    String soldByName = '',
     required String paymentMethod,
     int? cashReceived,
   }) async {
@@ -47,6 +48,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
           saleId: saleId,
           receiptNo: receiptNo,
           soldBy: soldBy,
+          soldByName: soldByName,
           paymentMethod: paymentMethod,
           cashReceived: paid,
           change: change,

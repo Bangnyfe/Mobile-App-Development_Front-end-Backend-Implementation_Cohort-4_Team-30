@@ -45,7 +45,8 @@ class FirestoreCheckoutRepository implements CheckoutRepository {
 
       // Phase 2: validation. Throwing here aborts the transaction before
       // anything is written.
-      final saleItems = request.items.expand(_saleItems).toList();
+      // Built first: a cart line without a batch allocation fails here.
+      final sale = saleToFirestore(request);
       final today = DateTime.now();
       final newQuantities = <int>[];
       for (final read in reads) {
@@ -86,16 +87,7 @@ class FirestoreCheckoutRepository implements CheckoutRepository {
         transaction.update(reads[i].ref, {'quantity': newQuantities[i]});
       }
 
-      transaction.set(saleRef, {
-        'receiptNo': request.receiptNo,
-        'createdAt': FieldValue.serverTimestamp(),
-        'soldBy': request.soldBy,
-        'paymentMethod': request.paymentMethod,
-        'total': request.total,
-        'cashReceived': request.cashReceived,
-        'change': request.change,
-        'items': saleItems,
-      });
+      transaction.set(saleRef, sale);
     });
   }
 
@@ -110,25 +102,6 @@ class FirestoreCheckoutRepository implements CheckoutRepository {
       .doc(productId)
       .collection('batches')
       .doc(batchId);
-
-  Iterable<Map<String, Object>> _saleItems(CartItem item) sync* {
-    final allocations = item.allocations;
-    if (allocations.isEmpty) {
-      throw const CheckoutException(
-        'Checkout failed because the cart allocation is missing.',
-      );
-    }
-
-    for (final allocation in allocations) {
-      yield {
-        'productId': item.product.id,
-        'batchId': allocation.batchId,
-        'productName': item.product.name,
-        'quantity': allocation.quantity,
-        'unitPrice': item.unitPrice,
-      };
-    }
-  }
 
   bool _isExpired(DateTime expiryDate, DateTime today) {
     final expiry = DateTime(expiryDate.year, expiryDate.month, expiryDate.day);
@@ -148,4 +121,40 @@ class _BatchRead {
   final DocumentReference<Map<String, dynamic>> ref;
   final DocumentSnapshot<Map<String, dynamic>> snapshot;
   final int requested;
+}
+
+/// The `pharmacies/{pharmacyId}/sales/{saleId}` document for [request],
+/// with the field names from the ERD. Each cart line becomes one item per
+/// batch it was allocated from, since stock is taken per batch.
+///
+/// Throws [CheckoutException] if a cart line has no batch allocation.
+Map<String, Object> saleToFirestore(CheckoutRequest request) => {
+  'receiptNo': request.receiptNo,
+  'createdAt': FieldValue.serverTimestamp(),
+  'soldBy': request.soldBy,
+  'soldByName': request.soldByName,
+  'paymentMethod': request.paymentMethod,
+  'total': request.total,
+  'cashReceived': request.cashReceived,
+  'change': request.change,
+  'items': [for (final item in request.items) ..._saleItems(item)],
+};
+
+Iterable<Map<String, Object>> _saleItems(CartItem item) sync* {
+  final allocations = item.allocations;
+  if (allocations.isEmpty) {
+    throw const CheckoutException(
+      'Checkout failed because the cart allocation is missing.',
+    );
+  }
+
+  for (final allocation in allocations) {
+    yield {
+      'productId': item.product.id,
+      'batchId': allocation.batchId,
+      'productName': item.product.name,
+      'quantity': allocation.quantity,
+      'unitPrice': item.unitPrice,
+    };
+  }
 }

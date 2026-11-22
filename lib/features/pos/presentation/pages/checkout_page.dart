@@ -80,6 +80,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
       saleId: SaleIds.saleId(now),
       receiptNo: SaleIds.receiptNo(now),
       soldBy: seller.soldBy,
+      soldByName: seller.name,
       paymentMethod: form.method,
       cashReceived: form.cashReceived,
     );

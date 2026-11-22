@@ -15,6 +15,7 @@ class CheckoutRequest {
     required this.saleId,
     required this.receiptNo,
     required this.soldBy,
+    this.soldByName = '',
     required this.paymentMethod,
     required this.cashReceived,
     required this.change,
@@ -25,6 +26,10 @@ class CheckoutRequest {
   final String saleId;
   final String receiptNo;
   final String soldBy;
+
+  /// The seller's name at the time of the sale, saved with it (as in the
+  /// ERD) so Sales history can show it without looking the user up.
+  final String soldByName;
   final String paymentMethod;
   final int cashReceived;
   final int change;
