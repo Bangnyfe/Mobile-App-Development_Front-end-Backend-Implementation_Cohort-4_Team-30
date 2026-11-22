@@ -1,7 +1,7 @@
 rules_version = '2';
 
-// Who can read and write what. Deploy with:
-//   firebase deploy --only firestore:rules
+// Who can read and write what. Deploy the rules and indexes with:
+//   firebase deploy --only firestore
 //
 // Everything a pharmacy owns lives under pharmacies/{pharmacyId}, so
 // membership is checked once there. Users join a pharmacy either by
@@ -47,6 +47,17 @@ service cloud.firestore {
       return hasProfile() && me().role == 'owner';
     }
 
+    // Units in stock are whole numbers and never negative.
+    function validQuantity(quantity) {
+      return quantity is int && quantity >= 0;
+    }
+
+    // Money is whole RWF. Products typed in the console skip these rules.
+    function validProduct(data) {
+      return data.name is string && data.name.size() > 0
+        && data.sellingPrice is int && data.sellingPrice >= 0;
+    }
+
     function inviteFor(email) {
       return get(/databases/$(database)/documents/invites/$(email)).data;
     }
@@ -90,9 +101,59 @@ service cloud.firestore {
         && request.resource.data.ownerId == resource.data.ownerId;
       allow delete: if false;
 
-      // Products, batches, sales, stock removals, categories...
-      match /{document=**} {
-        allow read, write: if memberOf(pharmacyId);
+      // Categories: anyone in the pharmacy can add one while registering
+      // a product; only the owner renames or deletes them.
+      match /categories/{categoryId} {
+        allow read: if memberOf(pharmacyId);
+        allow create: if memberOf(pharmacyId)
+          && request.resource.data.name is string
+          && request.resource.data.name.size() > 0;
+        allow update, delete: if ownerOf(pharmacyId);
+      }
+
+      // Products: anyone in the pharmacy can register a product they are
+      // receiving. Only the owner edits details and prices or deletes.
+      match /products/{productId} {
+        allow read: if memberOf(pharmacyId);
+        allow create: if memberOf(pharmacyId)
+          && validProduct(request.resource.data);
+        allow update: if ownerOf(pharmacyId)
+          && validProduct(request.resource.data);
+        allow delete: if ownerOf(pharmacyId);
+
+        // Batches: anyone in the pharmacy adds batches (Add stock) and
+        // lowers their quantity (selling, removing stock). Pharmacists may
+        // change nothing else; only the owner edits or deletes a batch.
+        match /batches/{batchId} {
+          allow read: if memberOf(pharmacyId);
+          allow create: if memberOf(pharmacyId)
+            && request.resource.data.pharmacyId == pharmacyId
+            && request.resource.data.productId == productId
+            && validQuantity(request.resource.data.quantity);
+          allow update: if memberOf(pharmacyId)
+            && validQuantity(request.resource.data.quantity)
+            && (ownerOf(pharmacyId)
+              || request.resource.data.diff(resource.data).affectedKeys()
+                .hasOnly(['quantity']));
+          allow delete: if ownerOf(pharmacyId);
+        }
+      }
+
+      // Sales are written once, by the seller, and never changed.
+      match /sales/{saleId} {
+        allow read: if memberOf(pharmacyId);
+        allow create: if memberOf(pharmacyId)
+          && request.resource.data.soldBy == request.auth.uid;
+        allow update, delete: if false;
+      }
+
+      // Stock removals are a record of what left the shelf, so they are
+      // never changed either.
+      match /stock_removals/{removalId} {
+        allow read: if memberOf(pharmacyId);
+        allow create: if memberOf(pharmacyId)
+          && request.resource.data.removedBy == request.auth.uid;
+        allow update, delete: if false;
       }
     }
 
