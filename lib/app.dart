@@ -18,6 +18,8 @@ import 'features/notifications/presentation/cubit/notifications_cubit.dart';
 import 'features/pos/presentation/cubit/cart_cubit.dart';
 import 'features/sales/data/fake_sales_repository.dart';
 import 'features/sales/domain/repositories/sales_repository.dart';
+import 'features/scanner/data/fake_product_lookup_repository.dart';
+import 'features/scanner/domain/repositories/product_lookup_repository.dart';
 import 'features/settings/data/fake_account_repository.dart';
 import 'features/settings/domain/repositories/account_repository.dart';
 import 'features/settings/domain/repositories/settings_repository.dart';
@@ -48,6 +50,7 @@ class PharmacyApp extends StatelessWidget {
     this.accountRepository,
     this.salesRepository,
     this.stockRemovalRepository,
+    this.productLookupRepository,
     this.stockAlertsRepository,
     this.seenAlertsRepository,
     this.inviteRepository,
@@ -74,6 +77,12 @@ class PharmacyApp extends StatelessWidget {
 
   /// Defaults to sample stock until the Firestore one is passed in.
   final StockRemovalRepository? stockRemovalRepository;
+
+  /// Finds scanned barcodes. Defaults to sample products until products
+  /// can be added to Firestore; then `main.dart` passes a
+  /// `CurrentPharmacyProductLookupRepository` using
+  /// `FirestoreProductLookupRepository`.
+  final ProductLookupRepository? productLookupRepository;
 
   /// Defaults to sample stock until auth gives us the pharmacy ID and the
   /// data layer (products and batches) is merged.
@@ -130,6 +139,10 @@ class PharmacyApp extends StatelessWidget {
         ),
         RepositoryProvider<StockRemovalRepository>(
           create: (_) => stockRemovalRepository ?? FakeStockRemovalRepository(),
+        ),
+        RepositoryProvider<ProductLookupRepository>(
+          create: (_) =>
+              productLookupRepository ?? FakeProductLookupRepository(),
         ),
         RepositoryProvider<StockAlertsRepository>(
           create: (_) => stockAlertsRepository ?? FakeStockAlertsRepository(),
