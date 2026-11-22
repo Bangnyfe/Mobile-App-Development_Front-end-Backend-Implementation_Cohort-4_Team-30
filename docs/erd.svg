@@ -1,0 +1,546 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2040" height="1570" viewBox="0 0 2040 1570">
+<rect width="2040" height="1570" fill="#ffffff"/>
+<text x="60" y="48" font-size="24" font-weight="bold" fill="#111827" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >Pharmacy Inventory &amp; POS: Firestore data model</text>
+<rect x="30" y="500" width="1980" height="930" rx="14" fill="#f8fafc" stroke="#0f766e" stroke-width="2" stroke-dasharray="10 6"/>
+<text x="60" y="536" font-size="16" font-weight="bold" fill="#0f766e" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >Inside each pharmacy: subcollections of pharmacies/{pharmacyId}</text>
+<text x="60" y="556" font-size="12" font-weight="normal" fill="#475569" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >“…/” below stands for pharmacies/{pharmacyId}/</text>
+<rect x="60" y="110" width="560" height="312" rx="8" fill="#ffffff" stroke="#b45309" stroke-width="2"/>
+<path d="M60 118 a8 8 0 0 1 8 -8 h544 a8 8 0 0 1 8 8 v44 h-560 z" fill="#b45309"/>
+<text x="74" y="133" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >INVITES</text>
+<text x="74" y="152" font-size="12" font-weight="normal" fill="#ffffffdd" text-anchor="start" font-family="Consolas, Menlo, monospace" >invites/{email}</text>
+<text x="72" y="179.5" font-size="11" font-weight="bold" fill="#b45309" text-anchor="start" font-family="Consolas, Menlo, monospace" >PK</text>
+<text x="106" y="179.5" font-size="13" font-weight="bold" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" text-decoration="underline">email</text>
+<text x="292" y="179.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="390" y="179.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >lowercased, used as doc id</text>
+<rect x="62" y="188" width="556" height="26" fill="#f3f4f6"/>
+<line x1="60" y1="188" x2="620" y2="188" stroke="#e5e7eb"/>
+<text x="72" y="205.5" font-size="11" font-weight="bold" fill="#6b7280" text-anchor="start" font-family="Consolas, Menlo, monospace" >FK</text>
+<text x="106" y="205.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >pharmacyId</text>
+<text x="292" y="205.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="390" y="205.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >→ pharmacies</text>
+<line x1="60" y1="214" x2="620" y2="214" stroke="#e5e7eb"/>
+<text x="106" y="231.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >pharmacyName</text>
+<text x="292" y="231.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="390" y="231.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >snapshot</text>
+<rect x="62" y="240" width="556" height="26" fill="#f3f4f6"/>
+<line x1="60" y1="240" x2="620" y2="240" stroke="#e5e7eb"/>
+<text x="106" y="257.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >role</text>
+<text x="292" y="257.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="390" y="257.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >always pharmacist</text>
+<line x1="60" y1="266" x2="620" y2="266" stroke="#e5e7eb"/>
+<text x="72" y="283.5" font-size="11" font-weight="bold" fill="#6b7280" text-anchor="start" font-family="Consolas, Menlo, monospace" >FK</text>
+<text x="106" y="283.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >invitedBy</text>
+<text x="292" y="283.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="390" y="283.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >→ users (the owner)</text>
+<rect x="62" y="292" width="556" height="26" fill="#f3f4f6"/>
+<line x1="60" y1="292" x2="620" y2="292" stroke="#e5e7eb"/>
+<text x="106" y="309.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >invitedByName</text>
+<text x="292" y="309.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="390" y="309.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >snapshot</text>
+<line x1="60" y1="318" x2="620" y2="318" stroke="#e5e7eb"/>
+<text x="106" y="335.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >status</text>
+<text x="292" y="335.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="390" y="335.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >pending | accepted</text>
+<rect x="62" y="344" width="556" height="26" fill="#f3f4f6"/>
+<line x1="60" y1="344" x2="620" y2="344" stroke="#e5e7eb"/>
+<text x="72" y="361.5" font-size="11" font-weight="bold" fill="#6b7280" text-anchor="start" font-family="Consolas, Menlo, monospace" >FK</text>
+<text x="106" y="361.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >acceptedBy</text>
+<text x="292" y="361.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="390" y="361.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >→ users, set on join</text>
+<line x1="60" y1="370" x2="620" y2="370" stroke="#e5e7eb"/>
+<text x="106" y="387.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >acceptedAt</text>
+<text x="292" y="387.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >timestamp</text>
+<text x="390" y="387.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >set on join</text>
+<rect x="62" y="396" width="556" height="26" fill="#f3f4f6"/>
+<line x1="60" y1="396" x2="620" y2="396" stroke="#e5e7eb"/>
+<text x="106" y="413.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >createdAt</text>
+<text x="292" y="413.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >timestamp</text>
+<rect x="740" y="110" width="560" height="208" rx="8" fill="#ffffff" stroke="#9333ea" stroke-width="2"/>
+<path d="M740 118 a8 8 0 0 1 8 -8 h544 a8 8 0 0 1 8 8 v44 h-560 z" fill="#9333ea"/>
+<text x="754" y="133" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >USERS</text>
+<text x="754" y="152" font-size="12" font-weight="normal" fill="#ffffffdd" text-anchor="start" font-family="Consolas, Menlo, monospace" >users/{uid}</text>
+<text x="752" y="179.5" font-size="11" font-weight="bold" fill="#9333ea" text-anchor="start" font-family="Consolas, Menlo, monospace" >PK</text>
+<text x="786" y="179.5" font-size="13" font-weight="bold" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" text-decoration="underline">uid</text>
+<text x="972" y="179.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1070" y="179.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >Firebase Auth uid</text>
+<rect x="742" y="188" width="556" height="26" fill="#f3f4f6"/>
+<line x1="740" y1="188" x2="1300" y2="188" stroke="#e5e7eb"/>
+<text x="786" y="205.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >name</text>
+<text x="972" y="205.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<line x1="740" y1="214" x2="1300" y2="214" stroke="#e5e7eb"/>
+<text x="786" y="231.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >email</text>
+<text x="972" y="231.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1070" y="231.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >sign-in email</text>
+<rect x="742" y="240" width="556" height="26" fill="#f3f4f6"/>
+<line x1="740" y1="240" x2="1300" y2="240" stroke="#e5e7eb"/>
+<text x="786" y="257.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >role</text>
+<text x="972" y="257.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1070" y="257.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >owner | pharmacist</text>
+<line x1="740" y1="266" x2="1300" y2="266" stroke="#e5e7eb"/>
+<text x="752" y="283.5" font-size="11" font-weight="bold" fill="#6b7280" text-anchor="start" font-family="Consolas, Menlo, monospace" >FK</text>
+<text x="786" y="283.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >pharmacyId</text>
+<text x="972" y="283.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1070" y="283.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >→ pharmacies</text>
+<rect x="742" y="292" width="556" height="26" fill="#f3f4f6"/>
+<line x1="740" y1="292" x2="1300" y2="292" stroke="#e5e7eb"/>
+<text x="786" y="309.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >createdAt</text>
+<text x="972" y="309.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >timestamp</text>
+<rect x="1420" y="110" width="560" height="338" rx="8" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+<path d="M1420 118 a8 8 0 0 1 8 -8 h544 a8 8 0 0 1 8 8 v44 h-560 z" fill="#0f766e"/>
+<text x="1434" y="133" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >PHARMACIES</text>
+<text x="1434" y="152" font-size="12" font-weight="normal" fill="#ffffffdd" text-anchor="start" font-family="Consolas, Menlo, monospace" >pharmacies/{pharmacyId}</text>
+<text x="1432" y="179.5" font-size="11" font-weight="bold" fill="#0f766e" text-anchor="start" font-family="Consolas, Menlo, monospace" >PK</text>
+<text x="1466" y="179.5" font-size="13" font-weight="bold" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" text-decoration="underline">pharmacyId</text>
+<text x="1652" y="179.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1750" y="179.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >auto id</text>
+<rect x="1422" y="188" width="556" height="26" fill="#f3f4f6"/>
+<line x1="1420" y1="188" x2="1980" y2="188" stroke="#e5e7eb"/>
+<text x="1466" y="205.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >name</text>
+<text x="1652" y="205.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<line x1="1420" y1="214" x2="1980" y2="214" stroke="#e5e7eb"/>
+<text x="1466" y="231.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >district</text>
+<text x="1652" y="231.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<rect x="1422" y="240" width="556" height="26" fill="#f3f4f6"/>
+<line x1="1420" y1="240" x2="1980" y2="240" stroke="#e5e7eb"/>
+<text x="1466" y="257.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >city</text>
+<text x="1652" y="257.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<line x1="1420" y1="266" x2="1980" y2="266" stroke="#e5e7eb"/>
+<text x="1466" y="283.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >phone</text>
+<text x="1652" y="283.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1750" y="283.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >optional</text>
+<rect x="1422" y="292" width="556" height="26" fill="#f3f4f6"/>
+<line x1="1420" y1="292" x2="1980" y2="292" stroke="#e5e7eb"/>
+<text x="1466" y="309.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >address</text>
+<text x="1652" y="309.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1750" y="309.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >optional</text>
+<line x1="1420" y1="318" x2="1980" y2="318" stroke="#e5e7eb"/>
+<text x="1432" y="335.5" font-size="11" font-weight="bold" fill="#6b7280" text-anchor="start" font-family="Consolas, Menlo, monospace" >FK</text>
+<text x="1466" y="335.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >ownerId</text>
+<text x="1652" y="335.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1750" y="335.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >→ users</text>
+<rect x="1422" y="344" width="556" height="26" fill="#f3f4f6"/>
+<line x1="1420" y1="344" x2="1980" y2="344" stroke="#e5e7eb"/>
+<text x="1466" y="361.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >nextReceiptNo</text>
+<text x="1652" y="361.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >int</text>
+<text x="1750" y="361.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >counter, starts at 1</text>
+<line x1="1420" y1="370" x2="1980" y2="370" stroke="#e5e7eb"/>
+<text x="1466" y="387.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >defaultReorderLevel</text>
+<text x="1652" y="387.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >int</text>
+<text x="1750" y="387.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >default 20 (1–1000)</text>
+<rect x="1422" y="396" width="556" height="26" fill="#f3f4f6"/>
+<line x1="1420" y1="396" x2="1980" y2="396" stroke="#e5e7eb"/>
+<text x="1466" y="413.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >expiryAlertDays</text>
+<text x="1652" y="413.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >int</text>
+<text x="1750" y="413.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >default 90 (1–365)</text>
+<line x1="1420" y1="422" x2="1980" y2="422" stroke="#e5e7eb"/>
+<text x="1466" y="439.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >createdAt</text>
+<text x="1652" y="439.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >timestamp</text>
+<rect x="60" y="610" width="560" height="312" rx="8" fill="#ffffff" stroke="#15803d" stroke-width="2"/>
+<path d="M60 618 a8 8 0 0 1 8 -8 h544 a8 8 0 0 1 8 8 v44 h-560 z" fill="#15803d"/>
+<text x="74" y="633" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >SALES</text>
+<text x="74" y="652" font-size="12" font-weight="normal" fill="#ffffffdd" text-anchor="start" font-family="Consolas, Menlo, monospace" >…/sales/{saleId}</text>
+<text x="72" y="679.5" font-size="11" font-weight="bold" fill="#15803d" text-anchor="start" font-family="Consolas, Menlo, monospace" >PK</text>
+<text x="106" y="679.5" font-size="13" font-weight="bold" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" text-decoration="underline">saleId</text>
+<text x="292" y="679.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="390" y="679.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >auto id</text>
+<rect x="62" y="688" width="556" height="26" fill="#f3f4f6"/>
+<line x1="60" y1="688" x2="620" y2="688" stroke="#e5e7eb"/>
+<text x="106" y="705.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >receiptNo</text>
+<text x="292" y="705.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >int</text>
+<text x="390" y="705.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >taken from nextReceiptNo</text>
+<line x1="60" y1="714" x2="620" y2="714" stroke="#e5e7eb"/>
+<text x="106" y="731.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >createdAt</text>
+<text x="292" y="731.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >timestamp</text>
+<rect x="62" y="740" width="556" height="26" fill="#f3f4f6"/>
+<line x1="60" y1="740" x2="620" y2="740" stroke="#e5e7eb"/>
+<text x="72" y="757.5" font-size="11" font-weight="bold" fill="#6b7280" text-anchor="start" font-family="Consolas, Menlo, monospace" >FK</text>
+<text x="106" y="757.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >soldBy</text>
+<text x="292" y="757.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="390" y="757.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >→ users</text>
+<line x1="60" y1="766" x2="620" y2="766" stroke="#e5e7eb"/>
+<text x="106" y="783.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >soldByName</text>
+<text x="292" y="783.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="390" y="783.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >snapshot</text>
+<rect x="62" y="792" width="556" height="26" fill="#f3f4f6"/>
+<line x1="60" y1="792" x2="620" y2="792" stroke="#e5e7eb"/>
+<text x="106" y="809.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >paymentMethod</text>
+<text x="292" y="809.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="390" y="809.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >label only, no payment taken</text>
+<line x1="60" y1="818" x2="620" y2="818" stroke="#e5e7eb"/>
+<text x="106" y="835.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >total</text>
+<text x="292" y="835.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >int</text>
+<text x="390" y="835.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >RWF</text>
+<rect x="62" y="844" width="556" height="26" fill="#f3f4f6"/>
+<line x1="60" y1="844" x2="620" y2="844" stroke="#e5e7eb"/>
+<text x="106" y="861.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >cashReceived</text>
+<text x="292" y="861.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >int</text>
+<text x="390" y="861.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >cash sales only</text>
+<line x1="60" y1="870" x2="620" y2="870" stroke="#e5e7eb"/>
+<text x="106" y="887.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >change</text>
+<text x="292" y="887.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >int</text>
+<text x="390" y="887.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >RWF</text>
+<rect x="62" y="896" width="556" height="26" fill="#f3f4f6"/>
+<line x1="60" y1="896" x2="620" y2="896" stroke="#e5e7eb"/>
+<text x="106" y="913.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >items</text>
+<text x="292" y="913.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >array</text>
+<text x="390" y="913.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >SALE ITEM, embedded</text>
+<rect x="740" y="610" width="560" height="312" rx="8" fill="#ffffff" stroke="#0369a1" stroke-width="2"/>
+<path d="M740 618 a8 8 0 0 1 8 -8 h544 a8 8 0 0 1 8 8 v44 h-560 z" fill="#0369a1"/>
+<text x="754" y="633" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >BATCHES</text>
+<text x="754" y="652" font-size="12" font-weight="normal" fill="#ffffffdd" text-anchor="start" font-family="Consolas, Menlo, monospace" >…/products/{productId}/batches/{batchId}</text>
+<text x="752" y="679.5" font-size="11" font-weight="bold" fill="#0369a1" text-anchor="start" font-family="Consolas, Menlo, monospace" >PK</text>
+<text x="786" y="679.5" font-size="13" font-weight="bold" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" text-decoration="underline">batchId</text>
+<text x="972" y="679.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1070" y="679.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >auto id</text>
+<rect x="742" y="688" width="556" height="26" fill="#f3f4f6"/>
+<line x1="740" y1="688" x2="1300" y2="688" stroke="#e5e7eb"/>
+<text x="786" y="705.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >batchNumber</text>
+<text x="972" y="705.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1070" y="705.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >printed on the pack</text>
+<line x1="740" y1="714" x2="1300" y2="714" stroke="#e5e7eb"/>
+<text x="786" y="731.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >expiryDate</text>
+<text x="972" y="731.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >timestamp</text>
+<rect x="742" y="740" width="556" height="26" fill="#f3f4f6"/>
+<line x1="740" y1="740" x2="1300" y2="740" stroke="#e5e7eb"/>
+<text x="786" y="757.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >quantity</text>
+<text x="972" y="757.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >int</text>
+<text x="1070" y="757.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >units in stock</text>
+<line x1="740" y1="766" x2="1300" y2="766" stroke="#e5e7eb"/>
+<text x="786" y="783.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >costPrice</text>
+<text x="972" y="783.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >int</text>
+<text x="1070" y="783.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >RWF per unit</text>
+<rect x="742" y="792" width="556" height="26" fill="#f3f4f6"/>
+<line x1="740" y1="792" x2="1300" y2="792" stroke="#e5e7eb"/>
+<text x="786" y="809.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >receivedAt</text>
+<text x="972" y="809.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >timestamp</text>
+<line x1="740" y1="818" x2="1300" y2="818" stroke="#e5e7eb"/>
+<text x="752" y="835.5" font-size="11" font-weight="bold" fill="#6b7280" text-anchor="start" font-family="Consolas, Menlo, monospace" >FK</text>
+<text x="786" y="835.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >receivedBy</text>
+<text x="972" y="835.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1070" y="835.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >→ users</text>
+<rect x="742" y="844" width="556" height="26" fill="#f3f4f6"/>
+<line x1="740" y1="844" x2="1300" y2="844" stroke="#e5e7eb"/>
+<text x="786" y="861.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >receivedByName</text>
+<text x="972" y="861.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1070" y="861.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >snapshot</text>
+<line x1="740" y1="870" x2="1300" y2="870" stroke="#e5e7eb"/>
+<text x="752" y="887.5" font-size="11" font-weight="bold" fill="#6b7280" text-anchor="start" font-family="Consolas, Menlo, monospace" >FK</text>
+<text x="786" y="887.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >pharmacyId</text>
+<text x="972" y="887.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1070" y="887.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >for cross-product queries</text>
+<rect x="742" y="896" width="556" height="26" fill="#f3f4f6"/>
+<line x1="740" y1="896" x2="1300" y2="896" stroke="#e5e7eb"/>
+<text x="752" y="913.5" font-size="11" font-weight="bold" fill="#6b7280" text-anchor="start" font-family="Consolas, Menlo, monospace" >FK</text>
+<text x="786" y="913.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >productId</text>
+<text x="972" y="913.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1070" y="913.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >parent product</text>
+<rect x="1420" y="610" width="560" height="364" rx="8" fill="#ffffff" stroke="#6d28d9" stroke-width="2"/>
+<path d="M1420 618 a8 8 0 0 1 8 -8 h544 a8 8 0 0 1 8 8 v44 h-560 z" fill="#6d28d9"/>
+<text x="1434" y="633" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >STOCK_REMOVALS</text>
+<text x="1434" y="652" font-size="12" font-weight="normal" fill="#ffffffdd" text-anchor="start" font-family="Consolas, Menlo, monospace" >…/stock_removals/{removalId}</text>
+<text x="1432" y="679.5" font-size="11" font-weight="bold" fill="#6d28d9" text-anchor="start" font-family="Consolas, Menlo, monospace" >PK</text>
+<text x="1466" y="679.5" font-size="13" font-weight="bold" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" text-decoration="underline">removalId</text>
+<text x="1652" y="679.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1750" y="679.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >auto id</text>
+<rect x="1422" y="688" width="556" height="26" fill="#f3f4f6"/>
+<line x1="1420" y1="688" x2="1980" y2="688" stroke="#e5e7eb"/>
+<text x="1432" y="705.5" font-size="11" font-weight="bold" fill="#6b7280" text-anchor="start" font-family="Consolas, Menlo, monospace" >FK</text>
+<text x="1466" y="705.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >productId</text>
+<text x="1652" y="705.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1750" y="705.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >→ products</text>
+<line x1="1420" y1="714" x2="1980" y2="714" stroke="#e5e7eb"/>
+<text x="1432" y="731.5" font-size="11" font-weight="bold" fill="#6b7280" text-anchor="start" font-family="Consolas, Menlo, monospace" >FK</text>
+<text x="1466" y="731.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >batchId</text>
+<text x="1652" y="731.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1750" y="731.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >→ batches</text>
+<rect x="1422" y="740" width="556" height="26" fill="#f3f4f6"/>
+<line x1="1420" y1="740" x2="1980" y2="740" stroke="#e5e7eb"/>
+<text x="1466" y="757.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >productName</text>
+<text x="1652" y="757.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1750" y="757.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >snapshot</text>
+<line x1="1420" y1="766" x2="1980" y2="766" stroke="#e5e7eb"/>
+<text x="1466" y="783.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >batchNumber</text>
+<text x="1652" y="783.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1750" y="783.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >snapshot</text>
+<rect x="1422" y="792" width="556" height="26" fill="#f3f4f6"/>
+<line x1="1420" y1="792" x2="1980" y2="792" stroke="#e5e7eb"/>
+<text x="1466" y="809.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >quantity</text>
+<text x="1652" y="809.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >int</text>
+<text x="1750" y="809.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >units removed</text>
+<line x1="1420" y1="818" x2="1980" y2="818" stroke="#e5e7eb"/>
+<text x="1466" y="835.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >reason</text>
+<text x="1652" y="835.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1750" y="835.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >expired, damaged, …</text>
+<rect x="1422" y="844" width="556" height="26" fill="#f3f4f6"/>
+<line x1="1420" y1="844" x2="1980" y2="844" stroke="#e5e7eb"/>
+<text x="1466" y="861.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >note</text>
+<text x="1652" y="861.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1750" y="861.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >optional</text>
+<line x1="1420" y1="870" x2="1980" y2="870" stroke="#e5e7eb"/>
+<text x="1466" y="887.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >costValue</text>
+<text x="1652" y="887.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >int</text>
+<text x="1750" y="887.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >RWF lost</text>
+<rect x="1422" y="896" width="556" height="26" fill="#f3f4f6"/>
+<line x1="1420" y1="896" x2="1980" y2="896" stroke="#e5e7eb"/>
+<text x="1432" y="913.5" font-size="11" font-weight="bold" fill="#6b7280" text-anchor="start" font-family="Consolas, Menlo, monospace" >FK</text>
+<text x="1466" y="913.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >removedBy</text>
+<text x="1652" y="913.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1750" y="913.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >→ users</text>
+<line x1="1420" y1="922" x2="1980" y2="922" stroke="#e5e7eb"/>
+<text x="1466" y="939.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >removedByName</text>
+<text x="1652" y="939.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1750" y="939.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >snapshot</text>
+<rect x="1422" y="948" width="556" height="26" fill="#f3f4f6"/>
+<line x1="1420" y1="948" x2="1980" y2="948" stroke="#e5e7eb"/>
+<text x="1466" y="965.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >createdAt</text>
+<text x="1652" y="965.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >timestamp</text>
+<rect x="60" y="1060" width="560" height="182" rx="8" fill="#ffffff" stroke="#15803d" stroke-width="2" stroke-dasharray="7 5"/>
+<path d="M60 1068 a8 8 0 0 1 8 -8 h544 a8 8 0 0 1 8 8 v44 h-560 z" fill="#15803d"/>
+<text x="74" y="1083" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >SALE ITEM</text>
+<text x="74" y="1102" font-size="12" font-weight="normal" fill="#ffffffdd" text-anchor="start" font-family="Consolas, Menlo, monospace" >embedded in sales.items[ ]</text>
+<text x="72" y="1129.5" font-size="11" font-weight="bold" fill="#6b7280" text-anchor="start" font-family="Consolas, Menlo, monospace" >FK</text>
+<text x="106" y="1129.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >productId</text>
+<text x="292" y="1129.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="390" y="1129.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >→ products</text>
+<rect x="62" y="1138" width="556" height="26" fill="#f3f4f6"/>
+<line x1="60" y1="1138" x2="620" y2="1138" stroke="#e5e7eb"/>
+<text x="72" y="1155.5" font-size="11" font-weight="bold" fill="#6b7280" text-anchor="start" font-family="Consolas, Menlo, monospace" >FK</text>
+<text x="106" y="1155.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >batchId</text>
+<text x="292" y="1155.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="390" y="1155.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >→ batches</text>
+<line x1="60" y1="1164" x2="620" y2="1164" stroke="#e5e7eb"/>
+<text x="106" y="1181.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >productName</text>
+<text x="292" y="1181.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="390" y="1181.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >snapshot</text>
+<rect x="62" y="1190" width="556" height="26" fill="#f3f4f6"/>
+<line x1="60" y1="1190" x2="620" y2="1190" stroke="#e5e7eb"/>
+<text x="106" y="1207.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >quantity</text>
+<text x="292" y="1207.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >int</text>
+<line x1="60" y1="1216" x2="620" y2="1216" stroke="#e5e7eb"/>
+<text x="106" y="1233.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >unitPrice</text>
+<text x="292" y="1233.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >int</text>
+<text x="390" y="1233.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >RWF at time of sale</text>
+<rect x="740" y="1060" width="560" height="312" rx="8" fill="#ffffff" stroke="#c2410c" stroke-width="2"/>
+<path d="M740 1068 a8 8 0 0 1 8 -8 h544 a8 8 0 0 1 8 8 v44 h-560 z" fill="#c2410c"/>
+<text x="754" y="1083" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >PRODUCTS</text>
+<text x="754" y="1102" font-size="12" font-weight="normal" fill="#ffffffdd" text-anchor="start" font-family="Consolas, Menlo, monospace" >…/products/{productId}</text>
+<text x="752" y="1129.5" font-size="11" font-weight="bold" fill="#c2410c" text-anchor="start" font-family="Consolas, Menlo, monospace" >PK</text>
+<text x="786" y="1129.5" font-size="13" font-weight="bold" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" text-decoration="underline">productId</text>
+<text x="972" y="1129.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1070" y="1129.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >auto id</text>
+<rect x="742" y="1138" width="556" height="26" fill="#f3f4f6"/>
+<line x1="740" y1="1138" x2="1300" y2="1138" stroke="#e5e7eb"/>
+<text x="786" y="1155.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >barcode</text>
+<text x="972" y="1155.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1070" y="1155.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >GTIN, unique per pharmacy</text>
+<line x1="740" y1="1164" x2="1300" y2="1164" stroke="#e5e7eb"/>
+<text x="786" y="1181.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >name</text>
+<text x="972" y="1181.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<rect x="742" y="1190" width="556" height="26" fill="#f3f4f6"/>
+<line x1="740" y1="1190" x2="1300" y2="1190" stroke="#e5e7eb"/>
+<text x="786" y="1207.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >form</text>
+<text x="972" y="1207.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1070" y="1207.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >tablet, syrup, …</text>
+<line x1="740" y1="1216" x2="1300" y2="1216" stroke="#e5e7eb"/>
+<text x="786" y="1233.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >packSize</text>
+<text x="972" y="1233.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1070" y="1233.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >e.g. 10 × 10</text>
+<rect x="742" y="1242" width="556" height="26" fill="#f3f4f6"/>
+<line x1="740" y1="1242" x2="1300" y2="1242" stroke="#e5e7eb"/>
+<text x="752" y="1259.5" font-size="11" font-weight="bold" fill="#6b7280" text-anchor="start" font-family="Consolas, Menlo, monospace" >FK</text>
+<text x="786" y="1259.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >categoryId</text>
+<text x="972" y="1259.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1070" y="1259.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >→ categories</text>
+<line x1="740" y1="1268" x2="1300" y2="1268" stroke="#e5e7eb"/>
+<text x="786" y="1285.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >sellingPrice</text>
+<text x="972" y="1285.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >int</text>
+<text x="1070" y="1285.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >RWF per unit</text>
+<rect x="742" y="1294" width="556" height="26" fill="#f3f4f6"/>
+<line x1="740" y1="1294" x2="1300" y2="1294" stroke="#e5e7eb"/>
+<text x="786" y="1311.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >reorderLevel</text>
+<text x="972" y="1311.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >int</text>
+<text x="1070" y="1311.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >null = pharmacy default</text>
+<line x1="740" y1="1320" x2="1300" y2="1320" stroke="#e5e7eb"/>
+<text x="786" y="1337.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >createdAt</text>
+<text x="972" y="1337.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >timestamp</text>
+<rect x="742" y="1346" width="556" height="26" fill="#f3f4f6"/>
+<line x1="740" y1="1346" x2="1300" y2="1346" stroke="#e5e7eb"/>
+<text x="786" y="1363.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >updatedAt</text>
+<text x="972" y="1363.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >timestamp</text>
+<rect x="1420" y="1060" width="560" height="130" rx="8" fill="#ffffff" stroke="#be123c" stroke-width="2"/>
+<path d="M1420 1068 a8 8 0 0 1 8 -8 h544 a8 8 0 0 1 8 8 v44 h-560 z" fill="#be123c"/>
+<text x="1434" y="1083" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >CATEGORIES</text>
+<text x="1434" y="1102" font-size="12" font-weight="normal" fill="#ffffffdd" text-anchor="start" font-family="Consolas, Menlo, monospace" >…/categories/{categoryId}</text>
+<text x="1432" y="1129.5" font-size="11" font-weight="bold" fill="#be123c" text-anchor="start" font-family="Consolas, Menlo, monospace" >PK</text>
+<text x="1466" y="1129.5" font-size="13" font-weight="bold" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" text-decoration="underline">categoryId</text>
+<text x="1652" y="1129.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<text x="1750" y="1129.5" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >auto id</text>
+<rect x="1422" y="1138" width="556" height="26" fill="#f3f4f6"/>
+<line x1="1420" y1="1138" x2="1980" y2="1138" stroke="#e5e7eb"/>
+<text x="1466" y="1155.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >name</text>
+<text x="1652" y="1155.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >string</text>
+<line x1="1420" y1="1164" x2="1980" y2="1164" stroke="#e5e7eb"/>
+<text x="1466" y="1181.5" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Consolas, Menlo, monospace" >createdAt</text>
+<text x="1652" y="1181.5" font-size="12" font-weight="normal" fill="#2563eb" text-anchor="start" font-family="Consolas, Menlo, monospace" >timestamp</text>
+<path d="M620 200 L740 200" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="636.0" y1="200.0" x2="620.0" y2="190.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="636.0" y1="200.0" x2="620.0" y2="200.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="636.0" y1="200.0" x2="620.0" y2="210.0" stroke="#374151" stroke-width="2" fill="none"/>
+<circle cx="645.0" cy="200.0" r="5.5" stroke="#374151" stroke-width="2" fill="#ffffff"/>
+<line x1="731.0" y1="191.0" x2="731.0" y2="209.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="724.0" y1="191.0" x2="724.0" y2="209.0" stroke="#374151" stroke-width="2" fill="none"/>
+<rect x="656.0" y="178" width="48.0" height="20" rx="4" fill="#ffffff" opacity="0.92"/>
+<text x="680" y="192" font-size="13" font-weight="normal" fill="#111827" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-style="italic">sends</text>
+<path d="M340 110 L340 80 L1700 80 L1700 110" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="340.0" y1="94.0" x2="330.0" y2="110.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="340.0" y1="94.0" x2="340.0" y2="110.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="340.0" y1="94.0" x2="350.0" y2="110.0" stroke="#374151" stroke-width="2" fill="none"/>
+<circle cx="340.0" cy="85.0" r="5.5" stroke="#374151" stroke-width="2" fill="#ffffff"/>
+<line x1="1709.0" y1="101.0" x2="1691.0" y2="101.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1709.0" y1="94.0" x2="1691.0" y2="94.0" stroke="#374151" stroke-width="2" fill="none"/>
+<rect x="992.4" y="71" width="55.2" height="20" rx="4" fill="#ffffff" opacity="0.92"/>
+<text x="1020" y="85" font-size="13" font-weight="normal" fill="#111827" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-style="italic">is for</text>
+<path d="M1300 170 L1420 170" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1316.0" y1="170.0" x2="1300.0" y2="160.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1316.0" y1="170.0" x2="1300.0" y2="170.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1316.0" y1="170.0" x2="1300.0" y2="180.0" stroke="#374151" stroke-width="2" fill="none"/>
+<circle cx="1325.0" cy="170.0" r="5.5" stroke="#374151" stroke-width="2" fill="#ffffff"/>
+<line x1="1411.0" y1="161.0" x2="1411.0" y2="179.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1404.0" y1="161.0" x2="1404.0" y2="179.0" stroke="#374151" stroke-width="2" fill="none"/>
+<rect x="1325.2" y="148" width="69.6" height="20" rx="4" fill="#ffffff" opacity="0.92"/>
+<text x="1360" y="162" font-size="13" font-weight="normal" fill="#111827" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-style="italic">works at</text>
+<path d="M1300 262 L1420 262" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1309.0" y1="271.0" x2="1309.0" y2="253.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1316.0" y1="271.0" x2="1316.0" y2="253.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1411.0" y1="253.0" x2="1411.0" y2="271.0" stroke="#374151" stroke-width="2" fill="none"/>
+<circle cx="1397.0" cy="262.0" r="5.5" stroke="#374151" stroke-width="2" fill="#ffffff"/>
+<rect x="1339.6" y="240" width="40.8" height="20" rx="4" fill="#ffffff" opacity="0.92"/>
+<text x="1360" y="254" font-size="13" font-weight="normal" fill="#111827" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-style="italic">owns</text>
+<path d="M1840 448 L1840 500" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1831.0" y1="457.0" x2="1849.0" y2="457.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1831.0" y1="464.0" x2="1849.0" y2="464.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1840.0" y1="484.0" x2="1830.0" y2="500.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1840.0" y1="484.0" x2="1840.0" y2="500.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1840.0" y1="484.0" x2="1850.0" y2="500.0" stroke="#374151" stroke-width="2" fill="none"/>
+<circle cx="1840.0" cy="475.0" r="5.5" stroke="#374151" stroke-width="2" fill="#ffffff"/>
+<rect x="1850" y="466" width="69.6" height="20" rx="4" fill="#ffffff" opacity="0.92"/>
+<text x="1856" y="480" font-size="13" font-weight="normal" fill="#111827" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" font-style="italic">contains</text>
+<path d="M800 318 L800 576 L340 576 L340 610" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="791.0" y1="327.0" x2="809.0" y2="327.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="791.0" y1="334.0" x2="809.0" y2="334.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="340.0" y1="594.0" x2="330.0" y2="610.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="340.0" y1="594.0" x2="340.0" y2="610.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="340.0" y1="594.0" x2="350.0" y2="610.0" stroke="#374151" stroke-width="2" fill="none"/>
+<circle cx="340.0" cy="585.0" r="5.5" stroke="#374151" stroke-width="2" fill="#ffffff"/>
+<rect x="546.0" y="567" width="48.0" height="20" rx="4" fill="#ffffff" opacity="0.92"/>
+<text x="570" y="581" font-size="13" font-weight="normal" fill="#111827" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-style="italic">sells</text>
+<path d="M1020 318 L1020 610" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1011.0" y1="327.0" x2="1029.0" y2="327.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1011.0" y1="334.0" x2="1029.0" y2="334.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1020.0" y1="594.0" x2="1010.0" y2="610.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1020.0" y1="594.0" x2="1020.0" y2="610.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1020.0" y1="594.0" x2="1030.0" y2="610.0" stroke="#374151" stroke-width="2" fill="none"/>
+<circle cx="1020.0" cy="585.0" r="5.5" stroke="#374151" stroke-width="2" fill="#ffffff"/>
+<rect x="1030" y="456" width="69.6" height="20" rx="4" fill="#ffffff" opacity="0.92"/>
+<text x="1036" y="470" font-size="13" font-weight="normal" fill="#111827" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" font-style="italic">receives</text>
+<path d="M1240 318 L1240 576 L1600 576 L1600 610" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1231.0" y1="327.0" x2="1249.0" y2="327.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1231.0" y1="334.0" x2="1249.0" y2="334.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1600.0" y1="594.0" x2="1590.0" y2="610.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1600.0" y1="594.0" x2="1600.0" y2="610.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1600.0" y1="594.0" x2="1610.0" y2="610.0" stroke="#374151" stroke-width="2" fill="none"/>
+<circle cx="1600.0" cy="585.0" r="5.5" stroke="#374151" stroke-width="2" fill="#ffffff"/>
+<rect x="1388.8" y="567" width="62.4" height="20" rx="4" fill="#ffffff" opacity="0.92"/>
+<text x="1420" y="581" font-size="13" font-weight="normal" fill="#111827" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-style="italic">records</text>
+<path d="M340 922 L340 1060" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="331.0" y1="931.0" x2="349.0" y2="931.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="331.0" y1="938.0" x2="349.0" y2="938.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="340.0" y1="1044.0" x2="330.0" y2="1060.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="340.0" y1="1044.0" x2="340.0" y2="1060.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="340.0" y1="1044.0" x2="350.0" y2="1060.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="349.0" y1="1039.0" x2="331.0" y2="1039.0" stroke="#374151" stroke-width="2" fill="none"/>
+<rect x="350" y="986" width="48.0" height="20" rx="4" fill="#ffffff" opacity="0.92"/>
+<text x="356" y="1000" font-size="13" font-weight="normal" fill="#111827" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" font-style="italic">lists</text>
+<path d="M620 1092 L680 1092 L680 800 L740 800" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="636.0" y1="1092.0" x2="620.0" y2="1082.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="636.0" y1="1092.0" x2="620.0" y2="1092.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="636.0" y1="1092.0" x2="620.0" y2="1102.0" stroke="#374151" stroke-width="2" fill="none"/>
+<circle cx="645.0" cy="1092.0" r="5.5" stroke="#374151" stroke-width="2" fill="#ffffff"/>
+<line x1="731.0" y1="791.0" x2="731.0" y2="809.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="724.0" y1="791.0" x2="724.0" y2="809.0" stroke="#374151" stroke-width="2" fill="none"/>
+<rect x="641.6" y="946" width="76.8" height="20" rx="4" fill="#ffffff" opacity="0.92"/>
+<text x="680" y="960" font-size="13" font-weight="normal" fill="#111827" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-style="italic">sold from</text>
+<path d="M620 1190 L740 1190" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="636.0" y1="1190.0" x2="620.0" y2="1180.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="636.0" y1="1190.0" x2="620.0" y2="1190.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="636.0" y1="1190.0" x2="620.0" y2="1200.0" stroke="#374151" stroke-width="2" fill="none"/>
+<circle cx="645.0" cy="1190.0" r="5.5" stroke="#374151" stroke-width="2" fill="#ffffff"/>
+<line x1="731.0" y1="1181.0" x2="731.0" y2="1199.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="724.0" y1="1181.0" x2="724.0" y2="1199.0" stroke="#374151" stroke-width="2" fill="none"/>
+<rect x="666.8" y="1168" width="26.4" height="20" rx="4" fill="#ffffff" opacity="0.92"/>
+<text x="680" y="1182" font-size="13" font-weight="normal" fill="#111827" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-style="italic">of</text>
+<path d="M1020 1060 L1020 922" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1029.0" y1="1051.0" x2="1011.0" y2="1051.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1029.0" y1="1044.0" x2="1011.0" y2="1044.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1020.0" y1="938.0" x2="1030.0" y2="922.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1020.0" y1="938.0" x2="1020.0" y2="922.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1020.0" y1="938.0" x2="1010.0" y2="922.0" stroke="#374151" stroke-width="2" fill="none"/>
+<circle cx="1020.0" cy="947.0" r="5.5" stroke="#374151" stroke-width="2" fill="#ffffff"/>
+<rect x="1030" y="982" width="33.6" height="20" rx="4" fill="#ffffff" opacity="0.92"/>
+<text x="1036" y="996" font-size="13" font-weight="normal" fill="#111827" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" font-style="italic">has</text>
+<path d="M1300 700 L1420 700" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1309.0" y1="709.0" x2="1309.0" y2="691.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1316.0" y1="709.0" x2="1316.0" y2="691.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1404.0" y1="700.0" x2="1420.0" y2="710.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1404.0" y1="700.0" x2="1420.0" y2="700.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1404.0" y1="700.0" x2="1420.0" y2="690.0" stroke="#374151" stroke-width="2" fill="none"/>
+<circle cx="1395.0" cy="700.0" r="5.5" stroke="#374151" stroke-width="2" fill="#ffffff"/>
+<rect x="1310.8" y="678" width="98.4" height="20" rx="4" fill="#ffffff" opacity="0.92"/>
+<text x="1360" y="692" font-size="13" font-weight="normal" fill="#111827" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-style="italic">removed from</text>
+<path d="M1420 900 L1360 900 L1360 1090 L1300 1090" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1404.0" y1="900.0" x2="1420.0" y2="910.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1404.0" y1="900.0" x2="1420.0" y2="900.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1404.0" y1="900.0" x2="1420.0" y2="890.0" stroke="#374151" stroke-width="2" fill="none"/>
+<circle cx="1395.0" cy="900.0" r="5.5" stroke="#374151" stroke-width="2" fill="#ffffff"/>
+<line x1="1309.0" y1="1099.0" x2="1309.0" y2="1081.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1316.0" y1="1099.0" x2="1316.0" y2="1081.0" stroke="#374151" stroke-width="2" fill="none"/>
+<rect x="1346.8" y="986" width="26.4" height="20" rx="4" fill="#ffffff" opacity="0.92"/>
+<text x="1360" y="1000" font-size="13" font-weight="normal" fill="#111827" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-style="italic">of</text>
+<path d="M1420 1140 L1300 1140" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1411.0" y1="1131.0" x2="1411.0" y2="1149.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1404.0" y1="1131.0" x2="1404.0" y2="1149.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1316.0" y1="1140.0" x2="1300.0" y2="1130.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1316.0" y1="1140.0" x2="1300.0" y2="1140.0" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="1316.0" y1="1140.0" x2="1300.0" y2="1150.0" stroke="#374151" stroke-width="2" fill="none"/>
+<circle cx="1325.0" cy="1140.0" r="5.5" stroke="#374151" stroke-width="2" fill="#ffffff"/>
+<rect x="1332.4" y="1118" width="55.2" height="20" rx="4" fill="#ffffff" opacity="0.92"/>
+<text x="1360" y="1132" font-size="13" font-weight="normal" fill="#111827" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-style="italic">groups</text>
+<text x="60" y="1468" font-size="15" font-weight="bold" fill="#111827" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >How to read it</text>
+<line x1="60" y1="1498" x2="120" y2="1498" stroke="#374151" stroke-width="2"/>
+<line x1="111" y1="1489" x2="111" y2="1507" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="104" y1="1489" x2="104" y2="1507" stroke="#374151" stroke-width="2" fill="none"/>
+<text x="134" y="1503" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >exactly one</text>
+<line x1="290" y1="1498" x2="350" y2="1498" stroke="#374151" stroke-width="2"/>
+<line x1="341" y1="1489" x2="341" y2="1507" stroke="#374151" stroke-width="2" fill="none"/>
+<circle cx="327" cy="1498" r="5.5" stroke="#374151" stroke-width="2" fill="#ffffff"/>
+<text x="364" y="1503" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >zero or one</text>
+<line x1="520" y1="1498" x2="580" y2="1498" stroke="#374151" stroke-width="2"/>
+<line x1="564" y1="1498" x2="580" y2="1508" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="564" y1="1498" x2="580" y2="1498" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="564" y1="1498" x2="580" y2="1488" stroke="#374151" stroke-width="2" fill="none"/>
+<circle cx="555" cy="1498" r="5.5" stroke="#374151" stroke-width="2" fill="#ffffff"/>
+<text x="594" y="1503" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >zero or many</text>
+<line x1="750" y1="1498" x2="810" y2="1498" stroke="#374151" stroke-width="2"/>
+<line x1="794" y1="1498" x2="810" y2="1508" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="794" y1="1498" x2="810" y2="1498" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="794" y1="1498" x2="810" y2="1488" stroke="#374151" stroke-width="2" fill="none"/>
+<line x1="789" y1="1489" x2="789" y2="1507" stroke="#374151" stroke-width="2" fill="none"/>
+<text x="824" y="1503" font-size="13" font-weight="normal" fill="#1f2937" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >one or many</text>
+<text x="60" y="1534" font-size="13" font-weight="normal" fill="#374151" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >PK = document id</text>
+<text x="210" y="1534" font-size="13" font-weight="normal" fill="#374151" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >FK = holds another document’s id</text>
+<text x="460" y="1534" font-size="13" font-weight="normal" fill="#374151" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >Dashed box = stored inside its parent, not a collection</text>
+<text x="1020" y="1468" font-size="13" font-weight="normal" fill="#374151" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >•  Money is stored as whole Rwandan francs (int). The app takes no payments: paymentMethod is only a label.</text>
+<text x="1020" y="1490" font-size="13" font-weight="normal" fill="#374151" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >•  Snapshot fields (…Name, batchNumber) copy a value at the time of the event, so history still reads correctly after a rename.</text>
+<text x="1020" y="1512" font-size="13" font-weight="normal" fill="#374151" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >•  Batches keep pharmacyId so one collection-group query can find expiring stock across all products of a pharmacy.</text>
+<text x="1020" y="1534" font-size="13" font-weight="normal" fill="#374151" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" >•  Receipt numbers come from pharmacies.nextReceiptNo, increased in the same transaction that saves the sale.</text>
+</svg>

@@ -1,4 +1,5 @@
 import '../domain/entities/removable_product.dart';
+import '../domain/entities/removal_reason.dart';
 import '../domain/entities/stock_removal.dart';
 import '../domain/removal_rules.dart';
 import '../domain/repositories/stock_removal_repository.dart';
@@ -15,7 +16,10 @@ class FakeStockRemovalRepository implements StockRemovalRepository {
     List<RemovableProduct>? products,
   }) : _clock = clock ?? DateTime.now {
     _products = products ?? _sampleProducts(_clock());
+    _history = products == null ? _sampleHistory(_clock()) : const [];
   }
+
+  late final List<StockRemoval> _history;
 
   final DateTime Function() _clock;
   late List<RemovableProduct> _products;
@@ -78,6 +82,98 @@ class FakeStockRemovalRepository implements StockRemovalRepository {
     );
     _removals.add(removal);
     return removal;
+  }
+
+  @override
+  Future<List<StockRemoval>> loadRemovals({required DateTime since}) async =>
+      [
+          ..._history,
+          ..._removals,
+        ].where((removal) => !removal.createdAt.isBefore(since)).toList()
+        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+  static List<StockRemoval> _sampleHistory(DateTime now) {
+    StockRemoval removal({
+      required String id,
+      required int daysAgo,
+      required String productName,
+      required String batchNumber,
+      required int quantity,
+      required RemovalReason reason,
+      required int costPrice,
+      String note = '',
+    }) => StockRemoval(
+      id: id,
+      productId: 'history-$id',
+      productName: productName,
+      batchId: 'history-$batchNumber',
+      batchNumber: batchNumber,
+      quantity: quantity,
+      reason: reason,
+      note: note,
+      costValue: quantity * costPrice,
+      removedBy: 'owner-1',
+      removedByName: 'Aline Uwase',
+      createdAt: now.subtract(Duration(days: daysAgo)),
+    );
+
+    return [
+      removal(
+        id: 'h1',
+        daysAgo: 2,
+        productName: 'Ibuprofen 400mg',
+        batchNumber: 'IB2108',
+        quantity: 8,
+        reason: RemovalReason.expired,
+        costPrice: 800,
+      ),
+      removal(
+        id: 'h2',
+        daysAgo: 6,
+        productName: 'Amoxicillin 500mg',
+        batchNumber: 'AMX-2207',
+        quantity: 4,
+        reason: RemovalReason.damaged,
+        costPrice: 3500,
+        note: 'Boxes crushed in delivery',
+      ),
+      removal(
+        id: 'h3',
+        daysAgo: 38,
+        productName: 'ORS sachets',
+        batchNumber: 'ORS-61',
+        quantity: 20,
+        reason: RemovalReason.returnedToSupplier,
+        costPrice: 300,
+      ),
+      removal(
+        id: 'h4',
+        daysAgo: 70,
+        productName: 'Metronidazole 400mg',
+        batchNumber: 'MZ2201',
+        quantity: 10,
+        reason: RemovalReason.expired,
+        costPrice: 1100,
+      ),
+      removal(
+        id: 'h5',
+        daysAgo: 130,
+        productName: 'Paracetamol 500mg',
+        batchNumber: 'PC2309',
+        quantity: 30,
+        reason: RemovalReason.expired,
+        costPrice: 450,
+      ),
+      removal(
+        id: 'h6',
+        daysAgo: 200,
+        productName: 'Cough syrup 100ml',
+        batchNumber: 'CS-090',
+        quantity: 6,
+        reason: RemovalReason.recalled,
+        costPrice: 1800,
+      ),
+    ];
   }
 
   static List<RemovableProduct> _sampleProducts(DateTime now) {
