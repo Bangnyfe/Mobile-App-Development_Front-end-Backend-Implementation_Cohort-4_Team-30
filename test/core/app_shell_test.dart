@@ -4,8 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:team30_app/app.dart';
 import 'package:team30_app/core/router/app_router.dart';
-import 'package:team30_app/core/widgets/feature_placeholder_page.dart';
 import 'package:team30_app/features/dashboard/presentation/pages/dashboard_page.dart';
+import 'package:team30_app/features/inventory/presentation/pages/inventory_page.dart';
 import 'package:team30_app/features/pos/domain/entities/pos_batch.dart';
 import 'package:team30_app/features/pos/domain/entities/pos_product.dart';
 import 'package:team30_app/features/pos/presentation/cubit/cart_cubit.dart';
@@ -13,11 +13,6 @@ import 'package:team30_app/features/pos/presentation/pages/sell_page.dart';
 import 'package:team30_app/features/reports/presentation/pages/reports_hub_page.dart';
 import 'package:team30_app/features/settings/data/shared_prefs_settings_repository.dart';
 import 'package:team30_app/features/settings/presentation/pages/settings_page.dart';
-
-/// Title of the placeholder tab page that is currently on screen.
-String visiblePlaceholderTitle(WidgetTester tester) => tester
-    .widget<FeaturePlaceholderPage>(find.byType(FeaturePlaceholderPage))
-    .title;
 
 Future<void> tapTab(WidgetTester tester, String label) async {
   await tester.tap(
@@ -54,7 +49,7 @@ void main() {
     expect(find.byType(SellPage), findsOneWidget);
 
     await tapTab(tester, 'Stock');
-    expect(visiblePlaceholderTitle(tester), 'Inventory');
+    expect(find.byType(InventoryPage), findsOneWidget);
 
     await tapTab(tester, 'Reports');
     expect(find.byType(ReportsHubPage), findsOneWidget);

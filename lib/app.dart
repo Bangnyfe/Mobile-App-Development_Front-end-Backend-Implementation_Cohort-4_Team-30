@@ -8,6 +8,8 @@ import 'features/auth/domain/repositories/pharmacy_draft_repository.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/dashboard/data/fake_dashboard_repository.dart';
 import 'features/dashboard/domain/repositories/dashboard_repository.dart';
+import 'features/inventory/data/fake_inventory_repository.dart';
+import 'features/inventory/domain/repositories/inventory_repository.dart';
 import 'features/invites/data/fake_invite_repository.dart';
 import 'features/invites/domain/repositories/invite_repository.dart';
 import 'features/notifications/data/fake_stock_alerts_repository.dart';
@@ -51,6 +53,7 @@ class PharmacyApp extends StatelessWidget {
     this.salesRepository,
     this.stockRemovalRepository,
     this.productLookupRepository,
+    this.inventoryRepository,
     this.stockAlertsRepository,
     this.seenAlertsRepository,
     this.inviteRepository,
@@ -81,6 +84,11 @@ class PharmacyApp extends StatelessWidget {
   /// Finds scanned barcodes. Defaults to sample products for widget tests;
   /// `main.dart` passes the signed-in pharmacy's products from Firestore.
   final ProductLookupRepository? productLookupRepository;
+
+  /// Products and batches for the Stock tab. Defaults to sample stock for
+  /// widget tests; `main.dart` passes the signed-in pharmacy's Firestore
+  /// inventory.
+  final InventoryRepository? inventoryRepository;
 
   /// Defaults to sample stock until auth gives us the pharmacy ID and the
   /// data layer (products and batches) is merged.
@@ -141,6 +149,9 @@ class PharmacyApp extends StatelessWidget {
         RepositoryProvider<ProductLookupRepository>(
           create: (_) =>
               productLookupRepository ?? FakeProductLookupRepository(),
+        ),
+        RepositoryProvider<InventoryRepository>(
+          create: (_) => inventoryRepository ?? FakeInventoryRepository(),
         ),
         RepositoryProvider<StockAlertsRepository>(
           create: (_) => stockAlertsRepository ?? FakeStockAlertsRepository(),

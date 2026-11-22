@@ -21,6 +21,9 @@ abstract final class RoutePaths {
   static const sellCheckout = '$sell/checkout';
   static const sellReceipt = '$sell/receipt';
 
+  // Stock subpages, inside the Stock tab.
+  static String stockProduct(String productId) => '$stock/products/$productId';
+
   // Reports subpages. Sales history is reachable from Home too; these
   // copies keep the Reports tab selected when it's opened from here.
   static const reportsSalesHistory = '$reports/sales';
