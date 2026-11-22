@@ -3,9 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'core/theme/app_theme.dart';
+import 'features/auth/data/in_memory_pharmacy_draft_repository.dart';
+import 'features/auth/domain/repositories/pharmacy_draft_repository.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/dashboard/data/fake_dashboard_repository.dart';
 import 'features/dashboard/domain/repositories/dashboard_repository.dart';
+import 'features/invites/data/fake_invite_repository.dart';
+import 'features/invites/domain/repositories/invite_repository.dart';
 import 'features/notifications/data/fake_stock_alerts_repository.dart';
 import 'features/notifications/data/in_memory_seen_alerts_repository.dart';
 import 'features/notifications/domain/repositories/seen_alerts_repository.dart';
@@ -46,6 +50,8 @@ class PharmacyApp extends StatelessWidget {
     this.stockRemovalRepository,
     this.stockAlertsRepository,
     this.seenAlertsRepository,
+    this.inviteRepository,
+    this.pharmacyDraftRepository,
   });
 
   final GoRouter router;
@@ -76,6 +82,14 @@ class PharmacyApp extends StatelessWidget {
   /// Defaults to remembering seen alerts in memory only; `main.dart`
   /// passes one that saves them on the device.
   final SeenAlertsRepository? seenAlertsRepository;
+
+  /// Defaults to in-memory invites; `main.dart` passes the Firestore one.
+  final InviteRepository? inviteRepository;
+
+  /// The pharmacy details remembered from Register. Must be the same one
+  /// the auth repository saves to; `main.dart` passes both the same
+  /// on-device repository.
+  final PharmacyDraftRepository? pharmacyDraftRepository;
 
   @override
   Widget build(BuildContext context) {
@@ -122,6 +136,13 @@ class PharmacyApp extends StatelessWidget {
         ),
         RepositoryProvider<SeenAlertsRepository>(
           create: (_) => seenAlertsRepository ?? InMemorySeenAlertsRepository(),
+        ),
+        RepositoryProvider<InviteRepository>(
+          create: (_) => inviteRepository ?? FakeInviteRepository(),
+        ),
+        RepositoryProvider<PharmacyDraftRepository>(
+          create: (_) =>
+              pharmacyDraftRepository ?? InMemoryPharmacyDraftRepository(),
         ),
       ],
       child: MultiBlocProvider(

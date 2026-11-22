@@ -8,8 +8,12 @@ abstract interface class AuthRepository {
     required String password,
   });
 
-  /// Creates the account and the owner's pharmacy, then sends the
-  /// verification email.
+  /// Creates the account and sends the verification email.
+  ///
+  /// The pharmacy details are only remembered (see
+  /// `PharmacyDraftRepository`). The pharmacy is created after
+  /// verification, at the setup step, where an invited pharmacist can
+  /// join their pharmacy instead.
   Future<AppUser> registerOwner({
     required String name,
     required String email,
@@ -30,6 +34,8 @@ abstract interface class AuthRepository {
 
   Future<void> resendVerificationEmail();
 
+  /// Fetches the latest account state, e.g. after the user opened the
+  /// verification link.
   Future<AppUser> reloadUser();
 
   Future<void> signOut();

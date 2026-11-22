@@ -1,0 +1,146 @@
+rules_version = '2';
+
+// Who can read and write what. Deploy with:
+//   firebase deploy --only firestore:rules
+//
+// Everything a pharmacy owns lives under pharmacies/{pharmacyId}, so
+// membership is checked once there. Users join a pharmacy either by
+// creating it (owner) or by accepting an invite (pharmacist).
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // Google accounts are verified already; email accounts after they open
+    // the verification link (the app refreshes the token afterwards).
+    function verified() {
+      return signedIn() && request.auth.token.email_verified == true;
+    }
+
+    function myEmail() {
+      return request.auth.token.email.lower();
+    }
+
+    function userDoc(uid) {
+      return /databases/$(database)/documents/users/$(uid);
+    }
+
+    function hasProfile() {
+      return signedIn() && exists(userDoc(request.auth.uid));
+    }
+
+    function me() {
+      return get(userDoc(request.auth.uid)).data;
+    }
+
+    function memberOf(pharmacyId) {
+      return hasProfile() && me().pharmacyId == pharmacyId;
+    }
+
+    function ownerOf(pharmacyId) {
+      return memberOf(pharmacyId) && me().role == 'owner';
+    }
+
+    function isOwner() {
+      return hasProfile() && me().role == 'owner';
+    }
+
+    function inviteFor(email) {
+      return get(/databases/$(database)/documents/invites/$(email)).data;
+    }
+
+    // ---------------------------------------------------------------------
+    match /users/{uid} {
+      allow read: if signedIn()
+        && (request.auth.uid == uid || memberOf(resource.data.pharmacyId));
+
+      // A profile is created once, by its own user, in one of two ways:
+      // as the owner of a pharmacy created in the same write, or as a
+      // pharmacist accepting a pending invite for their verified email.
+      allow create: if verified()
+        && request.auth.uid == uid
+        && request.resource.data.email.lower() == myEmail()
+        && (
+          (request.resource.data.role == 'owner'
+            && getAfter(/databases/$(database)/documents/pharmacies/$(request.resource.data.pharmacyId)).data.ownerId == uid)
+          ||
+          (request.resource.data.role == 'pharmacist'
+            && inviteFor(myEmail()).status == 'pending'
+            && inviteFor(myEmail()).pharmacyId == request.resource.data.pharmacyId)
+        );
+
+      // Only the name can change; the role and pharmacy never do.
+      allow update: if request.auth.uid == uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name']);
+      allow delete: if false;
+    }
+
+    // ---------------------------------------------------------------------
+    match /pharmacies/{pharmacyId} {
+      allow read: if memberOf(pharmacyId);
+
+      // Someone without a pharmacy yet creates one and becomes its owner.
+      allow create: if verified()
+        && !hasProfile()
+        && request.resource.data.ownerId == request.auth.uid;
+
+      allow update: if ownerOf(pharmacyId)
+        && request.resource.data.ownerId == resource.data.ownerId;
+      allow delete: if false;
+
+      // Products, batches, sales, stock removals, categories...
+      match /{document=**} {
+        allow read, write: if memberOf(pharmacyId);
+      }
+    }
+
+    // Collection-group queries across products' batches (expiry alerts).
+    match /{path=**}/batches/{batchId} {
+      allow read: if memberOf(resource.data.pharmacyId);
+    }
+
+    // ---------------------------------------------------------------------
+    // invites/{email}: the email is lowercased, so the invited person's app
+    // finds it straight from their sign-in email.
+    match /invites/{email} {
+      // The invited person (verified, same email), or an owner checking
+      // their own pharmacy's invites. Owners may also see that an email
+      // has no invite yet, before sending one.
+      allow read: if (verified() && myEmail() == email)
+        || (isOwner()
+          && (resource == null || resource.data.pharmacyId == me().pharmacyId));
+
+      allow create: if ownerOf(request.resource.data.pharmacyId)
+        && email == email.lower()
+        && request.resource.data.email == email
+        && request.resource.data.role == 'pharmacist'
+        && request.resource.data.status == 'pending'
+        && request.resource.data.invitedBy == request.auth.uid;
+
+      allow update: if
+        // The invited person accepting, in the same write as their profile.
+        (verified()
+          && myEmail() == email
+          && resource.data.status == 'pending'
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['status', 'acceptedBy', 'acceptedAt'])
+          && request.resource.data.status == 'accepted'
+          && request.resource.data.acceptedBy == request.auth.uid
+          && getAfter(userDoc(request.auth.uid)).data.pharmacyId == resource.data.pharmacyId)
+        ||
+        // An owner inviting an email whose earlier invite was already used.
+        (ownerOf(request.resource.data.pharmacyId)
+          && resource.data.status != 'pending'
+          && request.resource.data.email == email
+          && request.resource.data.role == 'pharmacist'
+          && request.resource.data.status == 'pending'
+          && request.resource.data.invitedBy == request.auth.uid);
+
+      // Revoking: the owner of the pharmacy, while still pending.
+      allow delete: if ownerOf(resource.data.pharmacyId)
+        && resource.data.status == 'pending';
+    }
+  }
+}

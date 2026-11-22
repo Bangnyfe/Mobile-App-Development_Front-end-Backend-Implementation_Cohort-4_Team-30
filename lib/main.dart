@@ -6,7 +6,9 @@ import 'app.dart';
 import 'core/router/app_router.dart';
 import 'features/auth/data/auth_backed_account_repository.dart';
 import 'features/auth/data/firebase_auth_repository.dart';
+import 'features/auth/data/shared_prefs_pharmacy_draft_repository.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/invites/data/firestore_invite_repository.dart';
 import 'features/notifications/data/shared_prefs_seen_alerts_repository.dart';
 import 'features/settings/data/fake_account_repository.dart';
 import 'features/settings/data/shared_prefs_settings_repository.dart';
@@ -17,10 +19,14 @@ Future<void> main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final prefs = await SharedPreferences.getInstance();
 
+  // Shared by auth (which saves the details typed on Register) and the
+  // pharmacy setup step (which pre-fills them).
+  final pharmacyDrafts = SharedPrefsPharmacyDraftRepository(prefs);
+
   // Created before the app so the router can follow the sign-in status
   // from the first frame. AuthStarted begins listening to Firebase, which
   // reports the saved session (if any) and moves the app off Splash.
-  final authRepository = FirebaseAuthRepository();
+  final authRepository = FirebaseAuthRepository(drafts: pharmacyDrafts);
   final authBloc = AuthBloc(authRepository)..add(const AuthStarted());
 
   runApp(
@@ -29,6 +35,8 @@ Future<void> main() async {
       settingsRepository: SharedPrefsSettingsRepository(prefs),
       seenAlertsRepository: SharedPrefsSeenAlertsRepository(prefs),
       authBloc: authBloc,
+      inviteRepository: FirestoreInviteRepository(),
+      pharmacyDraftRepository: pharmacyDrafts,
       accountRepository: AuthBackedAccountRepository(
         details: const FakeAccountRepository(),
         auth: authRepository,
