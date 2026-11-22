@@ -4,9 +4,13 @@ enum RemoveStockStatus { loading, ready, loadFailure }
 
 enum SubmitStatus { idle, submitting, success, failure }
 
+enum RemoveStockStep { chooseBatch, reason, done }
+
 class RemoveStockState extends Equatable {
   const RemoveStockState({
     this.status = RemoveStockStatus.loading,
+    this.step = RemoveStockStep.chooseBatch,
+    this.fromNotification = false,
     this.products = const [],
     this.query = '',
     this.productId,
@@ -21,6 +25,10 @@ class RemoveStockState extends Equatable {
   });
 
   final RemoveStockStatus status;
+  final RemoveStockStep step;
+
+  /// Opened from an expiry notification: the Reason step shows a banner.
+  final bool fromNotification;
   final List<RemovableProduct> products;
 
   /// What is typed in the search box.
@@ -78,12 +86,18 @@ class RemoveStockState extends Equatable {
       reasonError == null &&
       submitStatus != SubmitStatus.submitting;
 
+  /// Units of the selected product left on the shelf (0 once its last
+  /// batch is emptied, since empty products are no longer listed).
+  int get productUnits => product?.totalUnits ?? 0;
+
   /// Value written off for the current selection, in RWF.
   int get costValue => batch?.costOf(quantity) ?? 0;
 
   /// Nullable fields take a function, so `() => null` can clear them.
   RemoveStockState copyWith({
     RemoveStockStatus? status,
+    RemoveStockStep? step,
+    bool? fromNotification,
     List<RemovableProduct>? products,
     String? query,
     String? Function()? productId,
@@ -98,6 +112,8 @@ class RemoveStockState extends Equatable {
   }) {
     return RemoveStockState(
       status: status ?? this.status,
+      step: step ?? this.step,
+      fromNotification: fromNotification ?? this.fromNotification,
       products: products ?? this.products,
       query: query ?? this.query,
       productId: productId != null ? productId() : this.productId,
@@ -117,6 +133,8 @@ class RemoveStockState extends Equatable {
   @override
   List<Object?> get props => [
     status,
+    step,
+    fromNotification,
     products,
     query,
     productId,

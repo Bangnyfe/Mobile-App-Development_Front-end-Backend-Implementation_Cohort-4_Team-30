@@ -32,7 +32,7 @@ void main() {
     await cubit.start();
 
     expect(cubit.state.status, RemoveStockStatus.ready);
-    expect(cubit.state.products, hasLength(4));
+    expect(cubit.state.products, hasLength(5));
     expect(cubit.state.batch, isNull);
     expect(cubit.state.canContinue, isFalse);
   });

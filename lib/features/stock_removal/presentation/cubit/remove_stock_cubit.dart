@@ -57,9 +57,39 @@ class RemoveStockCubit extends Cubit<RemoveStockState> {
         ),
       );
     }
+    // From a notification the batch is already known, so the flow opens
+    // on the Reason step (Figma: "Remove stock - from notification").
+    if (batchId != null && state.canContinue) {
+      emit(
+        state.copyWith(step: RemoveStockStep.reason, fromNotification: true),
+      );
+    }
   }
 
   void search(String query) => emit(state.copyWith(query: query));
+
+  /// "Change": back to the product list.
+  void clearProduct() => emit(
+    state.copyWith(
+      productId: () => null,
+      batchId: () => null,
+      quantity: 0,
+      suggestedReason: () => null,
+    ),
+  );
+
+  /// Continue from Choose batch to Reason, once a batch and quantity are
+  /// valid.
+  void goToReason() {
+    if (state.canContinue) emit(state.copyWith(step: RemoveStockStep.reason));
+  }
+
+  /// Back from Reason to Choose batch, keeping the selection.
+  void backToBatch() {
+    if (state.step == RemoveStockStep.reason) {
+      emit(state.copyWith(step: RemoveStockStep.chooseBatch));
+    }
+  }
 
   /// Picks a product and offers its earliest-expiring batch with stock.
   void selectProduct(String productId) {
@@ -140,6 +170,7 @@ class RemoveStockCubit extends Cubit<RemoveStockState> {
         state.copyWith(
           products: products,
           submitStatus: SubmitStatus.success,
+          step: RemoveStockStep.done,
           result: () => removal,
         ),
       );

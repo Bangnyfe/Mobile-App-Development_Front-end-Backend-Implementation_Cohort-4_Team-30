@@ -105,25 +105,42 @@ class FakeStockRemovalRepository implements StockRemovalRepository {
           ),
         ],
       ),
+      // Same IDs as Notifications' sample stock, so "Remove stock" on an
+      // expiry alert opens this batch while both use sample data.
       RemovableProduct(
-        id: 'p-amoxicillin',
+        id: 'amoxicillin-500',
         name: 'Amoxicillin 500mg',
         barcode: '6001007023456',
         details: 'Capsules · box of 21',
         batches: [
           RemovableBatch(
-            id: 'b-ax2407',
-            batchNumber: 'AX2407',
-            expiryDate: inDays(19),
-            quantity: 18,
+            id: 'b-amx-2309',
+            batchNumber: 'AMX-2309',
+            expiryDate: inDays(-12),
+            quantity: 40,
             costPrice: 3500,
           ),
           RemovableBatch(
-            id: 'b-ax2503',
-            batchNumber: 'AX2503',
-            expiryDate: inDays(520),
-            quantity: 60,
+            id: 'b-amx-2411',
+            batchNumber: 'AMX-2411',
+            expiryDate: inDays(200),
+            quantity: 120,
             costPrice: 3500,
+          ),
+        ],
+      ),
+      RemovableProduct(
+        id: 'cough-syrup-100',
+        name: 'Cough syrup 100ml',
+        barcode: '6001007056789',
+        details: 'Syrup · 100ml bottle',
+        batches: [
+          RemovableBatch(
+            id: 'b-cs-118',
+            batchNumber: 'CS-118',
+            expiryDate: inDays(-3),
+            quantity: 6,
+            costPrice: 1800,
           ),
         ],
       ),
