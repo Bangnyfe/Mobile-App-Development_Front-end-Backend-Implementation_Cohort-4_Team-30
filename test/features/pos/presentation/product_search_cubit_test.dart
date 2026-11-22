@@ -129,6 +129,28 @@ void main() {
         expect(names(cubit.state), ['Paracetamol 500mg']);
       },
     );
+
+    blocTest<ProductSearchCubit, ProductSearchState>(
+      'loads again after a failed load is cleared',
+      build: () => ProductSearchCubit(catalog..fail = true),
+      act: (cubit) async {
+        cubit.search('para');
+        await Future<void>.delayed(Duration.zero);
+        expect(cubit.state.status, SearchStatus.failure);
+
+        cubit.clear();
+        expect(cubit.state.status, SearchStatus.idle);
+
+        catalog.fail = false;
+        cubit.search('para');
+        await Future<void>.delayed(Duration.zero);
+      },
+      verify: (cubit) {
+        expect(cubit.state.status, SearchStatus.ready);
+        expect(cubit.state.message, isNull);
+        expect(names(cubit.state), ['Paracetamol 500mg']);
+      },
+    );
   });
 
   group('live products', () {
