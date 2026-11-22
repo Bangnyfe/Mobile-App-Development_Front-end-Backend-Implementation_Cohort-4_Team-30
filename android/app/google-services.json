@@ -38,6 +38,14 @@
           }
         },
         {
+          "client_id": "1029034478085-tn5lo09l4jp0p2fr3aetcmrt4oirv07s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yourteam.team30_app",
+            "certificate_hash": "2814f74cb01906c929b77d8c911e325c4aa5334a"
+          }
+        },
+        {
           "client_id": "1029034478085-trk6qtgcq4o90famuh8p4q9nl0p3arm1.apps.googleusercontent.com",
           "client_type": 3
         }
