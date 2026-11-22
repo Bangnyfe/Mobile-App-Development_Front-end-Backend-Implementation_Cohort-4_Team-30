@@ -10,7 +10,11 @@ import 'features/auth/data/shared_prefs_pharmacy_draft_repository.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/invites/data/firestore_invite_repository.dart';
 import 'features/notifications/data/shared_prefs_seen_alerts_repository.dart';
+import 'features/inventory/data/firestore_batch_repository.dart';
+import 'features/inventory/data/firestore_product_repository.dart';
+import 'features/pos/data/current_pharmacy_product_catalog.dart';
 import 'features/pos/data/firestore_checkout_repository.dart';
+import 'features/pos/data/inventory_product_catalog.dart';
 import 'features/sales/data/current_pharmacy_sales_repository.dart';
 import 'features/sales/data/firestore_sales_repository.dart';
 import 'features/scanner/data/current_pharmacy_product_lookup_repository.dart';
@@ -58,6 +62,14 @@ Future<void> main() async {
       productLookupRepository: CurrentPharmacyProductLookupRepository(
         pharmacyId: () => authBloc.state.user?.pharmacyId,
         forPharmacy: (id) => FirestoreProductLookupRepository(pharmacyId: id),
+      ),
+      // ...and searches them by name, through the inventory repositories.
+      productCatalog: CurrentPharmacyProductCatalog(
+        pharmacyId: () => authBloc.state.user?.pharmacyId,
+        forPharmacy: (id) => InventoryProductCatalog(
+          products: FirestoreProductRepository(pharmacyId: id),
+          batches: FirestoreBatchRepository(pharmacyId: id),
+        ),
       ),
       // Remove stock reads and writes the signed-in user's pharmacy.
       stockRemovalRepository: CurrentPharmacyStockRemovalRepository(
