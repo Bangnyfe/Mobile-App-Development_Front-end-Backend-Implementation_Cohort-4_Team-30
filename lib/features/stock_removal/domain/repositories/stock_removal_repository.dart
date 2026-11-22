@@ -22,4 +22,8 @@ abstract interface class StockRemovalRepository {
   /// Throws [StockRemovalFailure] if the batch no longer has enough units
   /// (for example, someone sold from it meanwhile) or the save fails.
   Future<StockRemoval> removeStock(StockRemovalRequest request);
+
+  /// Removals recorded on or after [since], newest first, for the
+  /// Inventory report and the Expiry and waste report.
+  Future<List<StockRemoval>> loadRemovals({required DateTime since});
 }

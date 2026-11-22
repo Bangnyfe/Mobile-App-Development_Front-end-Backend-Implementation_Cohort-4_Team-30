@@ -3,7 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:team30_app/app.dart';
 import 'package:team30_app/core/router/app_router.dart';
-import 'package:team30_app/core/widgets/feature_placeholder_page.dart';
+import 'package:team30_app/features/reports/presentation/pages/expiry_waste_report_page.dart';
+import 'package:team30_app/features/reports/presentation/pages/inventory_report_page.dart';
 import 'package:team30_app/features/reports/presentation/pages/reports_hub_page.dart';
 import 'package:team30_app/features/sales/data/fake_sales_repository.dart';
 import 'package:team30_app/features/sales/presentation/pages/sale_details_page.dart';
@@ -75,20 +76,16 @@ void main() {
     expect(find.byType(ReportsHubPage), findsOneWidget);
   });
 
-  for (final title in ['Inventory report', 'Expiry & waste report']) {
-    testWidgets('$title opens its placeholder until Brian\'s is merged', (
-      tester,
-    ) async {
+  for (final (title, page) in [
+    ('Inventory report', InventoryReportPage),
+    ('Expiry & waste report', ExpiryWasteReportPage),
+  ]) {
+    testWidgets('$title opens inside the Reports tab', (tester) async {
       await pumpReportsTab(tester);
 
       await tapAndSettle(tester, find.text(title));
 
-      expect(
-        tester
-            .widget<FeaturePlaceholderPage>(find.byType(FeaturePlaceholderPage))
-            .title,
-        title,
-      );
+      expect(find.byType(page), findsOneWidget);
       expect(selectedTab(tester), _reportsTab);
 
       await tester.pageBack();
