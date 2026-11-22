@@ -16,10 +16,14 @@ import '../../features/dashboard/presentation/cubit/dashboard_cubit.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
 import '../../features/inventory/domain/inventory_filter.dart';
 import '../../features/inventory/domain/repositories/inventory_repository.dart';
+import '../../features/inventory/presentation/cubit/add_stock_cubit.dart';
 import '../../features/inventory/presentation/cubit/inventory_cubit.dart';
 import '../../features/inventory/presentation/cubit/product_details_cubit.dart';
+import '../../features/inventory/presentation/cubit/register_product_cubit.dart';
+import '../../features/inventory/presentation/pages/add_stock_page.dart';
 import '../../features/inventory/presentation/pages/inventory_page.dart';
 import '../../features/inventory/presentation/pages/product_details_page.dart';
+import '../../features/inventory/presentation/pages/register_product_page.dart';
 import '../../features/invites/domain/repositories/invite_repository.dart';
 import '../../features/invites/presentation/cubit/pharmacy_choice_cubit.dart';
 import '../../features/invites/presentation/cubit/pharmacy_invites_cubit.dart';
@@ -94,6 +98,8 @@ GoRouter createAppRouter({
     routes: [
       ..._authRoutes,
       _removeStockRoute,
+      _addStockRoute(authBloc: authBloc),
+      _registerProductRoute,
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
             AppShell(navigationShell: navigationShell),
@@ -365,6 +371,41 @@ final _removeStockRoute = GoRoute(
                 : RemovalReason.fromName(reason),
           ),
       child: const RemoveStockPage(),
+    );
+  },
+);
+
+/// Add stock opens above the tabs, like Remove stock (no bottom bar).
+/// `?productId=` skips the scan. The batch records who received it.
+GoRoute _addStockRoute({AuthBloc? authBloc}) {
+  return GoRoute(
+    path: RoutePaths.addStock,
+    builder: (context, state) {
+      final user = authBloc?.state.user;
+      return BlocProvider(
+        create: (context) => AddStockCubit(
+          context.read<InventoryRepository>(),
+          receivedBy: user?.uid ?? '',
+          receivedByName: user?.name ?? '',
+        )..start(productId: state.uri.queryParameters['productId']),
+        child: const AddStockPage(),
+      );
+    },
+  );
+}
+
+/// Register product opens above the tabs, with the scanned barcode (if
+/// any) as `extra`. It closes with the new product.
+final _registerProductRoute = GoRoute(
+  path: RoutePaths.registerProduct,
+  builder: (context, state) {
+    final barcode = state.extra;
+    return BlocProvider(
+      create: (context) =>
+          RegisterProductCubit(context.read<InventoryRepository>())..start(),
+      child: RegisterProductPage(
+        initialBarcode: barcode is String ? barcode : '',
+      ),
     );
   },
 );

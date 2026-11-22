@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/route_paths.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/formatters.dart';
+import '../../../../core/widgets/pinned_bottom_bar.dart';
 import '../../../../core/widgets/status_chip.dart';
 import '../../../pos/domain/entities/pos_batch.dart';
 import '../../../settings/presentation/cubit/settings_cubit.dart';
@@ -76,6 +79,18 @@ class ProductDetailsPage extends StatelessWidget {
               ),
             },
           ),
+          // Anyone can receive stock, owners and pharmacists alike.
+          bottomNavigationBar: item == null
+              ? null
+              : PinnedBottomBar(
+                  children: [
+                    FilledButton(
+                      onPressed: () =>
+                          context.push(RoutePaths.addStockFor(item.product.id)),
+                      child: const Text('Add stock'),
+                    ),
+                  ],
+                ),
         );
       },
     );

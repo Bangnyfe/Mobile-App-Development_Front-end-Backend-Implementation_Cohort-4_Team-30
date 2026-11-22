@@ -7,6 +7,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../settings/presentation/cubit/settings_cubit.dart';
 import '../../domain/entities/inventory_item.dart';
+import '../../domain/entities/product.dart';
 import '../../domain/inventory_filter.dart';
 import '../cubit/inventory_cubit.dart';
 import '../widgets/inventory_status_chip.dart';
@@ -34,7 +35,21 @@ class InventoryPage extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Inventory')),
+      appBar: AppBar(
+        title: const Text('Inventory'),
+        actions: [
+          IconButton(
+            tooltip: 'Register product',
+            icon: const Icon(Icons.add_box_outlined),
+            onPressed: () => _registerProduct(context),
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => context.push(RoutePaths.addStock),
+        icon: const Icon(Icons.add),
+        label: const Text('Add stock'),
+      ),
       body: SafeArea(
         child: BlocBuilder<InventoryCubit, InventoryState>(
           builder: (context, state) => switch (state.status) {
@@ -55,6 +70,17 @@ class InventoryPage extends StatelessWidget {
       ),
     );
   }
+}
+
+Future<void> _registerProduct(BuildContext context) async {
+  final messenger = ScaffoldMessenger.of(context);
+  final product = await context.push<Product>(RoutePaths.registerProduct);
+  if (product == null) return;
+  messenger.showSnackBar(
+    SnackBar(
+      content: Text('${product.name} registered. Use Add stock to receive it.'),
+    ),
+  );
 }
 
 class _InventoryList extends StatelessWidget {
@@ -119,7 +145,8 @@ class _InventoryList extends StatelessWidget {
               )
             else
               SliverPadding(
-                padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+                // Bottom space so the Add stock button never hides a row.
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 88),
                 sliver: SliverToBoxAdapter(
                   child: Card(
                     clipBehavior: Clip.antiAlias,
