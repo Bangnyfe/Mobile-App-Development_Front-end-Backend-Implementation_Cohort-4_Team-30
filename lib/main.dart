@@ -10,6 +10,8 @@ import 'features/auth/data/shared_prefs_pharmacy_draft_repository.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/invites/data/firestore_invite_repository.dart';
 import 'features/notifications/data/shared_prefs_seen_alerts_repository.dart';
+import 'features/sales/data/current_pharmacy_sales_repository.dart';
+import 'features/sales/data/firestore_sales_repository.dart';
 import 'features/settings/data/fake_account_repository.dart';
 import 'features/settings/data/shared_prefs_settings_repository.dart';
 import 'firebase_options.dart';
@@ -36,6 +38,11 @@ Future<void> main() async {
       seenAlertsRepository: SharedPrefsSeenAlertsRepository(prefs),
       authBloc: authBloc,
       inviteRepository: FirestoreInviteRepository(),
+      // Sales saved by checkout, for the signed-in user's pharmacy.
+      salesRepository: CurrentPharmacySalesRepository(
+        pharmacyId: () => authBloc.state.user?.pharmacyId,
+        forPharmacy: (id) => FirestoreSalesRepository(pharmacyId: id),
+      ),
       pharmacyDraftRepository: pharmacyDrafts,
       accountRepository: AuthBackedAccountRepository(
         details: const FakeAccountRepository(),
