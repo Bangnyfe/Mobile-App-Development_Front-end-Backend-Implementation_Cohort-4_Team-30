@@ -35,6 +35,16 @@ abstract final class RoutePaths {
   // Full-screen flows opened above the tabs (no bottom bar).
   static const removeStock = '/remove-stock';
 
+  /// Add stock starts with a scan; [addStockFor] skips it for a product
+  /// chosen on Product details.
+  static const addStock = '/add-stock';
+  static String addStockFor(String productId) =>
+      Uri(path: addStock, queryParameters: {'productId': productId}).toString();
+
+  /// Takes the barcode to fill in as `extra`, and closes with the new
+  /// product.
+  static const registerProduct = '/register-product';
+
   /// Remove stock with the batch already chosen and Expired suggested,
   /// as opened from an expiry notification.
   static String removeExpiredBatch({
