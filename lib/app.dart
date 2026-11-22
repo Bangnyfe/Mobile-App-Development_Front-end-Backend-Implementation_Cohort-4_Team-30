@@ -19,6 +19,8 @@ import 'features/settings/domain/repositories/account_repository.dart';
 import 'features/settings/domain/repositories/settings_repository.dart';
 import 'features/settings/presentation/cubit/account_cubit.dart';
 import 'features/settings/presentation/cubit/settings_cubit.dart';
+import 'features/stock_removal/data/fake_stock_removal_repository.dart';
+import 'features/stock_removal/domain/repositories/stock_removal_repository.dart';
 
 /// Root widget.
 ///
@@ -41,6 +43,7 @@ class PharmacyApp extends StatelessWidget {
     this.dashboardRepository,
     this.accountRepository,
     this.salesRepository,
+    this.stockRemovalRepository,
     this.stockAlertsRepository,
     this.seenAlertsRepository,
   });
@@ -62,6 +65,9 @@ class PharmacyApp extends StatelessWidget {
   /// Defaults to the fake repository until auth gives us the signed-in
   /// user's pharmacy ID for `FirestoreSalesRepository`.
   final SalesRepository? salesRepository;
+
+  /// Defaults to sample stock until the Firestore one is passed in.
+  final StockRemovalRepository? stockRemovalRepository;
 
   /// Defaults to sample stock until auth gives us the pharmacy ID and the
   /// data layer (products and batches) is merged.
@@ -107,6 +113,9 @@ class PharmacyApp extends StatelessWidget {
         ),
         RepositoryProvider<SalesRepository>(
           create: (_) => salesRepository ?? FakeSalesRepository(),
+        ),
+        RepositoryProvider<StockRemovalRepository>(
+          create: (_) => stockRemovalRepository ?? FakeStockRemovalRepository(),
         ),
         RepositoryProvider<StockAlertsRepository>(
           create: (_) => stockAlertsRepository ?? FakeStockAlertsRepository(),
