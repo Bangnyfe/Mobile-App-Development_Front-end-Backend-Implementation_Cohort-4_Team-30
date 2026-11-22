@@ -39,10 +39,7 @@ class ReportStatCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: TextStyle(fontSize: 13, color: foreground),
-          ),
+          Text(title, style: TextStyle(fontSize: 13, color: foreground)),
           const SizedBox(height: 4),
           FittedBox(
             fit: BoxFit.scaleDown,
