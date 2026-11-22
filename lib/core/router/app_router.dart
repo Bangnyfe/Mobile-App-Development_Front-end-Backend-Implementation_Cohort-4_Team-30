@@ -21,10 +21,12 @@ import '../../features/notifications/presentation/pages/notifications_page.dart'
 import '../../features/pos/data/fake_checkout_repository.dart';
 import '../../features/pos/domain/entities/sale_receipt.dart';
 import '../../features/pos/domain/repositories/checkout_repository.dart';
+import '../../features/pos/domain/repositories/product_catalog.dart';
 import '../../features/pos/presentation/cubit/batch_pick_cubit.dart';
 import '../../features/pos/presentation/cubit/cart_cubit.dart';
 import '../../features/pos/presentation/cubit/checkout_cubit.dart';
 import '../../features/pos/presentation/cubit/payment_form_cubit.dart';
+import '../../features/pos/presentation/cubit/product_search_cubit.dart';
 import '../../features/pos/presentation/pages/cart_page.dart';
 import '../../features/pos/presentation/pages/checkout_page.dart';
 import '../../features/pos/presentation/pages/product_found_page.dart';
@@ -224,11 +226,21 @@ GoRoute _sellRoute({
 }) {
   return GoRoute(
     path: RoutePaths.sell,
-    builder: (context, state) => BlocProvider(
-      // The app looks barcodes up in the signed-in pharmacy's Firestore
-      // products (see main.dart); tests use the sample products. Checkout
-      // must use the same source, since it takes stock from those batches.
-      create: (context) => ScanCubit(context.read<ProductLookupRepository>()),
+    // The app looks barcodes up, and searches names, in the signed-in
+    // pharmacy's Firestore products (see main.dart); tests use the sample
+    // products. Checkout must use the same source, since it takes stock
+    // from those batches.
+    builder: (context, state) => MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) =>
+              ScanCubit(context.read<ProductLookupRepository>()),
+        ),
+        BlocProvider(
+          create: (context) =>
+              ProductSearchCubit(context.read<ProductCatalog>()),
+        ),
+      ],
       child: const SellPage(),
     ),
     routes: [

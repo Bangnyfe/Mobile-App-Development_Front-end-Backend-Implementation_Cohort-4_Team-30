@@ -15,18 +15,18 @@ import '../../../scanner/presentation/widgets/camera_view.dart';
 import '../../../scanner/presentation/widgets/type_barcode_dialog.dart';
 import '../cubit/cart_cubit.dart';
 import '../cubit/cart_state.dart';
+import '../cubit/product_search_cubit.dart';
 
-/// The Sell tab: scan a pack with the camera (or type its barcode) to open
-/// Product found. Shows the cart's size and total.
+/// The Sell tab: scan a pack with the camera, type its barcode, or search
+/// the pharmacy's products by name, to open Product found. Shows the cart's
+/// size and total.
 class SellPage extends StatefulWidget {
   const SellPage({super.key, this.clock = DateTime.now});
 
   /// For tests; the app uses the real time.
   final DateTime Function() clock;
 
-  static const searchByNameMessage =
-      "Search by name isn't available yet. Type the barcode number, "
-      'or scan it.';
+  static String noMatchMessage(String query) => 'No product matches "$query"';
 
   static String notFoundMessage(String barcode) =>
       'No product with barcode $barcode';
@@ -108,14 +108,41 @@ class _SellPageState extends State<SellPage> {
     if (code != null) await cubit.lookUp(code);
   }
 
+  /// Enter in the search field: a full barcode is looked up like a scan;
+  /// a name opens the product when only one matches.
   void _submitSearch(String text) {
+    final search = context.read<ProductSearchCubit>();
     final code = Gs1Parser.parse(text.trim());
-    if (code == null) {
-      _showMessage(SellPage.searchByNameMessage);
+    if (code != null) {
+      _clearSearch();
+      context.read<ScanCubit>().lookUp(code);
       return;
     }
+    final results = search.state.results;
+    if (results.length == 1) {
+      search.open(results.single.product.id);
+    } else if (results.isEmpty && search.state.status == SearchStatus.ready) {
+      _showMessage(SellPage.noMatchMessage(search.state.query));
+    }
+  }
+
+  void _clearSearch() {
     _search.clear();
-    context.read<ScanCubit>().lookUp(code);
+    context.read<ProductSearchCubit>().clear();
+  }
+
+  void _onSearchState(BuildContext context, ProductSearchState state) {
+    final found = state.opened;
+    if (found != null) {
+      FocusScope.of(context).unfocus();
+      _clearSearch();
+      context.push(RoutePaths.sellProduct, extra: found);
+      return;
+    }
+    final message = state.message;
+    if (message != null && state.status != SearchStatus.failure) {
+      _showMessage(message);
+    }
   }
 
   void _showMessage(String message) {
@@ -149,8 +176,16 @@ class _SellPageState extends State<SellPage> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Sell'), actions: const [_CartAction()]),
-      body: BlocListener<ScanCubit, ScanState>(
-        listener: _onScanState,
+      body: MultiBlocListener(
+        listeners: [
+          BlocListener<ScanCubit, ScanState>(listener: _onScanState),
+          BlocListener<ProductSearchCubit, ProductSearchState>(
+            listenWhen: (previous, current) =>
+                current.opened != previous.opened ||
+                current.message != previous.message,
+            listener: _onSearchState,
+          ),
+        ],
         child: Column(
           children: [
             Expanded(
@@ -172,19 +207,40 @@ class _SellPageState extends State<SellPage> {
                           children: [
                             SizedBox(
                               height: cameraHeight,
-                              child: _ScannerView(
-                                cameraOn: _cameraOn,
-                                camera: (context) => camera(context, _onCode),
-                              ),
+                              // While searching, the results take the
+                              // camera's place and the camera is off.
+                              child: _searching(context)
+                                  ? const _SearchResults()
+                                  : _ScannerView(
+                                      cameraOn: _cameraOn,
+                                      camera: (context) =>
+                                          camera(context, _onCode),
+                                    ),
                             ),
                             const SizedBox(height: 12),
                             TextField(
+                              key: const ValueKey('sell-search'),
                               controller: _search,
                               textInputAction: TextInputAction.search,
+                              onChanged: context
+                                  .read<ProductSearchCubit>()
+                                  .search,
                               onSubmitted: _submitSearch,
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 hintText: 'Search product by name or code',
-                                prefixIcon: Icon(Icons.search),
+                                prefixIcon: const Icon(Icons.search),
+                                suffixIcon:
+                                    ValueListenableBuilder<TextEditingValue>(
+                                      valueListenable: _search,
+                                      builder: (context, value, _) =>
+                                          value.text.isEmpty
+                                          ? const SizedBox.shrink()
+                                          : IconButton(
+                                              tooltip: 'Clear search',
+                                              onPressed: _clearSearch,
+                                              icon: const Icon(Icons.close),
+                                            ),
+                                    ),
                               ),
                             ),
                           ],
@@ -223,6 +279,129 @@ class _SellPageState extends State<SellPage> {
                 ),
               ],
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+bool _searching(BuildContext context) =>
+    context.select((ProductSearchCubit cubit) => cubit.state.isSearching);
+
+/// The products matching what's typed in the search field.
+class _SearchResults extends StatelessWidget {
+  const _SearchResults();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final textTheme = theme.textTheme;
+    final cubit = context.read<ProductSearchCubit>();
+    final state = context.watch<ProductSearchCubit>().state;
+
+    final Widget body;
+    if (state.status == SearchStatus.failure) {
+      body = _SearchMessage(
+        icon: Icons.cloud_off_outlined,
+        text: state.message ?? ProductSearchCubit.loadFailedMessage,
+        action: TextButton(
+          onPressed: () => cubit.search(state.query),
+          child: const Text('Try again'),
+        ),
+      );
+    } else if (state.results.isEmpty) {
+      body = state.status == SearchStatus.ready
+          ? _SearchMessage(
+              icon: Icons.search_off,
+              text:
+                  '${SellPage.noMatchMessage(state.query)}. Check the '
+                  'spelling, or scan the barcode.',
+            )
+          : const Center(child: CircularProgressIndicator());
+    } else {
+      body = ListView.separated(
+        itemCount: state.results.length,
+        separatorBuilder: (_, _) => const Divider(height: 1),
+        itemBuilder: (context, index) {
+          final item = state.results[index];
+          final product = item.product;
+          final barcode = product.barcode.isEmpty
+              ? 'No barcode'
+              : 'Barcode ${product.barcode}';
+          return ListTile(
+            key: ValueKey('search-result-${product.id}'),
+            minTileHeight: 56,
+            enabled: !state.opening,
+            onTap: () => cubit.open(product.id),
+            title: Text(
+              product.name,
+              style: textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            subtitle: Text(
+              [item.details, barcode].where((s) => s.isNotEmpty).join(' · '),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: textTheme.bodySmall?.copyWith(
+                color: colors.onSurfaceVariant,
+              ),
+            ),
+            trailing: Text(
+              Formatters.rwf(product.sellingPrice),
+              style: textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          );
+        },
+      );
+    }
+
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: Stack(
+        children: [
+          Positioned.fill(child: body),
+          if (state.opening)
+            const Positioned(
+              left: 0,
+              right: 0,
+              top: 0,
+              child: LinearProgressIndicator(semanticsLabel: 'Opening'),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SearchMessage extends StatelessWidget {
+  const _SearchMessage({required this.icon, required this.text, this.action});
+
+  final IconData icon;
+  final String text;
+  final Widget? action;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 40, color: colors.onSurfaceVariant),
+            const SizedBox(height: 8),
+            Text(
+              text,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            ?action,
           ],
         ),
       ),
