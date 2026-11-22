@@ -42,6 +42,10 @@ class CurrentPharmacyStockRemovalRepository implements StockRemovalRepository {
       await _current?.loadProducts() ?? const [];
 
   @override
+  Future<List<StockRemoval>> loadRemovals({required DateTime since}) async =>
+      await _current?.loadRemovals(since: since) ?? const [];
+
+  @override
   Future<StockRemoval> removeStock(StockRemovalRequest request) {
     final current = _current;
     if (current == null) {
