@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/route_paths.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/expiry_status.dart';
 import '../../../../core/utils/formatters.dart';
@@ -197,6 +199,27 @@ class _AlertRow extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
+                    // Expired stock should leave the shelf: open Remove
+                    // stock with this batch chosen and Expired suggested.
+                    if (alert.type == StockAlertType.expired &&
+                        alert.batchId != null) ...[
+                      const SizedBox(height: 8),
+                      FilledButton.icon(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: AppColors.danger,
+                          foregroundColor: AppColors.onPrimary,
+                          visualDensity: VisualDensity.compact,
+                        ),
+                        onPressed: () => context.push(
+                          RoutePaths.removeExpiredBatch(
+                            productId: alert.productId,
+                            batchId: alert.batchId!,
+                          ),
+                        ),
+                        icon: const Icon(Icons.delete_outline, size: 18),
+                        label: const Text('Remove stock'),
+                      ),
+                    ],
                   ],
                 ),
               ),
