@@ -13,6 +13,7 @@ import 'features/inventory/data/firestore_batch_repository.dart';
 import 'features/inventory/data/firestore_inventory_repository.dart';
 import 'features/inventory/data/firestore_product_repository.dart';
 import 'features/invites/data/firestore_invite_repository.dart';
+import 'features/notifications/data/inventory_stock_alerts_repository.dart';
 import 'features/notifications/data/shared_prefs_seen_alerts_repository.dart';
 import 'features/pos/data/current_pharmacy_product_catalog.dart';
 import 'features/pos/data/firestore_checkout_repository.dart';
@@ -64,6 +65,10 @@ Future<void> main() async {
         checkoutRepository: FirestoreCheckoutRepository(),
       ),
       settingsRepository: SharedPrefsSettingsRepository(prefs),
+      // The bell and Notifications: alerts from the same stock as Home.
+      stockAlertsRepository: InventoryStockAlertsRepository(
+        inventoryRepository,
+      ),
       seenAlertsRepository: SharedPrefsSeenAlertsRepository(prefs),
       authBloc: authBloc,
       inviteRepository: FirestoreInviteRepository(),

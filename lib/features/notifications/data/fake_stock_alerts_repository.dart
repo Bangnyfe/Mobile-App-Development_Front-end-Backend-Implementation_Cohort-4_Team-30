@@ -1,11 +1,8 @@
 import '../domain/entities/alert_product.dart';
 import '../domain/repositories/stock_alerts_repository.dart';
 
-/// Temporary repository with sample products, so every kind of alert shows.
-///
-/// Replace with a Firestore-backed implementation once auth gives us the
-/// pharmacy ID and the data layer (products and batches) is merged. The
-/// Cubit and page don't change when that happens.
+/// Sample products, so every kind of alert shows in widget tests. The app
+/// works the alerts out from the signed-in pharmacy's inventory.
 class FakeStockAlertsRepository implements StockAlertsRepository {
   FakeStockAlertsRepository({DateTime Function()? clock})
     : _clock = clock ?? DateTime.now;
