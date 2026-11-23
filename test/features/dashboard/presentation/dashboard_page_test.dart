@@ -19,7 +19,7 @@ class _StubDashboardRepository implements DashboardRepository {
   final Stream<DashboardSummary> _stream;
 
   @override
-  Stream<DashboardSummary> watchSummary() => _stream;
+  Stream<DashboardSummary> watchSummary(AppSettings settings) => _stream;
 }
 
 /// Pumps the dashboard on a phone-sized screen (360 x 800 logical pixels
