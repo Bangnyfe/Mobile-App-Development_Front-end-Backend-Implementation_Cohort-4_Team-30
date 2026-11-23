@@ -40,10 +40,9 @@ class FirestoreCategoryRepository implements CategoryRepository {
   });
 
   @override
-  Future<void> renameCategory(String categoryId, String name) =>
-      guardInventory(
-        () => _categories.doc(categoryId).update({'name': name.trim()}),
-      );
+  Future<void> renameCategory(String categoryId, String name) => guardInventory(
+    () => _categories.doc(categoryId).update({'name': name.trim()}),
+  );
 
   @override
   Future<void> deleteCategory(String categoryId) =>

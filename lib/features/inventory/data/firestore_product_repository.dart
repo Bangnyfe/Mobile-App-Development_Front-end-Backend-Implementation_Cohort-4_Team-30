@@ -36,14 +36,11 @@ class FirestoreProductRepository implements ProductRepository {
       .withInventoryFailures();
 
   @override
-  Stream<Product?> watchProduct(String productId) => _products
-      .doc(productId)
-      .snapshots()
-      .map((doc) {
+  Stream<Product?> watchProduct(String productId) =>
+      _products.doc(productId).snapshots().map((doc) {
         final data = doc.data();
         return data == null ? null : Product.fromMap(doc.id, data);
-      })
-      .withInventoryFailures();
+      }).withInventoryFailures();
 
   @override
   Future<Product?> getProduct(String productId) => guardInventory(() async {
@@ -107,8 +104,8 @@ class FirestoreProductRepository implements ProductRepository {
       'sellingPrice': ?sellingPrice,
       if (clearReorderLevel)
         'reorderLevel': null
-      else if (reorderLevel != null)
-        'reorderLevel': reorderLevel,
+      else
+        'reorderLevel': ?reorderLevel,
     };
     if (changes.isEmpty) return;
     await _products.doc(productId).update({

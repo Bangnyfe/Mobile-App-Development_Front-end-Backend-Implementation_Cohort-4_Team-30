@@ -27,11 +27,12 @@ class FirestoreBatchRepository implements BatchRepository {
           .collection('batches');
 
   @override
-  Stream<List<Batch>> watchBatches(String productId) => _batches(productId)
-      .orderBy('expiryDate')
-      .snapshots()
-      .map(_toBatches)
-      .withInventoryFailures();
+  Stream<List<Batch>> watchBatches(String productId) =>
+      _batches(productId)
+          .orderBy('expiryDate')
+          .snapshots()
+          .map(_toBatches)
+          .withInventoryFailures();
 
   @override
   Stream<List<Batch>> watchAllBatches() => _firestore
