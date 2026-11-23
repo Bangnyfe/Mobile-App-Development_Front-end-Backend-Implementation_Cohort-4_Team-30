@@ -31,8 +31,8 @@ Other things worth knowing:
 
 ## Roles
 
-| | Owner | Pharmacist |
-|---|:---:|:---:|# Mobile-App-Development_Front-end-Backend-Implementation_Cohort-4_Team-30
+| Action | Owner | Pharmacist |
+|---|:---:|:---:|
 | Sell, view stock and reports | Yes | Yes |
 | Register products, add batches and categories | Yes | Yes |
 | Lower a batch's quantity (selling, removing stock) | Yes | Yes |
