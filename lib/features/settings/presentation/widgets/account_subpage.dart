@@ -8,36 +8,46 @@ import '../cubit/account_cubit.dart';
 /// bar with a back button, then [builder]'s content once loaded, with a
 /// spinner while loading and a retry button if loading failed.
 class AccountSubpage extends StatelessWidget {
-  const AccountSubpage({super.key, required this.title, required this.builder});
+  const AccountSubpage({
+    super.key,
+    required this.title,
+    required this.builder,
+    this.actions,
+  });
 
   final String title;
   final List<Widget> Function(BuildContext context, PharmacyAccount account)
   builder;
 
+  /// App bar buttons, shown once the account has loaded.
+  final List<Widget> Function(BuildContext context, PharmacyAccount account)?
+  actions;
+
   @override
   Widget build(BuildContext context) {
+    final state = context.watch<AccountCubit>().state;
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(
+        title: Text(title),
+        actions: switch (state) {
+          AccountLoaded(:final account) => actions?.call(context, account),
+          _ => null,
+        },
+      ),
       body: SafeArea(
-        child: BlocBuilder<AccountCubit, AccountState>(
-          builder: (context, state) => switch (state) {
-            AccountLoading() => const Center(
-              child: CircularProgressIndicator(),
-            ),
-            AccountFailure(:final message) => AccountErrorView(
-              message: message,
-            ),
-            AccountLoaded(:final account) => Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 640),
-                child: ListView(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-                  children: builder(context, account),
-                ),
+        child: switch (state) {
+          AccountLoading() => const Center(child: CircularProgressIndicator()),
+          AccountFailure(:final message) => AccountErrorView(message: message),
+          AccountLoaded(:final account) => Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 640),
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                children: builder(context, account),
               ),
             ),
-          },
-        ),
+          ),
+        },
       ),
     );
   }
