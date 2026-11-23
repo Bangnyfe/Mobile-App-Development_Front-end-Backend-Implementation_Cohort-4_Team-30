@@ -54,6 +54,7 @@ import '../../features/sales/presentation/pages/sales_history_page.dart';
 import '../../features/scanner/domain/entities/found_product.dart';
 import '../../features/scanner/domain/repositories/product_lookup_repository.dart';
 import '../../features/scanner/presentation/cubit/scan_cubit.dart';
+import '../../features/settings/presentation/cubit/settings_cubit.dart';
 import '../../features/settings/presentation/pages/categories_page.dart';
 import '../../features/settings/presentation/pages/edit_pharmacy_profile_page.dart';
 import '../../features/settings/presentation/pages/pharmacy_profile_page.dart';
@@ -112,9 +113,17 @@ GoRouter createAppRouter({
               GoRoute(
                 path: RoutePaths.home,
                 builder: (context, state) => BlocProvider(
-                  create: (context) =>
-                      DashboardCubit(context.read<DashboardRepository>())
-                        ..start(),
+                  // Low stock and expiring follow Settings › Alerts.
+                  create: (context) {
+                    final settings = context.read<SettingsCubit>();
+                    return DashboardCubit(
+                      context.read<DashboardRepository>(),
+                      initialSettings: settings.state.settings,
+                      settingsChanges: settings.stream.map(
+                        (state) => state.settings,
+                      ),
+                    )..start();
+                  },
                   child: const DashboardPage(),
                 ),
                 // Inside the Home tab, so the bottom bar stays visible and

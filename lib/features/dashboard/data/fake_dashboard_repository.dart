@@ -1,12 +1,10 @@
+import '../../settings/domain/entities/app_settings.dart';
 import '../domain/entities/dashboard_summary.dart';
 import '../domain/entities/recent_sale.dart';
 import '../domain/repositories/dashboard_repository.dart';
 
-/// Temporary repository with the prototype's sample numbers.
-///
-/// Replace with a Firestore-backed implementation once the shared data
-/// layer (products, batches, sales) is merged. The Cubit and UI do not
-/// change when that happens.
+/// The prototype's sample numbers, for widget tests. The app works Home
+/// out from the signed-in pharmacy's sales and stock.
 class FakeDashboardRepository implements DashboardRepository {
   FakeDashboardRepository({DateTime Function()? clock})
     : _clock = clock ?? DateTime.now;
@@ -14,7 +12,7 @@ class FakeDashboardRepository implements DashboardRepository {
   final DateTime Function() _clock;
 
   @override
-  Stream<DashboardSummary> watchSummary() {
+  Stream<DashboardSummary> watchSummary(AppSettings settings) {
     final today = _clock();
     DateTime at(int hour, int minute) =>
         DateTime(today.year, today.month, today.day, hour, minute);
@@ -28,7 +26,7 @@ class FakeDashboardRepository implements DashboardRepository {
         productCount: 412,
         unitsInStock: 8930,
         lowStockCount: 7,
-        expiringWindowDays: 30,
+        expiringWindowDays: settings.expiryAlertDays,
         expiringBatchCount: 5,
         expiringCostValue: 88700,
         expiredBatchCount: 2,
