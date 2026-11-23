@@ -7,11 +7,16 @@ import 'package:equatable/equatable.dart';
 /// signs up with email must first get the chance to join their pharmacy
 /// instead. The setup step after verification is pre-filled from this.
 class PharmacyDraft extends Equatable {
-  const PharmacyDraft({required this.name, required this.location});
+  const PharmacyDraft({
+    required this.name,
+    required this.district,
+    required this.city,
+  });
 
   final String name;
-  final String location;
+  final String district;
+  final String city;
 
   @override
-  List<Object?> get props => [name, location];
+  List<Object?> get props => [name, district, city];
 }

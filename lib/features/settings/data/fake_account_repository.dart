@@ -2,11 +2,8 @@ import '../../../core/domain/user_role.dart';
 import '../domain/entities/pharmacy_account.dart';
 import '../domain/repositories/account_repository.dart';
 
-/// Temporary repository with the prototype's sample pharmacy.
-///
-/// Replace with one that reads the pharmacy, users and categories from
-/// Firestore and signs out through auth, once those are merged. The Cubit
-/// and UI do not change when that happens.
+/// The prototype's sample pharmacy, for widget tests. The app uses
+/// `FirestoreAccountRepository`.
 class FakeAccountRepository implements AccountRepository {
   const FakeAccountRepository();
 
@@ -65,7 +62,12 @@ class FakeAccountRepository implements AccountRepository {
     ],
   );
 
-  /// Does nothing until auth is merged.
+  /// Does nothing: the Settings screens show the saved details from
+  /// `AccountCubit`, and tests check saving through their own repository.
+  @override
+  Future<void> updatePharmacy(Pharmacy pharmacy) async {}
+
+  /// Does nothing: tests check Log out through their own repository.
   @override
   Future<void> signOut() async {}
 }

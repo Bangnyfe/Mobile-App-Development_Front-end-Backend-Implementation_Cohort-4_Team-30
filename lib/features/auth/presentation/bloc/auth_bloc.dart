@@ -70,7 +70,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       email: event.email,
       password: event.password,
       pharmacyName: event.pharmacyName,
-      pharmacyLocation: event.pharmacyLocation,
+      pharmacyDistrict: event.pharmacyDistrict,
+      pharmacyCity: event.pharmacyCity,
     ),
   );
 
@@ -160,7 +161,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthAction.pharmacySetup,
     () => _repository.createPharmacy(
       pharmacyName: event.pharmacyName,
-      pharmacyLocation: event.pharmacyLocation,
+      pharmacyDistrict: event.pharmacyDistrict,
+      pharmacyCity: event.pharmacyCity,
     ),
   );
 

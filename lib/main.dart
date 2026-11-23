@@ -4,16 +4,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app.dart';
 import 'core/router/app_router.dart';
-import 'features/auth/data/auth_backed_account_repository.dart';
 import 'features/auth/data/firebase_auth_repository.dart';
 import 'features/auth/data/shared_prefs_pharmacy_draft_repository.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/inventory/data/current_pharmacy_inventory_repository.dart';
+import 'features/inventory/data/firestore_batch_repository.dart';
 import 'features/inventory/data/firestore_inventory_repository.dart';
+import 'features/inventory/data/firestore_product_repository.dart';
 import 'features/invites/data/firestore_invite_repository.dart';
 import 'features/notifications/data/shared_prefs_seen_alerts_repository.dart';
-import 'features/inventory/data/firestore_batch_repository.dart';
-import 'features/inventory/data/firestore_product_repository.dart';
 import 'features/pos/data/current_pharmacy_product_catalog.dart';
 import 'features/pos/data/firestore_checkout_repository.dart';
 import 'features/pos/data/inventory_product_catalog.dart';
@@ -21,11 +20,11 @@ import 'features/sales/data/current_pharmacy_sales_repository.dart';
 import 'features/sales/data/firestore_sales_repository.dart';
 import 'features/scanner/data/current_pharmacy_product_lookup_repository.dart';
 import 'features/scanner/data/firestore_product_lookup_repository.dart';
-import 'features/settings/data/fake_account_repository.dart';
+import 'features/settings/data/firestore_account_repository.dart';
 import 'features/settings/data/shared_prefs_settings_repository.dart';
-import 'firebase_options.dart';
 import 'features/stock_removal/data/current_pharmacy_stock_removal_repository.dart';
 import 'features/stock_removal/data/firestore_stock_removal_repository.dart';
+import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -88,9 +87,11 @@ Future<void> main() async {
         ),
       ),
       pharmacyDraftRepository: pharmacyDrafts,
-      accountRepository: AuthBackedAccountRepository(
-        details: const FakeAccountRepository(),
-        auth: authRepository,
+      // The signed-in user's pharmacy, staff and categories. Log out goes
+      // through Firebase auth, which sends the router back to Login.
+      accountRepository: FirestoreAccountRepository(
+        currentUser: () => authBloc.state.user,
+        signOut: authRepository.signOut,
       ),
     ),
   );

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/route_paths.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../widgets/account_subpage.dart';
 import '../widgets/settings_section.dart';
@@ -12,6 +14,15 @@ class PharmacyProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return AccountSubpage(
       title: 'Pharmacy profile',
+      // Only the owner can change the details (the rules agree).
+      actions: (context, account) => [
+        if (account.user.isOwner)
+          IconButton(
+            tooltip: 'Edit pharmacy profile',
+            icon: const Icon(Icons.edit_outlined),
+            onPressed: () => context.push(RoutePaths.editPharmacyProfile),
+          ),
+      ],
       builder: (context, account) {
         final pharmacy = account.pharmacy;
         return [

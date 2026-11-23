@@ -73,8 +73,8 @@ class PharmacyApp extends StatelessWidget {
   /// Defaults to the fake repository until the Firestore one is merged.
   final DashboardRepository? dashboardRepository;
 
-  /// Defaults to the fake repository until auth and the data layer are
-  /// merged.
+  /// Defaults to the sample pharmacy for widget tests; `main.dart` passes
+  /// the signed-in user's pharmacy from Firestore.
   final AccountRepository? accountRepository;
 
   /// Defaults to sample sales for widget tests; `main.dart` passes the
@@ -125,11 +125,13 @@ class PharmacyApp extends StatelessWidget {
     if (bloc != null) {
       app = BlocListener<AuthBloc, AuthState>(
         bloc: bloc,
-        // Another user signed in, or the user signed out: drop the previous
-        // user's cart and reload the account shown in Settings, so nothing
-        // from one session leaks into the next.
+        // Another user signed in, the user signed out, or they just joined
+        // or created a pharmacy: drop the previous user's cart and reload
+        // the account shown in Settings, so nothing from one session leaks
+        // into the next.
         listenWhen: (previous, current) =>
-            previous.user?.uid != current.user?.uid,
+            previous.user?.uid != current.user?.uid ||
+            previous.user?.pharmacyId != current.user?.pharmacyId,
         listener: (context, state) {
           context.read<CartCubit>().clear();
           context.read<AccountCubit>().load();

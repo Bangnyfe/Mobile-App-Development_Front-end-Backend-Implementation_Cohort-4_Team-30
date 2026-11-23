@@ -61,6 +61,7 @@ abstract final class RoutePaths {
 
   // Settings subpages.
   static const pharmacyProfile = '$settings/pharmacy';
+  static const editPharmacyProfile = '$pharmacyProfile/edit';
   static const staff = '$settings/staff';
   static const categories = '$settings/categories';
 }

@@ -63,7 +63,11 @@ void main() {
       pharmacyNames: const {'p1': 'Amani Pharmacy'},
     );
     drafts = InMemoryPharmacyDraftRepository({
-      'u2': const PharmacyDraft(name: 'Eric Pharmacy', location: 'Remera'),
+      'u2': const PharmacyDraft(
+        name: 'Eric Pharmacy',
+        district: 'Gasabo',
+        city: 'Kigali',
+      ),
     });
   });
 
@@ -147,7 +151,8 @@ void main() {
       () => bloc.add(
         const AuthPharmacySetupSubmitted(
           pharmacyName: 'Eric Pharmacy',
-          pharmacyLocation: 'Remera',
+          pharmacyDistrict: 'Gasabo',
+          pharmacyCity: 'Kigali',
         ),
       ),
     ).called(1);

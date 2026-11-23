@@ -55,6 +55,7 @@ import '../../features/scanner/domain/entities/found_product.dart';
 import '../../features/scanner/domain/repositories/product_lookup_repository.dart';
 import '../../features/scanner/presentation/cubit/scan_cubit.dart';
 import '../../features/settings/presentation/pages/categories_page.dart';
+import '../../features/settings/presentation/pages/edit_pharmacy_profile_page.dart';
 import '../../features/settings/presentation/pages/pharmacy_profile_page.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
 import '../../features/settings/presentation/pages/staff_page.dart';
@@ -185,6 +186,13 @@ GoRouter createAppRouter({
                   GoRoute(
                     path: 'pharmacy',
                     builder: (context, state) => const PharmacyProfilePage(),
+                    routes: [
+                      GoRoute(
+                        path: 'edit',
+                        builder: (context, state) =>
+                            const EditPharmacyProfilePage(),
+                      ),
+                    ],
                   ),
                   GoRoute(
                     path: 'staff',
