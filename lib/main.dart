@@ -7,6 +7,7 @@ import 'core/router/app_router.dart';
 import 'features/auth/data/firebase_auth_repository.dart';
 import 'features/auth/data/shared_prefs_pharmacy_draft_repository.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/dashboard/data/live_dashboard_repository.dart';
 import 'features/inventory/data/current_pharmacy_inventory_repository.dart';
 import 'features/inventory/data/firestore_batch_repository.dart';
 import 'features/inventory/data/firestore_inventory_repository.dart';
@@ -41,6 +42,19 @@ Future<void> main() async {
   final authRepository = FirebaseAuthRepository(drafts: pharmacyDrafts);
   final authBloc = AuthBloc(authRepository)..add(const AuthStarted());
 
+  // Sales saved by checkout, for the signed-in user's pharmacy (Sales
+  // history and Home).
+  final salesRepository = CurrentPharmacySalesRepository(
+    pharmacyId: () => authBloc.state.user?.pharmacyId,
+    forPharmacy: (id) => FirestoreSalesRepository(pharmacyId: id),
+  );
+
+  // The signed-in pharmacy's products and batches (the Stock tab and Home).
+  final inventoryRepository = CurrentPharmacyInventoryRepository(
+    pharmacyId: () => authBloc.state.user?.pharmacyId,
+    forPharmacy: FirestoreInventoryRepository.forPharmacy,
+  );
+
   runApp(
     PharmacyApp(
       // Confirmed sales are saved in the seller's pharmacy, lowering each
@@ -53,21 +67,19 @@ Future<void> main() async {
       seenAlertsRepository: SharedPrefsSeenAlertsRepository(prefs),
       authBloc: authBloc,
       inviteRepository: FirestoreInviteRepository(),
-      // Sales saved by checkout, for the signed-in user's pharmacy.
-      salesRepository: CurrentPharmacySalesRepository(
-        pharmacyId: () => authBloc.state.user?.pharmacyId,
-        forPharmacy: (id) => FirestoreSalesRepository(pharmacyId: id),
-      ),
+      salesRepository: salesRepository,
       // The Sell tab finds scanned barcodes among the signed-in
       // pharmacy's products.
       productLookupRepository: CurrentPharmacyProductLookupRepository(
         pharmacyId: () => authBloc.state.user?.pharmacyId,
         forPharmacy: (id) => FirestoreProductLookupRepository(pharmacyId: id),
       ),
-      // The Stock tab lists the signed-in pharmacy's products and batches.
-      inventoryRepository: CurrentPharmacyInventoryRepository(
-        pharmacyId: () => authBloc.state.user?.pharmacyId,
-        forPharmacy: FirestoreInventoryRepository.forPharmacy,
+      inventoryRepository: inventoryRepository,
+      // Home: today's sales and the stock alerts, from the same two.
+      dashboardRepository: LiveDashboardRepository(
+        sales: salesRepository,
+        inventory: inventoryRepository,
+        userName: () => authBloc.state.user?.name,
       ),
       // ...and searches them by name, through the inventory repositories.
       productCatalog: CurrentPharmacyProductCatalog(
