@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -13,10 +14,34 @@ import '../../features/auth/domain/repositories/pharmacy_draft_repository.dart';
 import '../../features/dashboard/domain/repositories/dashboard_repository.dart';
 import '../../features/dashboard/presentation/cubit/dashboard_cubit.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
+import '../../features/inventory/domain/inventory_filter.dart';
+import '../../features/inventory/domain/repositories/inventory_repository.dart';
+import '../../features/inventory/presentation/cubit/add_stock_cubit.dart';
+import '../../features/inventory/presentation/cubit/inventory_cubit.dart';
+import '../../features/inventory/presentation/cubit/product_details_cubit.dart';
+import '../../features/inventory/presentation/cubit/register_product_cubit.dart';
+import '../../features/inventory/presentation/pages/add_stock_page.dart';
+import '../../features/inventory/presentation/pages/inventory_page.dart';
+import '../../features/inventory/presentation/pages/product_details_page.dart';
+import '../../features/inventory/presentation/pages/register_product_page.dart';
 import '../../features/invites/domain/repositories/invite_repository.dart';
 import '../../features/invites/presentation/cubit/pharmacy_choice_cubit.dart';
 import '../../features/invites/presentation/cubit/pharmacy_invites_cubit.dart';
 import '../../features/notifications/presentation/pages/notifications_page.dart';
+import '../../features/pos/data/fake_checkout_repository.dart';
+import '../../features/pos/domain/entities/sale_receipt.dart';
+import '../../features/pos/domain/repositories/checkout_repository.dart';
+import '../../features/pos/domain/repositories/product_catalog.dart';
+import '../../features/pos/presentation/cubit/batch_pick_cubit.dart';
+import '../../features/pos/presentation/cubit/cart_cubit.dart';
+import '../../features/pos/presentation/cubit/checkout_cubit.dart';
+import '../../features/pos/presentation/cubit/payment_form_cubit.dart';
+import '../../features/pos/presentation/cubit/product_search_cubit.dart';
+import '../../features/pos/presentation/pages/cart_page.dart';
+import '../../features/pos/presentation/pages/checkout_page.dart';
+import '../../features/pos/presentation/pages/product_found_page.dart';
+import '../../features/pos/presentation/pages/receipt_page.dart';
+import '../../features/pos/presentation/pages/sell_page.dart';
 import '../../features/reports/presentation/cubit/stock_reports_cubit.dart';
 import '../../features/reports/presentation/pages/expiry_waste_report_page.dart';
 import '../../features/reports/presentation/pages/inventory_report_page.dart';
@@ -26,9 +51,9 @@ import '../../features/sales/presentation/cubit/sale_details_cubit.dart';
 import '../../features/sales/presentation/cubit/sales_history_cubit.dart';
 import '../../features/sales/presentation/pages/sale_details_page.dart';
 import '../../features/sales/presentation/pages/sales_history_page.dart';
+import '../../features/scanner/domain/entities/found_product.dart';
 import '../../features/scanner/domain/repositories/product_lookup_repository.dart';
 import '../../features/scanner/presentation/cubit/scan_cubit.dart';
-import '../../features/scanner/presentation/pages/scan_product_page.dart';
 import '../../features/settings/presentation/pages/categories_page.dart';
 import '../../features/settings/presentation/pages/pharmacy_profile_page.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
@@ -38,7 +63,6 @@ import '../../features/stock_removal/domain/repositories/stock_removal_repositor
 import '../../features/stock_removal/presentation/cubit/remove_stock_cubit.dart';
 import '../../features/stock_removal/presentation/pages/remove_stock_page.dart';
 import '../widgets/app_shell.dart';
-import '../widgets/feature_placeholder_page.dart';
 import 'auth_redirect.dart';
 import 'auth_status_listenable.dart';
 import 'route_paths.dart';
@@ -49,15 +73,22 @@ import 'route_paths.dart';
 /// own navigation stack, so switching tabs never loses where the user was
 /// and the system back button only pops within the current tab.
 ///
-/// Feature owners: replace the [FeaturePlaceholderPage] in your branch with
-/// your real page, and add sub-routes (e.g. product details) under it.
-///
 /// With [authBloc] (the real app), the app starts on Splash and every
 /// navigation is checked by [authRedirect], so each sign-in status always
 /// lands on its own screen. Without it (most widget tests), the app opens
 /// straight on Home as before.
-GoRouter createAppRouter({AuthBloc? authBloc}) {
+///
+/// [checkoutRepository] saves confirmed sales: `main.dart` passes
+/// `FirestoreCheckoutRepository`, and tests get [FakeCheckoutRepository]
+/// by default (see [_sellRoute]).
+GoRouter createAppRouter({
+  AuthBloc? authBloc,
+  CheckoutRepository? checkoutRepository,
+}) {
+  // Screens that open above the tabs (no bottom bar) use this navigator.
+  final rootNavigatorKey = GlobalKey<NavigatorState>();
   return GoRouter(
+    navigatorKey: rootNavigatorKey,
     initialLocation: authBloc == null ? RoutePaths.home : AuthRoutePaths.splash,
     refreshListenable: authBloc == null ? null : AuthStatusListenable(authBloc),
     redirect: authBloc == null
@@ -69,6 +100,8 @@ GoRouter createAppRouter({AuthBloc? authBloc}) {
     routes: [
       ..._authRoutes,
       _removeStockRoute,
+      _addStockRoute(authBloc: authBloc),
+      _registerProductRoute,
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
             AppShell(navigationShell: navigationShell),
@@ -99,19 +132,15 @@ GoRouter createAppRouter({AuthBloc? authBloc}) {
           ),
           StatefulShellBranch(
             routes: [
-              GoRoute(
-                path: RoutePaths.sell,
-                // Maxime: the cart and checkout build on this. A found
-                // product is ready for CartCubit.addItem.
-                builder: (context, state) => BlocProvider(
-                  create: (context) =>
-                      ScanCubit(context.read<ProductLookupRepository>()),
-                  child: const ScanProductPage(),
-                ),
+              _sellRoute(
+                rootNavigatorKey: rootNavigatorKey,
+                checkoutRepository:
+                    checkoutRepository ?? FakeCheckoutRepository(),
+                authBloc: authBloc,
               ),
             ],
           ),
-          _tab(RoutePaths.stock, 'Inventory'),
+          StatefulShellBranch(routes: [_stockRoute(authBloc: authBloc)]),
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -187,6 +216,84 @@ GoRouter createAppRouter({AuthBloc? authBloc}) {
             ],
           ),
         ],
+      ),
+    ],
+  );
+}
+
+/// The Sell tab and its flow: Sell → Product found → Cart → Checkout →
+/// Receipt. The sub-screens open on the root navigator, above the tabs, so
+/// the bottom bar is hidden on them as in the Figma flow, while their paths
+/// stay under /sell and back returns to Sell.
+///
+/// The cart is the app-wide CartCubit from `app.dart`.
+GoRoute _sellRoute({
+  required GlobalKey<NavigatorState> rootNavigatorKey,
+  required CheckoutRepository checkoutRepository,
+  AuthBloc? authBloc,
+}) {
+  return GoRoute(
+    path: RoutePaths.sell,
+    // The app looks barcodes up, and searches names, in the signed-in
+    // pharmacy's Firestore products (see main.dart); tests use the sample
+    // products. Checkout must use the same source, since it takes stock
+    // from those batches.
+    builder: (context, state) => MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) =>
+              ScanCubit(context.read<ProductLookupRepository>()),
+        ),
+        BlocProvider(
+          create: (context) =>
+              ProductSearchCubit(context.read<ProductCatalog>()),
+        ),
+      ],
+      child: const SellPage(),
+    ),
+    routes: [
+      GoRoute(
+        path: 'product',
+        parentNavigatorKey: rootNavigatorKey,
+        // Needs the scanned product; without it (e.g. a restored link)
+        // there's nothing to show, so start again from Sell.
+        redirect: (context, state) =>
+            state.extra is FoundProduct ? null : RoutePaths.sell,
+        builder: (context, state) {
+          final found = state.extra! as FoundProduct;
+          return BlocProvider(
+            create: (context) => BatchPickCubit(
+              batches: found.batches,
+              today: DateTime.now(),
+              cart: context.read<CartCubit>().state.items,
+            ),
+            child: ProductFoundPage(found: found),
+          );
+        },
+      ),
+      GoRoute(
+        path: 'cart',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const CartPage(),
+      ),
+      GoRoute(
+        path: 'checkout',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => CheckoutCubit(checkoutRepository)),
+            BlocProvider(create: (_) => PaymentFormCubit()),
+          ],
+          child: CheckoutPage(signedInUser: authBloc?.state.user),
+        ),
+      ),
+      GoRoute(
+        path: 'receipt',
+        parentNavigatorKey: rootNavigatorKey,
+        redirect: (context, state) =>
+            state.extra is SaleReceipt ? null : RoutePaths.sell,
+        builder: (context, state) =>
+            ReceiptPage(receipt: state.extra! as SaleReceipt),
       ),
     ],
   );
@@ -280,12 +387,72 @@ final _removeStockRoute = GoRoute(
   },
 );
 
-StatefulShellBranch _tab(String path, String title) {
-  return StatefulShellBranch(
+/// Add stock opens above the tabs, like Remove stock (no bottom bar).
+/// `?productId=` skips the scan. The batch records who received it.
+GoRoute _addStockRoute({AuthBloc? authBloc}) {
+  return GoRoute(
+    path: RoutePaths.addStock,
+    builder: (context, state) {
+      final user = authBloc?.state.user;
+      return BlocProvider(
+        create: (context) => AddStockCubit(
+          context.read<InventoryRepository>(),
+          receivedBy: user?.uid ?? '',
+          receivedByName: user?.name ?? '',
+        )..start(productId: state.uri.queryParameters['productId']),
+        child: const AddStockPage(),
+      );
+    },
+  );
+}
+
+/// Register product opens above the tabs, with the scanned barcode (if
+/// any) as `extra`. It closes with the new product.
+final _registerProductRoute = GoRoute(
+  path: RoutePaths.registerProduct,
+  builder: (context, state) {
+    final barcode = state.extra;
+    return BlocProvider(
+      create: (context) =>
+          RegisterProductCubit(context.read<InventoryRepository>())..start(),
+      child: RegisterProductPage(
+        initialBarcode: barcode is String ? barcode : '',
+      ),
+    );
+  },
+);
+
+/// The Stock tab: the Inventory list, with Product details inside the tab
+/// so the bottom bar stays visible and back returns to the list.
+///
+/// `/stock?filter=lowStock` opens the list on a filter chip (the names are
+/// in `InventoryFilter`). Only owners may edit or delete products; without
+/// [authBloc] (most widget tests) everyone can.
+GoRoute _stockRoute({AuthBloc? authBloc}) {
+  bool canManage() =>
+      authBloc == null || (authBloc.state.user?.isOwner ?? false);
+
+  return GoRoute(
+    path: RoutePaths.stock,
+    builder: (context, state) => BlocProvider(
+      create: (context) => InventoryCubit(
+        context.read<InventoryRepository>(),
+        initialFilter: InventoryFilter.fromName(
+          state.uri.queryParameters['filter'],
+        ),
+      )..start(),
+      child: const InventoryPage(),
+    ),
     routes: [
       GoRoute(
-        path: path,
-        builder: (context, state) => FeaturePlaceholderPage(title: title),
+        path: 'products/:productId',
+        builder: (context, state) => BlocProvider(
+          create: (context) => ProductDetailsCubit(
+            context.read<InventoryRepository>(),
+            state.pathParameters['productId']!,
+          )..start(),
+          child: ProductDetailsPage(canManage: canManage()),
+        ),
       ),
     ],
   );

@@ -3,9 +3,9 @@ import '../../pos/domain/entities/pos_product.dart';
 import '../domain/entities/found_product.dart';
 import '../domain/repositories/product_lookup_repository.dart';
 
-/// Sample products to scan until the shared data layer is merged. Uses the
-/// same products and batch numbers as the Remove stock samples, with real
-/// check digits so the barcodes can be typed.
+/// Sample products to scan, for widget tests; the app looks barcodes up
+/// in Firestore. Uses the same products and batch numbers as the Remove
+/// stock samples, with real check digits so the barcodes can be typed.
 ///
 /// Expiry dates are relative to [clock], so there is always an expired
 /// batch to see.

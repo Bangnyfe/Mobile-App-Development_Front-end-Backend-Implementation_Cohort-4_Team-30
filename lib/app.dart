@@ -8,6 +8,8 @@ import 'features/auth/domain/repositories/pharmacy_draft_repository.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/dashboard/data/fake_dashboard_repository.dart';
 import 'features/dashboard/domain/repositories/dashboard_repository.dart';
+import 'features/inventory/data/fake_inventory_repository.dart';
+import 'features/inventory/domain/repositories/inventory_repository.dart';
 import 'features/invites/data/fake_invite_repository.dart';
 import 'features/invites/domain/repositories/invite_repository.dart';
 import 'features/notifications/data/fake_stock_alerts_repository.dart';
@@ -15,6 +17,8 @@ import 'features/notifications/data/in_memory_seen_alerts_repository.dart';
 import 'features/notifications/domain/repositories/seen_alerts_repository.dart';
 import 'features/notifications/domain/repositories/stock_alerts_repository.dart';
 import 'features/notifications/presentation/cubit/notifications_cubit.dart';
+import 'features/pos/data/fake_product_catalog.dart';
+import 'features/pos/domain/repositories/product_catalog.dart';
 import 'features/pos/presentation/cubit/cart_cubit.dart';
 import 'features/sales/data/fake_sales_repository.dart';
 import 'features/sales/domain/repositories/sales_repository.dart';
@@ -51,6 +55,8 @@ class PharmacyApp extends StatelessWidget {
     this.salesRepository,
     this.stockRemovalRepository,
     this.productLookupRepository,
+    this.inventoryRepository,
+    this.productCatalog,
     this.stockAlertsRepository,
     this.seenAlertsRepository,
     this.inviteRepository,
@@ -78,11 +84,18 @@ class PharmacyApp extends StatelessWidget {
   /// Defaults to sample stock until the Firestore one is passed in.
   final StockRemovalRepository? stockRemovalRepository;
 
-  /// Finds scanned barcodes. Defaults to sample products until products
-  /// can be added to Firestore; then `main.dart` passes a
-  /// `CurrentPharmacyProductLookupRepository` using
-  /// `FirestoreProductLookupRepository`.
+  /// Finds scanned barcodes. Defaults to sample products for widget tests;
+  /// `main.dart` passes the signed-in pharmacy's products from Firestore.
   final ProductLookupRepository? productLookupRepository;
+
+  /// Products and batches for the Stock tab. Defaults to sample stock for
+  /// widget tests; `main.dart` passes the signed-in pharmacy's Firestore
+  /// inventory.
+  final InventoryRepository? inventoryRepository;
+
+  /// Searches products by name on Sell. Defaults to the sample products for
+  /// widget tests; `main.dart` passes the signed-in pharmacy's products.
+  final ProductCatalog? productCatalog;
 
   /// Defaults to sample stock until auth gives us the pharmacy ID and the
   /// data layer (products and batches) is merged.
@@ -145,6 +158,12 @@ class PharmacyApp extends StatelessWidget {
         RepositoryProvider<ProductLookupRepository>(
           create: (_) =>
               productLookupRepository ?? FakeProductLookupRepository(),
+        ),
+        RepositoryProvider<InventoryRepository>(
+          create: (_) => inventoryRepository ?? FakeInventoryRepository(),
+        ),
+        RepositoryProvider<ProductCatalog>(
+          create: (_) => productCatalog ?? FakeProductCatalog(),
         ),
         RepositoryProvider<StockAlertsRepository>(
           create: (_) => stockAlertsRepository ?? FakeStockAlertsRepository(),

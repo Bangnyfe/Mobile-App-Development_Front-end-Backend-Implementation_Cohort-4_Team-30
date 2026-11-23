@@ -7,15 +7,24 @@ import 'core/router/app_router.dart';
 import 'features/auth/data/firebase_auth_repository.dart';
 import 'features/auth/data/shared_prefs_pharmacy_draft_repository.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/inventory/data/current_pharmacy_inventory_repository.dart';
+import 'features/inventory/data/firestore_batch_repository.dart';
+import 'features/inventory/data/firestore_inventory_repository.dart';
+import 'features/inventory/data/firestore_product_repository.dart';
 import 'features/invites/data/firestore_invite_repository.dart';
 import 'features/notifications/data/shared_prefs_seen_alerts_repository.dart';
+import 'features/pos/data/current_pharmacy_product_catalog.dart';
+import 'features/pos/data/firestore_checkout_repository.dart';
+import 'features/pos/data/inventory_product_catalog.dart';
 import 'features/sales/data/current_pharmacy_sales_repository.dart';
 import 'features/sales/data/firestore_sales_repository.dart';
+import 'features/scanner/data/current_pharmacy_product_lookup_repository.dart';
+import 'features/scanner/data/firestore_product_lookup_repository.dart';
 import 'features/settings/data/firestore_account_repository.dart';
 import 'features/settings/data/shared_prefs_settings_repository.dart';
-import 'firebase_options.dart';
 import 'features/stock_removal/data/current_pharmacy_stock_removal_repository.dart';
 import 'features/stock_removal/data/firestore_stock_removal_repository.dart';
+import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,7 +43,12 @@ Future<void> main() async {
 
   runApp(
     PharmacyApp(
-      router: createAppRouter(authBloc: authBloc),
+      // Confirmed sales are saved in the seller's pharmacy, lowering each
+      // batch in the same transaction.
+      router: createAppRouter(
+        authBloc: authBloc,
+        checkoutRepository: FirestoreCheckoutRepository(),
+      ),
       settingsRepository: SharedPrefsSettingsRepository(prefs),
       seenAlertsRepository: SharedPrefsSeenAlertsRepository(prefs),
       authBloc: authBloc,
@@ -43,6 +57,25 @@ Future<void> main() async {
       salesRepository: CurrentPharmacySalesRepository(
         pharmacyId: () => authBloc.state.user?.pharmacyId,
         forPharmacy: (id) => FirestoreSalesRepository(pharmacyId: id),
+      ),
+      // The Sell tab finds scanned barcodes among the signed-in
+      // pharmacy's products.
+      productLookupRepository: CurrentPharmacyProductLookupRepository(
+        pharmacyId: () => authBloc.state.user?.pharmacyId,
+        forPharmacy: (id) => FirestoreProductLookupRepository(pharmacyId: id),
+      ),
+      // The Stock tab lists the signed-in pharmacy's products and batches.
+      inventoryRepository: CurrentPharmacyInventoryRepository(
+        pharmacyId: () => authBloc.state.user?.pharmacyId,
+        forPharmacy: FirestoreInventoryRepository.forPharmacy,
+      ),
+      // ...and searches them by name, through the inventory repositories.
+      productCatalog: CurrentPharmacyProductCatalog(
+        pharmacyId: () => authBloc.state.user?.pharmacyId,
+        forPharmacy: (id) => InventoryProductCatalog(
+          products: FirestoreProductRepository(pharmacyId: id),
+          batches: FirestoreBatchRepository(pharmacyId: id),
+        ),
       ),
       // Remove stock reads and writes the signed-in user's pharmacy.
       stockRemovalRepository: CurrentPharmacyStockRemovalRepository(
