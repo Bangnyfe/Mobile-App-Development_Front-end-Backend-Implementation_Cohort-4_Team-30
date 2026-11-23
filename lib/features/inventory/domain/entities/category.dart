@@ -8,11 +8,7 @@ import 'firestore_fields.dart';
 /// Named `ProductCategory` because Flutter's `material.dart` already
 /// exports a `Category` annotation.
 class ProductCategory extends Equatable {
-  const ProductCategory({
-    required this.id,
-    required this.name,
-    this.createdAt,
-  });
+  const ProductCategory({required this.id, required this.name, this.createdAt});
 
   /// `categoryId`, the document ID.
   final String id;
