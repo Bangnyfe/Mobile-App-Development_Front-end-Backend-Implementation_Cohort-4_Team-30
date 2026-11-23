@@ -4,5 +4,9 @@ import '../entities/pharmacy_account.dart';
 abstract interface class AccountRepository {
   Future<PharmacyAccount> load();
 
+  /// Saves [pharmacy]'s name, district, city, phone and address (owner
+  /// only). A null phone or address removes it.
+  Future<void> updatePharmacy(Pharmacy pharmacy);
+
   Future<void> signOut();
 }

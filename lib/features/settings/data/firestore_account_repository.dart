@@ -64,6 +64,14 @@ class FirestoreAccountRepository implements AccountRepository {
     );
   }
 
+  /// The rules only let the owner update the pharmacy, and keep `ownerId`
+  /// as it is, which `update` never touches.
+  @override
+  Future<void> updatePharmacy(Pharmacy pharmacy) => _firestore
+      .collection('pharmacies')
+      .doc(pharmacy.id)
+      .update(pharmacyProfileToFirestore(pharmacy));
+
   @override
   Future<void> signOut() => _signOut();
 }

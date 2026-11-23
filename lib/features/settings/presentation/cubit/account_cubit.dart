@@ -25,5 +25,25 @@ class AccountCubit extends Cubit<AccountState> {
     }
   }
 
+  static const saveFailedMessage =
+      "Couldn't save the pharmacy profile. Check your connection and try "
+      'again.';
+
+  /// Saves the owner's edits to the pharmacy and shows them everywhere in
+  /// Settings. Returns an error message, or null once saved.
+  Future<String?> updatePharmacy(Pharmacy pharmacy) async {
+    final current = state;
+    if (current is! AccountLoaded) return loadFailedMessage;
+    try {
+      await _repository.updatePharmacy(pharmacy);
+    } catch (_) {
+      return saveFailedMessage;
+    }
+    if (!isClosed) {
+      emit(AccountLoaded(current.account.copyWith(pharmacy: pharmacy)));
+    }
+    return null;
+  }
+
   Future<void> signOut() => _repository.signOut();
 }

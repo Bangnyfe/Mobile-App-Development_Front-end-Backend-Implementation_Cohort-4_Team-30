@@ -26,6 +26,13 @@ class PharmacyAccount extends Equatable {
 
   final List<ProductCategory> categories;
 
+  PharmacyAccount copyWith({Pharmacy? pharmacy}) => PharmacyAccount(
+    pharmacy: pharmacy ?? this.pharmacy,
+    user: user,
+    staff: staff,
+    categories: categories,
+  );
+
   @override
   List<Object?> get props => [pharmacy, user, staff, categories];
 }

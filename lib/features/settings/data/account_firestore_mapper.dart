@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../core/domain/user_role.dart';
 import '../domain/entities/pharmacy_account.dart';
 
@@ -43,6 +45,25 @@ PharmacyAccount pharmacyAccountFromFirestore({
         ),
     ]..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase())),
   );
+}
+
+/// The fields an owner edits on `pharmacies/{pharmacyId}`, trimmed. An
+/// empty phone or address is deleted rather than saved blank, and the old
+/// single `location` field goes, now that district and city are saved.
+Map<String, Object> pharmacyProfileToFirestore(Pharmacy pharmacy) {
+  String? optional(String? value) {
+    final text = value?.trim() ?? '';
+    return text.isEmpty ? null : text;
+  }
+
+  return {
+    'name': pharmacy.name.trim(),
+    'district': pharmacy.district.trim(),
+    'city': pharmacy.city.trim(),
+    'phone': optional(pharmacy.phone) ?? FieldValue.delete(),
+    'address': optional(pharmacy.address) ?? FieldValue.delete(),
+    'location': FieldValue.delete(),
+  };
 }
 
 Pharmacy _pharmacy(FirestoreDoc doc) {

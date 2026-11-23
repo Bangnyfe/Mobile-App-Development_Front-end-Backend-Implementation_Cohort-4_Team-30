@@ -11,18 +11,31 @@ import 'package:team30_app/features/settings/domain/entities/pharmacy_account.da
 import 'package:team30_app/features/settings/domain/repositories/account_repository.dart';
 
 /// Account repository for tests: returns [account] (or throws while
-/// [fail] is true) and counts sign-outs.
+/// [fail] is true), keeps the pharmacies saved (or throws while
+/// [failSaving] is true) and counts sign-outs.
 class TestAccountRepository implements AccountRepository {
-  TestAccountRepository({this.account, this.fail = false});
+  TestAccountRepository({
+    this.account,
+    this.fail = false,
+    this.failSaving = false,
+  });
 
   PharmacyAccount? account;
   bool fail;
+  bool failSaving;
   int signOutCount = 0;
+  final List<Pharmacy> saved = [];
 
   @override
   Future<PharmacyAccount> load() async {
     if (fail) throw Exception('load failed');
     return account ?? await const FakeAccountRepository().load();
+  }
+
+  @override
+  Future<void> updatePharmacy(Pharmacy pharmacy) async {
+    if (failSaving) throw Exception('save failed');
+    saved.add(pharmacy);
   }
 
   @override

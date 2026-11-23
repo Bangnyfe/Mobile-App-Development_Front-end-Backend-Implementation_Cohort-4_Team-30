@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:team30_app/core/domain/user_role.dart';
 import 'package:team30_app/features/settings/data/account_firestore_mapper.dart';
@@ -147,5 +148,44 @@ void main() {
 
     expect(account.user.role, UserRole.pharmacist);
     expect(account.user.email, '');
+  });
+
+  group('pharmacyProfileToFirestore', () {
+    test('saves the edited fields trimmed', () {
+      final fields = pharmacyProfileToFirestore(
+        const Pharmacy(
+          id: 'p1',
+          name: ' Amani Pharmacy ',
+          district: ' Gasabo ',
+          city: ' Kigali ',
+          phone: ' +250 788 111 222 ',
+          address: ' KG 7 Ave ',
+        ),
+      );
+
+      expect(fields['name'], 'Amani Pharmacy');
+      expect(fields['district'], 'Gasabo');
+      expect(fields['city'], 'Kigali');
+      expect(fields['phone'], '+250 788 111 222');
+      expect(fields['address'], 'KG 7 Ave');
+      expect(fields.containsKey('ownerId'), isFalse);
+    });
+
+    test('deletes a missing or blank phone and address, and the old '
+        'location', () {
+      final fields = pharmacyProfileToFirestore(
+        const Pharmacy(
+          id: 'p1',
+          name: 'Amani Pharmacy',
+          district: 'Gasabo',
+          city: 'Kigali',
+          address: '   ',
+        ),
+      );
+
+      expect(fields['phone'], isA<FieldValue>());
+      expect(fields['address'], isA<FieldValue>());
+      expect(fields['location'], isA<FieldValue>());
+    });
   });
 }
