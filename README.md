@@ -1,11 +1,11 @@
-# Pharmacy Inventory & POS (Team 30)
+# Pharmacy Inventory & POS
 
 A Flutter and Firebase app for small pharmacies in Rwanda. It tracks stock
 by batch and expiry date, handles sales at the counter with a barcode
 scanner, and warns staff when stock is low or medicines are about to expire.
 
-## Demo video:
-
+## Demo video: 
+**Link**: https://youtu.be/RPRhCax65qA
 
 ## What it does
 
@@ -163,6 +163,7 @@ A couple of notes:
 4. In Settings > Staff and users, invite a second email address. Register
    with that address, verify it, and you will join the pharmacy as a
    pharmacist.
+5. To test scanning without real medicine packs, print [`docs/barcode_sheet.pdf`](docs/barcode_sheet.pdf). Page 1 has product barcodes for Sell, and page 2 has GS1 DataMatrix codes for Add stock.
 
 ## Tests
 
