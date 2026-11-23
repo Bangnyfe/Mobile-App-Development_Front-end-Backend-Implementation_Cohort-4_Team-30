@@ -229,8 +229,8 @@ class FirebaseAuthRepository implements AuthRepository {
         'district': pharmacyDistrict.trim(),
         'city': pharmacyCity.trim(),
         'ownerId': user.uid,
-        // Defaults from the ERD, changed later in Settings.
-        'nextReceiptNo': 1,
+        // Defaults from the ERD, changed later in Settings. No receipt
+        // counter: receipt numbers come from the sale's date and time.
         'defaultReorderLevel': AppSettings.defaultLowStockThreshold,
         'expiryAlertDays': AppSettings.defaultExpiryAlertDays,
         'createdAt': FieldValue.serverTimestamp(),

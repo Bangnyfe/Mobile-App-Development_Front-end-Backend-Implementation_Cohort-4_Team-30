@@ -210,7 +210,7 @@ void main() {
       expect(pharmacy, containsPair('district', 'Gasabo'));
       expect(pharmacy, containsPair('city', 'Kigali'));
       expect(pharmacy, containsPair('ownerId', 'u1'));
-      expect(pharmacy, containsPair('nextReceiptNo', 1));
+      expect(pharmacy.containsKey('nextReceiptNo'), isFalse);
       expect(pharmacy, containsPair('defaultReorderLevel', 20));
       expect(pharmacy, containsPair('expiryAlertDays', 90));
       expect(pharmacy.containsKey('location'), isFalse);
